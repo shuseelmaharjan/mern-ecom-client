@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import logo from '../../assets/main.svg';
-import { FaSearch, FaHeart, FaShoppingCart, FaRegHeart, FaUser, FaTimes } from 'react-icons/fa';
+import logo from '../../assets/felthub-logo.png';
+import { FaSearch, FaBars, FaShoppingCart, FaRegHeart, FaUser, FaTimes } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   // State to manage the category dropdown visibility
@@ -10,117 +11,102 @@ const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   return (
-    <header className="bg-gray-800 text-white p-4 relative">
+    <>
+    <header className="bg-white text-black p-4 relative shadow-xl border-gray-300">
       <div className="container mx-auto">
         {/* Desktop View */}
-        <div className="hidden lg:flex items-center justify-between relative">
-          {/* Logo */}
-          <div className="flex items-center space-x-4">
-            {/* Increased logo size */}
-            <img src={logo} alt="Logo" className="h-30" /> {/* Adjust h-30 or h-40 based on your needs */}
-            
-            {/* Category Button */}
+        <div className="hidden lg:flex items-center relative">
+          <div className="flex items-center space-x-4 justify-between w-[20vw]">
+            <Link to="/">
+              <img src={logo} alt="Logo" className="w-30" />
+            </Link>
             <button
               onClick={() => setShowCategory(!showCategory)}
-              className="text-white bg-gray-700 px-4 py-2 rounded-md"
+              className="px-4 py-2 rounded-md flex items-center justify-center hover:bg-gray-100 transition-colors duration-300 w-[10vw] text-xl"
             >
               Categories
+              <FaBars className='ml-4' />
             </button>
-
-            {/* Category List (Dropdown) */}
-            {showCategory && (
-              <div className="absolute top-full left-0 bg-gray-700 text-white mt-2 p-4 rounded-md w-[80%] h-[80vh]">
-                {/* Close Button on Desktop */}
-                <button
-                  onClick={() => setShowCategory(false)}
-                  className="absolute top-0 right-0 p-2"
-                >
-                  <FaTimes className="text-white text-xl" />
-                </button>
-                <ul>
-                  <li>Category 1</li>
-                  <li>Category 2</li>
-                  <li>Category 3</li>
-                </ul>
-              </div>
-            )}
+            
           </div>
-
-          {/* Search Box */}
           <div className="flex items-center">
             <input
               type="text"
-              className="w-[50vw] py-2 px-4 bg-gray-700 text-white rounded-md"
+              className="w-[40vw] py-2 px-4 border border-gray-400 focus:outline-none"
               placeholder="Search..."
             />
-            <button className="ml-2">
-              <FaSearch className="text-white text-xl" />
+            <button className="bg-green-500 p-2.5 border border-gray-400 text-white">
+              <FaSearch className="text-xl" />
             </button>
           </div>
+          <div className="flex items-center justify-end space-x-2 w-[20vw]">
+            <span className="flex items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors duration-200 select-none">
+              <FaRegHeart className="text-2xl" />
+            </span>
 
-          {/* Favorite, Cart, Wishlist, and User Icons */}
-          <div className="flex items-center space-x-6">
-            <FaRegHeart className="text-xl cursor-pointer" />
-            <FaShoppingCart className="text-xl cursor-pointer" />
-            <FaHeart className="text-xl cursor-pointer" />
-            <FaUser className="text-xl cursor-pointer" />
+            <span className="flex items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors duration-200 select-none">
+              <FaShoppingCart className="text-2xl" />
+              <span className="text-xl mx-2">Cart</span>
+            </span>
+
+            <span className="flex items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors duration-200 select-none">
+              <Link to='/login'>
+                <FaUser className="text-2xl" />
+                <span className="text-xl mx-2">Login/Signup</span>
+              </Link>
+            </span>
           </div>
-        </div>
 
+        </div>
         {/* Mobile View */}
         <div className="lg:hidden">
-          {/* First Row (Mobile Menu, Logo, and Icons) */}
-          <div className="flex items-center justify-between mb-4">
-            {/* Mobile Menu Bar */}
-            <button
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="text-white"
-            >
-              <div className="w-6 h-1 bg-white mb-1"></div>
-              <div className="w-6 h-1 bg-white mb-1"></div>
-              <div className="w-6 h-1 bg-white"></div>
-            </button>
+          <div className="flex items-center justify-between">
+            <div className="flex">
+              <button onClick={() => setShowMobileMenu(!showMobileMenu)}>
+                <div className="w-6 h-1 bg-black mb-1"></div>
+                <div className="w-6 h-1 bg-black mb-1"></div>
+                <div className="w-6 h-1 bg-black"></div>
+              </button>
+              <img src={logo} alt="Logo" className="w-20 ml-5" />
+            </div>
 
-            {/* Increased logo size in mobile */}
-            <img src={logo} alt="Logo" className="h-30" /> {/* Adjust h-30 or h-40 based on your needs */}
-
-            {/* Icons */}
             <div className="flex items-center space-x-4">
-              <FaRegHeart className="text-xl cursor-pointer" />
-              <FaShoppingCart className="text-xl cursor-pointer" />
-              <FaHeart className="text-xl cursor-pointer" />
-              <FaUser className="text-xl cursor-pointer" />
+              <FaRegHeart className="text-xl" />
+              <FaShoppingCart className="text-xl" />
+              <span>
+              <FaUser className="text-xl" />
+              <span>Sign in</span>
+              </span>
             </div>
           </div>
-
-          {/* Category Dropdown for Mobile */}
           {showMobileMenu && (
-            <div className="absolute top-0 left-0 w-full bg-gray-700 text-white p-4 z-10">
-              {/* Close Button */}
-              <button onClick={() => setShowMobileMenu(false)} className="text-white">
+            <div className="absolute bg-gray-700 text-white p-4 w-full">
+              <button onClick={() => setShowMobileMenu(false)}>
                 <FaTimes className="text-xl" />
               </button>
-              <div className="text-xl font-bold mt-4">Categories</div>
-              <ul className="mt-4">
+              <ul>
                 <li>Category 1</li>
                 <li>Category 2</li>
                 <li>Category 3</li>
               </ul>
             </div>
           )}
-
-          {/* Second Row (Search Box) */}
-          <div className="w-full mt-4">
-            <input
-              type="text"
-              className="w-full py-2 px-4 bg-gray-700 text-white rounded-md"
-              placeholder="Search..."
-            />
-          </div>
         </div>
-
       </div>
     </header>
+    {showCategory && (
+      <div className="container mx-auto">
+        <div className="absolute bg-white text-black p-4 rounded-md shadow-lg border w-[15vw] ml-24" style={{marginTop:'-2vh'}}>
+          <ul>
+            <li className="p-2 hover:bg-gray-100">Category 1</li>
+            <li className="p-2 hover:bg-gray-100">Category 2</li>
+            <li className="p-2 hover:bg-gray-100">Category 3</li>
+          </ul>
+        </div>
+      </div>
+      
+    )}
+    </>
   );
 };
 
