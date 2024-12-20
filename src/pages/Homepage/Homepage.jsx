@@ -1,9 +1,19 @@
-import React from 'react'
+import React from 'react';
+import { useAuth } from './../../context/AuthContext';
 
 const Homepage = () => {
-  return (
-    <div>Homepage</div>
-  )
-}
+  const { accessToken } = useAuth(); 
 
-export default Homepage
+  return (
+    <div>
+      <h1>Homepage</h1>
+      {accessToken ? (
+        <p>Access Token: {accessToken}</p>
+      ) : (
+        <p>No Access Token Found</p>
+      )}
+    </div>
+  );
+};
+
+export default Homepage;

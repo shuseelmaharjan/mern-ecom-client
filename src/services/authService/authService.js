@@ -22,12 +22,19 @@ class AuthService {
     // Login logic
     async login(data) {
         try {
-            const response = await this.api.post('/api/v1/login', data);
-            return response.data; 
+          const response = await this.api.post('/api/v1/login', data, {
+            withCredentials: true,  
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          return response.data;  
         } catch (error) {
-            throw new Error(error.response ? error.response.data.message : 'Invalid Credentials');
+          throw new Error(error.response ? error.response.data.message : 'Invalid Credentials');
         }
-    }
+      }
+      
+
 }
 
 const authService = new AuthService();
