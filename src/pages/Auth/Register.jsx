@@ -54,7 +54,7 @@ const Register = () => {
       <div className="bg-white p-8 rounded-md shadow-lg max-w-sm w-full">
         <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2>
         {msg && (
-          <div className="text-green-500 text-sm text-center mb-4">
+          <div className="text-green-500 text-base text-center mb-4">
             {msg}
           </div>
         )}

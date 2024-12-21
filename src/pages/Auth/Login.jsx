@@ -11,7 +11,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [msg, setMsg] = useState('');
 
-  const { setToken } = useAuth(); // Use setToken from context
+  const { setToken } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -40,8 +40,8 @@ const Login = () => {
     <div className="h-[80vh] bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-md shadow-lg max-w-sm w-full">
         <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
-        {msg && <div className="text-green-500 text-sm text-center mb-4">{msg}</div>}
-        {error && <div className="text-red-500 text-sm text-center mb-4">{error}</div>}
+        {msg && <div className="text-green-500 text-base text-center mb-4">{msg}</div>}
+        {error && <div className="text-red-500 text-base text-center mb-4">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
