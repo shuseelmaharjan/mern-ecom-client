@@ -50,7 +50,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div className="h-[80vh] bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-md shadow-lg max-w-sm w-full">
         <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2>
         {msg && (
@@ -61,7 +61,7 @@ const Register = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Full Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Full Name</label>
+            <label className="block text-base font-medium text-gray-700">Full Name</label>
             <input
               type="text"
               value={fullName}
@@ -74,7 +74,7 @@ const Register = () => {
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-base font-medium text-gray-700">Email</label>
             <input
               type="email"
               value={email}
@@ -87,7 +87,7 @@ const Register = () => {
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="block text-base font-medium text-gray-700">Password</label>
             <input
               type="password"
               value={password}
@@ -100,7 +100,7 @@ const Register = () => {
 
           {/* Confirm Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
+            <label className="block text-base font-medium text-gray-700">Confirm Password</label>
             <input
               type="password"
               value={confirmPassword}
@@ -113,22 +113,22 @@ const Register = () => {
 
           {/* Error Message */}
           {error && (
-            <div className="text-red-500 text-sm text-center mt-2">
+            <div className="text-red-500 text-base text-center mt-2">
               {error}
             </div>
           )}
 
           <button
             type="submit"
-            className="w-full py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full py-2 bg-green-500 text-white font-bold text-base rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             Sign Up
           </button>
         </form>
         <div className="text-center mt-4">
-          <span className="text-sm text-gray-600">
+          <span className="text-base text-gray-600">
             Already have an account?{' '}
-            <Link to="/login" className="text-green-500 hover:underline">
+            <Link to="/login" className="text-green-500 hover:underline ml-1 font-bold">
               Login
             </Link>
           </span>

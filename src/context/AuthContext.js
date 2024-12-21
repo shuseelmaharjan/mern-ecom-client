@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import config from '../services/config';
+import authService from '../services/authService/authService';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -14,6 +16,10 @@ const api = axios.create({
 
 // Provider component
 export const AuthProvider = ({ children }) => {
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const navigate = useNavigate();
+
+
   const [accessToken, setAccessToken] = useState(() => {
     return window.accessToken || null; 
   });
@@ -72,7 +78,7 @@ export const AuthProvider = ({ children }) => {
 
   // Function to check if the cookie is expired
   const checkCookieExpiration = useCallback(() => {
-    const cookie = document.cookie.split('; ').find(row => row.startsWith('xhr='));
+    const cookie = document.cookie.split('; ').find(row => row.startsWith('rest='));
     if (cookie) {
       const cookieValue = cookie.split('=')[1];
       const decodedToken = JSON.parse(atob(cookieValue.split('.')[1])); 
@@ -99,11 +105,30 @@ export const AuthProvider = ({ children }) => {
       refreshToken();
     }
 
-    checkCookieExpiration(); // Check if the cookie is expired on every page load or refresh
+    checkCookieExpiration(); 
   }, [accessToken, checkToken, refreshToken, checkCookieExpiration]); 
 
+  const handleLogout = async () => {
+    try {
+      await authService.logout(); 
+      // setToken(null);
+      //   setIsLoggedIn(false);
+      //   setAccessToken(null);
+      //   setShowLogoutModal(false);
+      window.location.reload();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error.message);
+    }
+  };
+  
+
+  
+  // console.log("Logged status:", isLoggedIn);
+  // console.log("accessToken:", accessToken);
+  // console.log("Logout Modal:", showLogoutModal);
   return (
-    <AuthContext.Provider value={{ accessToken, setToken, isLoggedIn }}>
+    <AuthContext.Provider value={{ accessToken, setToken, isLoggedIn, handleLogout, showLogoutModal, setShowLogoutModal }}>
       {children}
     </AuthContext.Provider>
   );

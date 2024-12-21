@@ -33,6 +33,23 @@ class AuthService {
           throw new Error(error.response ? error.response.data.message : 'Invalid Credentials');
         }
       }
+
+    //logout logic
+    async logout() {
+        try {
+          const response = await this.api.post('/api/v1/logout', {}, {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          console.log(response.data);
+          return response.data; 
+          
+        } catch (error) {
+          throw new Error(error.response ? error.response.data.message : 'Error logging out');
+        }
+      }
       
 
 }
