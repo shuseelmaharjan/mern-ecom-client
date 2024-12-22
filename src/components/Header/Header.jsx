@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import logo from '../../assets/felthub-logo.png';
-import { FaSearch, FaBars, FaShoppingCart, FaRegHeart, FaUser, FaTimes } from 'react-icons/fa';
+import { FaSearch, FaBars, FaShoppingCart, FaRegHeart, FaUser } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FaBox } from "react-icons/fa6";
-import { LiaGiftSolid } from "react-icons/lia";
-import { MdLogout } from "react-icons/md";
 import Logout from '../../pages/Auth/Logout';
 import { useLocation } from 'react-router-dom';
-import { IoSettingsOutline } from "react-icons/io5";
-import { LuMessageSquareMore } from "react-icons/lu";
+
+import ProfileMenu from './ProfileMenu';
+import ShowCategories from './ShowCategories';
+import MobileOptions from './MobileOptions';
+
 
 const Header = () => {
   const [showCategory, setShowCategory] = useState(false);
@@ -29,7 +29,6 @@ const Header = () => {
 
   
   useEffect(() => {
-    // Reset state when route changes
     setShowCategory(false);
     setShowMobileMenu(false);
   }, [location]);
@@ -53,7 +52,7 @@ const Header = () => {
             <button
               onClick={() => setShowCategory(!showCategory)}
               className="hidden lg:flex items-center space-x-2 text-gray-700 hover:text-green-500 transition"
-              ref={categoriesButtonRef} // Attach the ref to the button
+              ref={categoriesButtonRef}
             >
               <span className="text-lg font-medium">Categories</span>
               <FaBars className="text-xl" />
@@ -101,87 +100,7 @@ const Header = () => {
                     <span className="hidden lg:block">Hello, User</span>
                   </button>
                   {showProfileMenu && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white shadow-lg border rounded-md z-100">
-                    <ul className="divide-y divide-gray-200">
-                      <li className="group">
-                        <Link
-                          to="/profile"
-                          className="flex items-center px-4 py-2 hover:bg-gray-100"
-                        >
-                          <FaUser className="mr-2 text-gray-500 group-hover:text-gray-700" />
-                          <span className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                            My Profile
-                          </span>
-                        </Link>
-                      </li>
-                      <li className="group">
-                        <Link
-                          to="/myorders"
-                          className="flex items-center px-4 py-2 hover:bg-gray-100"
-                        >
-                          <FaBox className="mr-2 text-gray-500 group-hover:text-gray-700" />
-                          <span className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                            Orders
-                          </span>
-                        </Link>
-                      </li>
-                      <li className="group">
-                        <Link
-                          to="/wishlist"
-                          className="flex items-center px-4 py-2 hover:bg-gray-100"
-                        >
-                          <FaRegHeart className="mr-2 text-gray-500 group-hover:text-gray-700" />
-                          <span className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                            Wishlist
-                          </span>
-                        </Link>
-                      </li>
-                      <li className="group">
-                        <Link
-                          to="/rewards"
-                          className="flex items-center px-4 py-2 hover:bg-gray-100"
-                        >
-                          <LiaGiftSolid className="mr-2 text-gray-500 group-hover:text-gray-700" />
-                          <span className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                            Rewards
-                          </span>
-                        </Link>
-                      </li>
-                      <li className="group">
-                        <Link
-                          to="/messages"
-                          className="flex items-center px-4 py-2 hover:bg-gray-100"
-                        >
-                          <LuMessageSquareMore className="mr-2 text-gray-500 group-hover:text-gray-700" />
-                          <span className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                            Messages
-                          </span>
-                        </Link>
-                      </li>
-                      <li className="group">
-                        <Link
-                          to="/account-settings"
-                          className="flex items-center px-4 py-2 hover:bg-gray-100"
-                        >
-                          <IoSettingsOutline className="mr-2 text-gray-500 group-hover:text-gray-700" />
-                          <span className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                            Account Settings
-                          </span>
-                        </Link>
-                      </li>
-                      <li className="group">
-                        <button
-                          className="flex items-center px-4 py-2 hover:bg-gray-100 w-full"
-                          onClick={() => setShowLogoutModal(true)} // Show logout modal
-                        >
-                          <MdLogout className="mr-2 text-gray-500 group-hover:text-gray-700" />
-                          <span className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                            Logout
-                          </span>
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
+                   <ProfileMenu/>
                   
                   )}
                 </>
@@ -201,74 +120,19 @@ const Header = () => {
         {/* Dropdown for Categories */}
         {showCategory && (
           <div
-          className="absolute bg-white shadow-lg border rounded-md z-100"
-          style={{
-              left: categoriesButtonRef.current?.offsetLeft, 
-              width: categoriesButtonRef.current?.offsetWidth + 80, 
-            }}
-          >
-            <ul className="divide-y divide-gray-200">
-                      <li className="group">
-                        <Link className="flex items-center px-4 py-2 hover:bg-gray-100">
-                          <span className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                           Option 1
-                          </span>
-                        </Link>
-                      </li>
-                      <li className="group">
-                        <Link className="flex items-center px-4 py-2 hover:bg-gray-100">
-                          <span className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                           Option 1
-                          </span>
-                        </Link>
-                      </li>
-                      <li className="group">
-                        <Link className="flex items-center px-4 py-2 hover:bg-gray-100">
-                          <span className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                           Option 1
-                          </span>
-                        </Link>
-                      </li>
-                      <li className="group">
-                        <Link className="flex items-center px-4 py-2 hover:bg-gray-100">
-                          <span className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                           Option 1
-                          </span>
-                        </Link>
-                      </li>
-                      <li className="group">
-                        <Link className="flex items-center px-4 py-2 hover:bg-gray-100">
-                          <span className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                           Option 1
-                          </span>
-                        </Link>
-                      </li>
-                      
-                    </ul>
+                    className="absolute bg-white shadow-lg border rounded-md z-100"
+                    style={{
+                        left: categoriesButtonRef.current?.offsetLeft, 
+                        width: categoriesButtonRef.current?.offsetWidth + 80, 
+                      }}
+                    >
+          <ShowCategories/>
           </div>
         )}
 
         {/* Mobile Menu */}
         {showMobileMenu && (
-          <div className="lg:hidden bg-white text-gray-800 absolute inset-0 z-50">
-            <div className='mx-auto px-4 py-3'>
-            <Link to="/">
-              <img src={logo} alt="Logo" className="w-32" />
-            </Link>
-            </div>
-            
-            <button
-              onClick={() => setShowMobileMenu(false)}
-              className="absolute top-4 right-4 text-gray-800"
-            >
-              <FaTimes className="text-2xl" />
-            </button>
-            <div className="flex flex-col space-y-4 px-8 py-6">
-              <Link to="/" className="hover:text-green-500">Home</Link>
-              <Link to="/category" className="hover:text-green-500">Categories</Link>
-              <Link to="/login" className="hover:text-green-500">Login / Signup</Link>
-            </div>
-          </div>
+          <MobileOptions setShowMobileMenu={setShowMobileMenu}/>
         )}
         <div className="lg:hidden px-4 py-2 flex">
           <input

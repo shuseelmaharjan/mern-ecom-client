@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 import config from '../services/config';
 import authService from '../services/authService/authService';
 import { useNavigate } from 'react-router-dom';
@@ -19,21 +20,26 @@ export const AuthProvider = ({ children }) => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
 
-
   const [accessToken, setAccessToken] = useState(() => {
     return window.accessToken || null; 
   });
-  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [role, setRole] = useState(null);
 
-  // Function to set the access token
+  // Function to set the access token and extract the role
   const setToken = (token) => {
     setAccessToken(token);
     if (token) {
       window.accessToken = token; 
-      setIsLoggedIn(true); 
+      setIsLoggedIn(true);
+
+      // Decode token to extract the role
+      const decodedToken = jwtDecode(token);
+      setRole(decodedToken.UserInfo?.role || null); // Extract role from token payload
     } else {
       delete window.accessToken; 
-      setIsLoggedIn(false); 
+      setIsLoggedIn(false);
+      setRole(null); // Reset role when token is null
     }
   };
 
@@ -96,7 +102,6 @@ export const AuthProvider = ({ children }) => {
     }
   }, []); 
 
-
   // On provider initialization, validate or refresh the token and check the cookie expiration
   useEffect(() => {
     if (accessToken) {
@@ -111,10 +116,6 @@ export const AuthProvider = ({ children }) => {
   const handleLogout = async () => {
     try {
       await authService.logout(); 
-      // setToken(null);
-      //   setIsLoggedIn(false);
-      //   setAccessToken(null);
-      //   setShowLogoutModal(false);
       window.location.reload();
       navigate('/');
     } catch (error) {
@@ -122,13 +123,8 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-
-  
-  // console.log("Logged status:", isLoggedIn);
-  // console.log("accessToken:", accessToken);
-  // console.log("Logout Modal:", showLogoutModal);
   return (
-    <AuthContext.Provider value={{ accessToken, setToken, isLoggedIn, handleLogout, showLogoutModal, setShowLogoutModal }}>
+    <AuthContext.Provider value={{ accessToken, setToken, isLoggedIn, role, handleLogout, showLogoutModal, setShowLogoutModal }}>
       {children}
     </AuthContext.Provider>
   );

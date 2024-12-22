@@ -15,6 +15,7 @@ import Cart from './pages/Cart/Cart';
 import OrderHistory from './pages/OrderHistory/OrderHistory';
 import Rewards from './pages/Rewards/Rewards';
 import Messages from './components/Messages/Messages';
+import Dashboard from './pages/Dashboard/Dashboard';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path='/myorders' element={<OrderHistory/>}/>
           <Route path='/rewards' element={<Rewards/>}/>
           <Route path='/messages' element={<Messages/>}/>
+          <Route path='/dashboard' element={<Dashboard/>}/>
         </Routes>
     </>    
   );

@@ -1,12 +1,17 @@
 import React from 'react';
-import ImageCarousel from '../../components/Homepage/ImageCarousel';
+import { useAuth } from '../../context/AuthContext';
+
 const Homepage = () => {
+  const { isLoggedIn, role } = useAuth();
 
   return (
-    <>
-      <ImageCarousel/>
-      
-    </>
+    <div>
+      {isLoggedIn ? (
+        <p>Welcome, your role is: {role}</p>
+      ) : (
+        <p>Please log in</p>
+      )}
+    </div>
   );
 };
 
