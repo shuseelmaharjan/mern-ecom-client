@@ -19,6 +19,7 @@ import Rewards from './pages/Rewards/Rewards';
 import Messages from './components/Messages/Messages';
 import Dashboard from './pages/Dashboard/Dashboard';
 import PrivateRoutes from './context/PrivateRoutes';
+import DashLoadout from './components/Layouts/DashLoadout';
 
 function App() {
   const { role, isLoggedIn } = useAuth();
@@ -98,7 +99,7 @@ function App() {
         <Route path="/myorders" element={<PrivateRoutes><OrderHistory /></PrivateRoutes>} />
         <Route path="/rewards" element={<PrivateRoutes><Rewards /></PrivateRoutes>} />
         <Route path="/messages" element={<PrivateRoutes><Messages /></PrivateRoutes>} />
-        <Route path="/dashboard" element={<PrivateRoutes><Dashboard /></PrivateRoutes>} />
+        <Route path="/dashboard" element={<PrivateRoutes><DashLoadout><Dashboard /></DashLoadout></PrivateRoutes>} />
       </Routes>
     </>
   );

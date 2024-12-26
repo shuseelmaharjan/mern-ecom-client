@@ -5,7 +5,8 @@ import authService from '../../services/authService/authService';
 import { Link } from 'react-router-dom';
 import { LoginSocialFacebook } from 'reactjs-social-login';
 import { FaFacebookF } from "react-icons/fa";
-
+import Cookies from 'js-cookie';
+import useEncryption from '../../hooks/useEncryption';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,8 +14,10 @@ const Login = () => {
   const [error, setError] = useState('');
   const [msg, setMsg] = useState('');
 
-  const { setToken } = useAuth();
+  const { setAccessToken } = useAuth();
   const navigate = useNavigate();
+
+  const { encrypt } = useEncryption();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,19 +27,16 @@ const Login = () => {
 
     try {
       const response = await authService.login(formData); 
-      const { accessToken } = response;
-
-      setToken(accessToken); 
-
+      setAccessToken(response.accessToken);
+      const encryptedSession = encrypt('true');
+      Cookies.set('_session', encryptedSession, { expires: 7, path: '/', secure: false, sameSite: 'Lax' });
       setMsg('Login successful!');
-      navigate('/');
+      navigate('/dashboard'); 
     } catch (error) {
       setError('Error logging in. Please check your credentials and try again.');
-      console.error(error);
+      console.error('Login Error:', error);
     }
   };
-
-  
 
   return (
     <div className="h-[80vh] bg-gray-100 flex items-center justify-center p-4">
@@ -90,8 +90,6 @@ const Login = () => {
         >
           <FaFacebookF />
         </LoginSocialFacebook>
-
-
       </div>
     </div>
   );
