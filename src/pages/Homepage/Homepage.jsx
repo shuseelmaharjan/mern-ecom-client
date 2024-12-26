@@ -1,18 +1,9 @@
-import React from 'react';
-import { useAuth } from '../../context/AuthContext';
+import React from 'react'
 
 const Homepage = () => {
-  const { isLoggedIn, role } = useAuth();
-
   return (
-    <div>
-      {isLoggedIn ? (
-        <p>Welcome, your role is: {role}</p>
-      ) : (
-        <p>Please log in</p>
-      )}
-    </div>
-  );
-};
+    <div>Homepage</div>
+  )
+}
 
-export default Homepage;
+export default Homepage

@@ -4,10 +4,8 @@ import { jwtDecode } from 'jwt-decode';
 import config from '../services/config';
 import authService from '../services/authService/authService';
 import { useNavigate } from 'react-router-dom';
-
 const AuthContext = createContext();
 
-// Custom hook to use the AuthContext
 export const useAuth = () => useContext(AuthContext);
 
 const api = axios.create({
@@ -15,7 +13,7 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Provider component
+
 export const AuthProvider = ({ children }) => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
@@ -26,20 +24,20 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState(null);
 
-  // Function to set the access token and extract the role
   const setToken = (token) => {
     setAccessToken(token);
     if (token) {
       window.accessToken = token; 
       setIsLoggedIn(true);
+      sessionStorage.setItem('l', 'true');
 
-      // Decode token to extract the role
       const decodedToken = jwtDecode(token);
-      setRole(decodedToken.UserInfo?.role || null); // Extract role from token payload
+      setRole(decodedToken.UserInfo?.role || null);
     } else {
       delete window.accessToken; 
       setIsLoggedIn(false);
-      setRole(null); // Reset role when token is null
+      sessionStorage.setItem('l', 'false');
+      setRole(null); 
     }
   };
 
@@ -92,17 +90,14 @@ export const AuthProvider = ({ children }) => {
       const currentDate = new Date();
 
       if (currentDate > expiryDate) {
-        // If the token is expired
         setIsLoggedIn(false);
         setToken(null); 
       } else {
-        // If token is still valid
         setIsLoggedIn(true);
       }
     }
   }, []); 
 
-  // On provider initialization, validate or refresh the token and check the cookie expiration
   useEffect(() => {
     if (accessToken) {
       checkToken();

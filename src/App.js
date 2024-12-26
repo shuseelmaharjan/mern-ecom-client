@@ -1,6 +1,8 @@
 import './App.css';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 import Header from './components/Header/Header';
-import { Routes, Route } from 'react-router-dom';
+import AdminHeader from './components/Header/AdminHeader';
 import Homepage from './pages/Homepage/Homepage';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
@@ -16,29 +18,89 @@ import OrderHistory from './pages/OrderHistory/OrderHistory';
 import Rewards from './pages/Rewards/Rewards';
 import Messages from './components/Messages/Messages';
 import Dashboard from './pages/Dashboard/Dashboard';
+import PrivateRoutes from './context/PrivateRoutes';
 
 function App() {
+  const { role, isLoggedIn } = useAuth();
+  const location = useLocation();
+
+  // Define paths for header and admin header
+  const adminPaths = [
+    "/profile",
+    "/account-settings",
+    "/account-security",
+    "/public-profile",
+    "/account-address",
+    "/credit-card",
+    "/myorders",
+    "/rewards",
+    "/messages",
+    "/dashboard"
+  ];
+
+  const headerPaths = [
+    "/",
+    "/login",
+    "/signup",
+    "/wishlist",
+    "/cart"
+  ];
+
+  // Determine if we should show AdminHeader or Header based on role and current path
+  const isAdminPage = adminPaths.includes(location.pathname);
+  const isHeaderPage = headerPaths.includes(location.pathname);
+
+  // Render AdminHeader if logged in and admin, otherwise render Header based on conditions
+  let headerComponent = null;
+
+  if (isLoggedIn) {
+    if (role === 'admin' || role === 'vendor') {
+      // Show AdminHeader on admin paths
+      if (isAdminPage) {
+        headerComponent = <AdminHeader />;
+      } else {
+        // Show Header on non-admin pages for admin or vendor
+        headerComponent = <Header />;
+      }
+    } else {
+      // Regular user, show Header for headerPaths
+      if (isHeaderPage) {
+        headerComponent = <Header />;
+      }
+    }
+  } else {
+    // For public pages (logged-out users), show Header
+    if (isHeaderPage) {
+      headerComponent = <Header />;
+    }
+  }
+
   return (
     <>
-    <Header />
-        <Routes>
-          <Route path='/' element={<Homepage />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/signup' element={<Register />} />
-          <Route path='/profile' element={<MyProfile/>}/>
-          <Route path='/account-settings' element={<Accounts/>}/>
-          <Route path='/account-security' element={<Security/>}/>
-          <Route path='/public-profile' element={<PublicProfile/>}/>
-          <Route path='/account-address' element={<Address/>}/>
-          <Route path='/credit-card' element={<CreditCard/>}/>
-          <Route path='/wishlist' element={<Wishlist/>}/>
-          <Route path='/cart' element={<Cart/>}/>
-          <Route path='/myorders' element={<OrderHistory/>}/>
-          <Route path='/rewards' element={<Rewards/>}/>
-          <Route path='/messages' element={<Messages/>}/>
-          <Route path='/dashboard' element={<Dashboard/>}/>
-        </Routes>
-    </>    
+      {/* Render Header or AdminHeader based on user role */}
+      {headerComponent}
+
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Homepage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Register />} />
+
+        {/* Private Routes */}
+        <Route path="/profile" element={<PrivateRoutes><MyProfile /></PrivateRoutes>} />
+        <Route path="/account-settings" element={<PrivateRoutes><Accounts /></PrivateRoutes>} />
+        <Route path="/account-security" element={<PrivateRoutes><Security /></PrivateRoutes>} />
+        <Route path="/public-profile" element={<PrivateRoutes><PublicProfile /></PrivateRoutes>} />
+        <Route path="/account-address" element={<PrivateRoutes><Address /></PrivateRoutes>} />
+        <Route path="/credit-card" element={<PrivateRoutes><CreditCard /></PrivateRoutes>} />
+        <Route path="/wishlist" element={<PrivateRoutes><Wishlist /></PrivateRoutes>} />
+        <Route path="/cart" element={<PrivateRoutes><Cart /></PrivateRoutes>} />
+        <Route path="/myorders" element={<PrivateRoutes><OrderHistory /></PrivateRoutes>} />
+        <Route path="/rewards" element={<PrivateRoutes><Rewards /></PrivateRoutes>} />
+        <Route path="/messages" element={<PrivateRoutes><Messages /></PrivateRoutes>} />
+        <Route path="/dashboard" element={<PrivateRoutes><Dashboard /></PrivateRoutes>} />
+      </Routes>
+    </>
   );
 }
 
