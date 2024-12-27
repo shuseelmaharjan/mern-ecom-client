@@ -27,6 +27,7 @@ import Marketing from './pages/Marketing/Marketing';
 import Help from './pages/Help/Help';
 import Settings from './pages/Settings/Settings';
 import Finances from './pages/Finances/Finances';
+import AddProduct from './pages/Products/AddProduct';
 
 
 
@@ -52,7 +53,8 @@ function App() {
     "/marketing",
     "/finances",
     "/help",
-    "/settings"
+    "/settings",
+    "/listing/create-product"
   ];
 
   const headerPaths = [
@@ -118,6 +120,7 @@ function App() {
         <Route path="/finances" element={<PrivateRoutes><DashLoadout><Finances /></DashLoadout></PrivateRoutes>} />
         <Route path="/help" element={<PrivateRoutes><DashLoadout><Help /></DashLoadout></PrivateRoutes>} />
         <Route path="/settings" element={<PrivateRoutes><DashLoadout><Settings /></DashLoadout></PrivateRoutes>} />
+        <Route path="/listing/create-product" element={<PrivateRoutes><DashLoadout><AddProduct /></DashLoadout></PrivateRoutes>} />
       </Routes>
     </>
   );
