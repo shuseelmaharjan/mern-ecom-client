@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import config from '../services/config';
-import authService from '../services/authService/authService';
-import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
 import useEncryption from '../hooks/useEncryption';  
@@ -21,20 +19,8 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState('');
   const [userId, setUserId] = useState('');
-  const navigate = useNavigate();
 
   const { decrypt, encrypt } = useEncryption(); 
-
-  const handleLogout = async () => {
-    try {
-      await authService.logout();
-      setIsLoggedIn(false);
-      setAccessToken(null);
-      navigate('/');
-    } catch (error) {
-      console.error('Logout failed:', error.message);
-    }
-  };
 
   const fetchCsrf = async () => {
     try {
@@ -118,7 +104,7 @@ export const AuthProvider = ({ children }) => {
   }, [fetchUserId]);
 
   return (
-    <AuthContext.Provider value={{ accessToken, setAccessToken, handleLogout, isLoggedIn, role, userId }}>
+    <AuthContext.Provider value={{ accessToken, setAccessToken, isLoggedIn, role, userId}}>
       {children}
     </AuthContext.Provider>
   );

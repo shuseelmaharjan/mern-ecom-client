@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight, MdLogout } from "react-icons/md";
 import { FaRegUserCircle } from "react-icons/fa";
 import { BsShop, BsClipboard2Data } from "react-icons/bs";
@@ -12,9 +13,10 @@ import { AiOutlineBank } from "react-icons/ai";
 const Sidebar = ({ isSidebarExpanded, setIsSidebarExpanded }) => {
   const [isProfilePopupOpen, setIsProfilePopupOpen] = useState(false);
   const [isShopPopupOpen, setIsShopPopupOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
-    localStorage.setItem("isSidebarExpanded", JSON.stringify(isSidebarExpanded));
+    localStorage.setItem("_bar", JSON.stringify(isSidebarExpanded));
   }, [isSidebarExpanded]);
 
   const toggleSidebar = () => {
@@ -29,10 +31,14 @@ const Sidebar = ({ isSidebarExpanded, setIsSidebarExpanded }) => {
     setIsShopPopupOpen(!isShopPopupOpen);
   };
 
+  const isActive = (path) => {
+    return location.pathname.includes(path);
+  };
+
   return (
     <div className="flex flex-col h-full border-r border-gray-300">
       {/* Shop Name Section */}
-      <div className="border-b border-gray-300">
+      <div>
         <button
           className="text-gray-800 px-4 py-4 w-full text-left focus:outline-none flex text-xl sm:text-xl lg:text-2xl"
           onClick={toggleShopName}
@@ -68,7 +74,7 @@ const Sidebar = ({ isSidebarExpanded, setIsSidebarExpanded }) => {
             </li>
             <li>
               <button
-                onClick={() => (window.location.href = "/marketplace")}
+                onClick={() => (window.location.href = "/")}
                 className="w-full text-left hover:bg-gray-200 text-gray-800 py-4 px-4 text-lg font-bold shadow focus:outline-none"
               >
                 <span className="flex items-center">
@@ -86,17 +92,62 @@ const Sidebar = ({ isSidebarExpanded, setIsSidebarExpanded }) => {
       {/* Navigation Section */}
       <nav className="flex-1 overflow-y-auto mt-12" id="nav">
         <ul>
-          <SidebarItem icon={<IoHomeOutline />} label="Dashboard" isExpanded={isSidebarExpanded} />
-          <SidebarItem icon={<LuShapes />} label="Listing" isExpanded={isSidebarExpanded} />
-          <SidebarItem icon={<LuMessageSquareText />} label="Messages" isExpanded={isSidebarExpanded} />
-          <SidebarItem icon={<BsClipboard2Data />} label="Order & Delivery" isExpanded={isSidebarExpanded} />
+          <Link to="/dashboard">
+            <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/dashboard") ? 'bg-gray-300' : ''}`}>
+              <IoHomeOutline />
+              {isSidebarExpanded && <span className="mx-2">Dashboard</span>}
+            </li>
+          </Link>
+          <Link to="/listing">
+            <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/listing") ? 'bg-gray-300' : ''}`}>
+              <LuShapes />
+              {isSidebarExpanded && <span className="mx-2">Listing</span>}
+            </li>
+          </Link>
+          <Link to="/messages">
+            <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/messages") ? 'bg-gray-300' : ''}`}>
+              <LuMessageSquareText />
+              {isSidebarExpanded && <span className="mx-2">Messages</span>}
+            </li>
+          </Link>
+          <Link to="/order-and-delivery">
+            <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/order-and-delivery") ? 'bg-gray-300' : ''}`}>
+              <BsClipboard2Data />
+              {isSidebarExpanded && <span className="mx-2">Order & Delivery</span>}
+            </li>
+          </Link>
           <div className="my-4 border-t border-gray-500"></div>
-          <SidebarItem icon={<IoBarChartOutline />} label="Stats" isExpanded={isSidebarExpanded} />
-          <SidebarItem icon={<LiaBullhornSolid />} label="Marketing" isExpanded={isSidebarExpanded} />
+          <Link to="/statistics">
+            <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/statistics") ? 'bg-gray-300' : ''}`}>
+              <IoBarChartOutline />
+              {isSidebarExpanded && <span className="mx-2">Stats</span>}
+            </li>
+          </Link>
+          <Link to="/marketing">
+            <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/marketing") ? 'bg-gray-300' : ''}`}>
+              <LiaBullhornSolid />
+              {isSidebarExpanded && <span className="mx-2">Marketing</span>}
+            </li>
+          </Link>
           <div className="my-4 border-t border-gray-500"></div>
-          <SidebarItem icon={<AiOutlineBank />} label="Finances" isExpanded={isSidebarExpanded} />
-          <SidebarItem icon={<LuUsersRound />} label="Help" isExpanded={isSidebarExpanded} />
-          <SidebarItem icon={<PiGearSix />} label="Settings" isExpanded={isSidebarExpanded} />
+          <Link to="/finances">
+            <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/finances") ? 'bg-gray-300' : ''}`}>
+              <AiOutlineBank />
+              {isSidebarExpanded && <span className="mx-2">Finances</span>}
+            </li>
+          </Link>
+          <Link to="/help">
+            <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/help") ? 'bg-gray-300' : ''}`}>
+              <LuUsersRound />
+              {isSidebarExpanded && <span className="mx-2">Help</span>}
+            </li>
+          </Link>
+          <Link to="/settings">
+            <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/settings") ? 'bg-gray-300' : ''}`}>
+              <PiGearSix />
+              {isSidebarExpanded && <span className="mx-2">Settings</span>}
+            </li>
+          </Link>
         </ul>
       </nav>
 
@@ -149,18 +200,5 @@ const Sidebar = ({ isSidebarExpanded, setIsSidebarExpanded }) => {
     </div>
   );
 };
-
-const SidebarItem = ({ icon, label, isExpanded }) => (
-  <li className="hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl">
-    {isExpanded ? (
-      <>
-        {icon}
-        <span className="mx-2">{label}</span>
-      </>
-    ) : (
-      <span className="mx-auto">{icon}</span>
-    )}
-  </li>
-);
 
 export default Sidebar;

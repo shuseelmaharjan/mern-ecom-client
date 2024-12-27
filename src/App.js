@@ -16,10 +16,19 @@ import Wishlist from './pages/Wishlist/Wishlist';
 import Cart from './pages/Cart/Cart';
 import OrderHistory from './pages/OrderHistory/OrderHistory';
 import Rewards from './pages/Rewards/Rewards';
-import Messages from './components/Messages/Messages';
 import Dashboard from './pages/Dashboard/Dashboard';
 import PrivateRoutes from './context/PrivateRoutes';
 import DashLoadout from './components/Layouts/DashLoadout';
+import Products from './pages/Products/Products';
+import Message from './pages/Messages/Messages';
+import OrderAndDelivery from './pages/OrderAndDelivery/OrderAndDelivery';
+import Stats from './pages/Stats/Stats';
+import Marketing from './pages/Marketing/Marketing';
+import Help from './pages/Help/Help';
+import Settings from './pages/Settings/Settings';
+import Finances from './pages/Finances/Finances';
+
+
 
 function App() {
   const { role, isLoggedIn } = useAuth();
@@ -35,8 +44,15 @@ function App() {
     "/credit-card",
     "/myorders",
     "/rewards",
+    "/dashboard",
+    "/listing",
     "/messages",
-    "/dashboard"
+    "/order-and-delivery",
+    "/statistics",
+    "/marketing",
+    "/finances",
+    "/help",
+    "/settings"
   ];
 
   const headerPaths = [
@@ -56,21 +72,17 @@ function App() {
 
   if (isLoggedIn) {
     if (role === 'admin' || role === 'vendor') {
-      // Show AdminHeader on admin paths
       if (isAdminPage) {
         headerComponent = <AdminHeader />;
       } else {
-        // Show Header on non-admin pages for admin or vendor
         headerComponent = <Header />;
       }
     } else {
-      // Regular user, show Header for headerPaths
       if (isHeaderPage) {
         headerComponent = <Header />;
       }
     }
   } else {
-    // For public pages (logged-out users), show Header
     if (isHeaderPage) {
       headerComponent = <Header />;
     }
@@ -87,7 +99,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Register />} />
 
-        {/* Private Routes */}
         <Route path="/profile" element={<PrivateRoutes><MyProfile /></PrivateRoutes>} />
         <Route path="/account-settings" element={<PrivateRoutes><Accounts /></PrivateRoutes>} />
         <Route path="/account-security" element={<PrivateRoutes><Security /></PrivateRoutes>} />
@@ -98,8 +109,15 @@ function App() {
         <Route path="/cart" element={<PrivateRoutes><Cart /></PrivateRoutes>} />
         <Route path="/myorders" element={<PrivateRoutes><OrderHistory /></PrivateRoutes>} />
         <Route path="/rewards" element={<PrivateRoutes><Rewards /></PrivateRoutes>} />
-        <Route path="/messages" element={<PrivateRoutes><Messages /></PrivateRoutes>} />
         <Route path="/dashboard" element={<PrivateRoutes><DashLoadout><Dashboard /></DashLoadout></PrivateRoutes>} />
+        <Route path="/listing" element={<PrivateRoutes><DashLoadout><Products/></DashLoadout></PrivateRoutes>} />
+        <Route path="/messages" element={<PrivateRoutes><DashLoadout><Message/></DashLoadout></PrivateRoutes>} />
+        <Route path="/order-and-delivery" element={<PrivateRoutes><DashLoadout><OrderAndDelivery /></DashLoadout></PrivateRoutes>} />
+        <Route path="/statistics" element={<PrivateRoutes><DashLoadout><Stats /></DashLoadout></PrivateRoutes>} />
+        <Route path="/marketing" element={<PrivateRoutes><DashLoadout><Marketing /></DashLoadout></PrivateRoutes>} />
+        <Route path="/finances" element={<PrivateRoutes><DashLoadout><Finances /></DashLoadout></PrivateRoutes>} />
+        <Route path="/help" element={<PrivateRoutes><DashLoadout><Help /></DashLoadout></PrivateRoutes>} />
+        <Route path="/settings" element={<PrivateRoutes><DashLoadout><Settings /></DashLoadout></PrivateRoutes>} />
       </Routes>
     </>
   );

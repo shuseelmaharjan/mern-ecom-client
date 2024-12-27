@@ -37,7 +37,7 @@ class AuthService {
     //logout logic
     async logout() {
         try {
-          const response = await this.api.post('/api/v1/logout', {}, {
+          const response = await this.api.post('/api/v1/logout', {
             withCredentials: true,
             headers: {
               'Content-Type': 'application/json',
