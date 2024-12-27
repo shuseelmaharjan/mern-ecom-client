@@ -32,6 +32,7 @@ const Login = () => {
       Cookies.set('_session', encryptedSession, { expires: 7, path: '/', secure: false, sameSite: 'Lax' });
       setMsg('Login successful!');
       navigate('/dashboard'); 
+      window.location.reload();
     } catch (error) {
       setError('Error logging in. Please check your credentials and try again.');
       console.error('Login Error:', error);

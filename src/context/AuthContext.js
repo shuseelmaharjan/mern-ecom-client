@@ -4,7 +4,8 @@ import config from '../services/config';
 import authService from '../services/authService/authService';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
+import useEncryption from '../hooks/useEncryption';  
 
 const AuthContext = createContext();
 
@@ -16,17 +17,19 @@ const api = axios.create({
 });
 
 export const AuthProvider = ({ children }) => {
-
   const [accessToken, setAccessToken] = useState(null);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState('');
-  const [userId, setId] = useState('');
+  const [userId, setUserId] = useState('');
   const navigate = useNavigate();
+
+  const { decrypt, encrypt } = useEncryption(); 
 
   const handleLogout = async () => {
     try {
       await authService.logout();
-      window.location.reload();
+      setIsLoggedIn(false);
+      setAccessToken(null);
       navigate('/');
     } catch (error) {
       console.error('Logout failed:', error.message);
@@ -49,33 +52,60 @@ export const AuthProvider = ({ children }) => {
   const fetchAccessToken = async () => {
     try {
       const csrfToken = Cookies.get('_csrf');
-      const rCookie = Cookies.get('_r');
-      const response = await api.post('/api/v1/refresh', {}, {
+      const refreshToken = Cookies.get('_r');
+
+      const response = await api.get('/api/v2/refresh', {
         headers: {
           'Content-Type': 'application/json',
           'x-csrf-token': csrfToken,
-          'Cookie': `_csrf=${csrfToken}; _r=${rCookie}`,
+          '_r': refreshToken,
         },
       });
+
       setAccessToken(response.data.accessToken);
     } catch (error) {
-      console.error('Failed to fetch access token:', error);
+      console.error('Failed to fetch access token:', error.response?.data || error.message);
     }
   };
 
+  const validateSession = useCallback(() => {
+    const encryptedSession = Cookies.get('_session');
+    const encryptedRefreshToken = Cookies.get('_r');
+
+    if (encryptedSession && encryptedRefreshToken) {
+      const decryptedSession = decrypt(encryptedSession); 
+      if (decryptedSession === 'true') {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [decrypt]);  
+
   const fetchUserId = useCallback(async () => {
+    if (!isLoggedIn) return; 
+
     let token = accessToken;
     if (!token) {
       await fetchAccessToken();
       token = accessToken;
     }
+
     if (token) {
       const decodedToken = jwtDecode(token);
-      console.log(decodedToken);
-      setRole(decodedToken.UserInfo?.role || null);
-      setId(decodedToken.UserInfo?.id || null);
+      setRole(decodedToken.UserInfo?.role || '');
+      setUserId(decodedToken.UserInfo?.id || '');
+
+      const encryptedRole = encrypt(decodedToken.UserInfo?.role || '');
+      sessionStorage.setItem('__usr', encryptedRole);
     }
-  }, [accessToken]);
+  }, [accessToken, isLoggedIn, encrypt]);
+
+  useEffect(() => {
+    validateSession();
+  }, [validateSession]);
 
   useEffect(() => {
     if (!isCsrfValid()) {
@@ -88,7 +118,7 @@ export const AuthProvider = ({ children }) => {
   }, [fetchUserId]);
 
   return (
-    <AuthContext.Provider value={{ accessToken, setAccessToken, handleLogout, showLogoutModal, setShowLogoutModal }}>
+    <AuthContext.Provider value={{ accessToken, setAccessToken, handleLogout, isLoggedIn, role, userId }}>
       {children}
     </AuthContext.Provider>
   );
