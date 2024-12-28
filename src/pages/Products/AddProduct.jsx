@@ -5,6 +5,7 @@ import { PiWarningCircleFill } from "react-icons/pi";
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
 import { FaPlus, FaPlay, FaPause, FaTrash } from 'react-icons/fa';
+import { capitalizeWords } from '../../utils/textUtils';
 
 
 
@@ -13,16 +14,8 @@ const AddProduct = () => {
   const [isPersonalizationVisible, setIsPersonalizationVisible] = useState(false)
   const [isColorVariation, setisColorVariation] = useState(false);
   const [isSizeVariation, setIsSizeVariation] = useState(false);
-  const [isLengthBreadthVariation, setIsLengthBreadthVariation] = useState(false);
   const [colors, setColors] = useState([]);
-  const [sizes, setSizes] = useState([]);
   const [colorPicker, setColorPicker] = useState({ color: '#000000', name: '' });
-  const [sizeDetail, setSizeDetail] = useState('');
-  const [dimensionLength, setDimensionLength] = useState("");
-  const [dimensionBreadth, setDimensionBreadth] = useState("");
-  const [sizess, setSizess] = useState([]);
-  const [isNationalFreeShipping, setIsNationalFreeShipping] = useState(false);
-  const [isInternationalFreeShipping, setIsInternationalFreeShipping] = useState(false);
   const [isError, setIsError] = useState(false);
   const [title, settitle] = useState('');
   const [description, setDescription] = useState('');
@@ -87,55 +80,20 @@ const AddProduct = () => {
     
         
     const addColor = () => {
-        if (colorPicker.color && colorPicker.name) {
-            setColors([...colors, { ...colorPicker }]);
-            setColorPicker({ color: '#000000', name: '' });
-        }
+      if (colorPicker.color && colorPicker.name) {
+        setColors([...colors, { ...colorPicker }]);
+        setColorPicker({ color: '#000000', name: '' });
+        console.log('Updated Colors:', JSON.stringify([...colors, { ...colorPicker }], null, 2)); 
+      }
     };
-        
+  
     const deleteColor = (index) => {
-        setColors(colors.filter((_, i) => i !== index));
+      const updatedColors = colors.filter((_, i) => i !== index);
+      setColors(updatedColors);
+      console.log('Updated Colors After Deletion:', JSON.stringify(updatedColors, null, 2)); 
     };
         
-    
-    const toggleLengthBreadthVariation = () => {
-        setIsLengthBreadthVariation(!isLengthBreadthVariation);
-        setDimensionLength("");
-        setDimensionBreadth("");
-        setSizes([]);
-      };
 
-      
-    const addSize = () => {
-        if (!dimensionLength || !dimensionBreadth) {
-          alert("Both length and breadth are required.");
-          return;
-        }
-    
-        if (sizess.length > 0) {
-            alert("Only one size can be added.");
-            return;
-        }
-
-        setSizess([{ length: dimensionLength, breadth: dimensionBreadth }]);
-        setDimensionLength("");
-        setDimensionBreadth("");
-      };
-    
-      const deleteSize = (index) => {
-        const newSizes = sizess.filter((_, i) => i !== index);
-        setSizess(newSizes);
-      };
-
-
-      const handleShippingToggle = (e, type) => {
-        const isFreeShipping = e.target.value === "true";
-        if (type === "national") {
-          setIsNationalFreeShipping(isFreeShipping);
-        } else if (type === "international") {
-          setIsInternationalFreeShipping(isFreeShipping);
-        }
-      };
 
 
       // for media validation
@@ -272,40 +230,160 @@ const AddProduct = () => {
         }
       };
 
+
+      const [productSizeDetails, setProductSizeDetails] = useState('');
+      const [productSize, setProductSize] = useState([]);
+
+      const addSize = () => {
+        if (productSizeDetails.trim() !== '') {
+          setProductSize([...productSize, productSizeDetails.trim()]);
+          setProductSizeDetails('');
+        } else {
+          alert('Size detail cannot be empty.');
+        }
+      };
+
+      const deleteSize = (index) => {
+        setProductSize(productSize.filter((_, i) => i !== index));
+      };
+
+
+      const [isLengthBreadthVariation, setIsLengthBreadthVariation] = useState(false);
+
+      const toggleLengthBreadthVariation = () => {
+          setIsLengthBreadthVariation(!isLengthBreadthVariation);
+        };
+      
+
+
+      const [dimensionLength, setDimensionLength] = useState("");
+      const [dimensionBreadth, setDimensionBreadth] = useState("");
+      const [dimension, setDimension] = useState(null);
+
+
+      const addDimension = () => {
+        if (dimensionLength.trim() !== "" && dimensionBreadth.trim() !== "") {
+          setDimension({ length: dimensionLength.trim(), breadth: dimensionBreadth.trim() });
+          setDimensionLength("");
+          setDimensionBreadth("");
+        } else {
+          alert("Both fields are required!");
+        }
+      };
     
+      const deleteDimension = () => {
+        setDimension(null);
+      };
+
+
+      const [productBrand, setProductBrand] = useState('');
+      const [productWeight, setProductWeight] = useState('');
+
+
+      const [tagInput, setTagInput] = useState("");
+      const [tags, setTags] = useState([]);
+
+      const addTag = () => {
+        if (tagInput.trim() === "") {
+          alert("Tag cannot be empty.");
+          return;
+        }
+
+        if (tags.length >= 13) {
+          alert("You can add up to 13 tags only.");
+          return;
+        }
+
+        if (tags.includes(tagInput.trim())) {
+          alert("Duplicate tag. Tags must be unique.");
+          return;
+        }
+
+        setTags([...tags, tagInput.trim()]);
+        setTagInput("");
+      };
+
+      const deleteTag = (index) => {
+        setTags(tags.filter((_, i) => i !== index));
+      };
+
+
+      const [productMaterial, setProductMaterial]= useState('');
+      const [domesticShippingTIme, setDomesticShippingTime] = useState('');
+      const [domesticShippingCost, setDomesticShippingCost] = useState('');
+      const [domesticFreeShipping, setDomesticFreeShipping] = useState(false);
+
+
+      const handleShippingToggle = (e, type) => {
+        if (type === "national") {
+          setDomesticFreeShipping(e.target.value === "true");
+        }
+      };
+
+
+      const [isNationalFreeShipping] = useState(false);
+      const [isInternationalFreeShipping] = useState(false);
+
+      const [internationalShippingTime, setInternationalShippingTime] = useState('');
+      const [internationalFreeShipping, setInternationalFreeShipping] = useState(false);
+      const [internationalShippingCost, setInternationalShippingCost] = useState(false);
+
+      const handleInternationalShippingToggle = (e, type) => {
+        if(type === "international"){
+          setInternationalFreeShipping(e.target.value==='true');
+        }
+      }
+
+      const [renewalOption, setRenewalOption] = useState("automatic");
+      const [expirationDate, setExpirationDate] = useState("");
+
+      const handleRenewalChange = (e) => {
+        const selectedOption = e.target.value;
+        setRenewalOption(selectedOption);
+    
+        if (selectedOption === "automatic") {
+          setExpirationDate("automatic");
+        } else if (selectedOption === "manual") {
+          const date = new Date();
+          date.setMonth(date.getMonth() + 3);
+          setExpirationDate(date.toISOString().split("T")[0]);
+        }
+      };
+
+
 
       const handleSubmit = (e) => {
         e.preventDefault();
     
-        const formData = new FormData();
-        formData.append('title', title);
+        const formData = {
+          title,
+          description,
+          ispersonalization: isPersonalizationVisible,
+          productLimit,
+          productPrice,
+          productQuantity,
+          sku: skuData,
+          enableColorVariation: isColorVariation,
+          colors,
+          productSize,
+          dimension,
+          productBrand,
+          productWeight,
+          tags,
+          productMaterial,
+          domesticShippingTIme,
+          domesticShippingCost,
+          domesticFreeShipping,
+          internationalShippingTime,
+          internationalFreeShipping,
+          internationalShippingCost,
+          expirationDate,
+          images: imageFiles.map((file) => (file ? file.name : null)).filter(Boolean), 
+          video: videoFile ? videoFile.name : null,
+        };
     
-        imageFiles.forEach((file, index) => {
-            if (file) {
-                formData.append(`image-${index}`, file);
-            }
-        });
-    
-        if (videoFile) {
-            formData.append('video', videoFile);
-        }
-
-        formData.append('description', description);
-        formData.append('ispersonalization', isPersonalizationVisible);
-        formData.append('productLimit', productLimit);
-        formData.append('productPrice', productPrice);
-        formData.append('productQuantity', productQuantity);
-        formData.append('sku', skuData);
-    
-        console.log('Form Data:');
-        for (let [key, value] of formData.entries()) {
-            if (value instanceof File) {
-                console.log(`${key}: ${value.name}`);
-            } else {
-                console.log(`${key}: ${value}`);
-            }
-        }
-    };
+        console.log('Form Data in JSON:', JSON.stringify(formData, null, 2)); 
+      };
     
     
 
@@ -313,7 +391,7 @@ const AddProduct = () => {
     <div className="container mx-auto p-6">
       <nav className="sticky top-[5rem] left-0 w-full bg-white shadow z-10">
         <ul className="flex space-x-4 p-4">
-          {['Product Details', 'Price & Inventory', 'section3', 'section4', 'section5'].map(section => (
+          {['Product Details', 'Price & Inventory', 'Variations Details', 'Shipping & Return', 'Settings'].map(section => (
             <li key={section}>
               <a
                 href={`#${section}`}
@@ -669,60 +747,63 @@ const AddProduct = () => {
 
 
 
-        <section id="section3" className="p-6 bg-white shadow-lg rounded-lg mt-12">
+        <section id="Variations Details" className="p-6 bg-white shadow-lg rounded-lg mt-12">
             <h2 className="text-2xl font-bold text-gray-700">Variations Details</h2>
-            <div className="flex justify-between items-center mt-4">
-                <p className="text-sm text-gray-600">
-                Share a few more specifics about your item to make it easier to find in search, and to help buyers know what to expect.
-                </p>
-            </div>
+            <p className='text-sm text-gray-600 mt-2'>Share a few more specifics about your item to make it easier to find in search, and to help buyers know what to expect.</p>
+
 
             <div className="mt-4">
                 <div className="flex">
-                <label htmlFor="title" className="block text-lg font-semibold mr-4">Color Variations</label>   
-                <label className="flex items-center">
-                    <input
-                        type="checkbox"
-                        className="toggle-checkbox hidden"
-                        checked={isColorVariation}
-                        onChange={toggleColorVariatioin}
-                    />
-                    <div className={`toggle-switch w-12 h-6 rounded-full shadow-inner ${isColorVariation ? 'bg-green-500' : 'bg-gray-300'}`}>
-                        <div
-                        className={`toggle-dot w-6 h-6 bg-white rounded-full shadow-lg transform duration-300 ease-in-out ${
-                            isColorVariation ? 'translate-x-6 bg-green-500' : ''
-                        }`}
-                        ></div>
-                    </div>
-                </label>
+                  <label htmlFor="color_variation" className="block text-gray-700 text-lg font-semibold mr-2">Color Variations</label>   
+                  <label className="flex items-center">
+                      <input type="checkbox" className="toggle-checkbox hidden" checked={isColorVariation} onChange={toggleColorVariatioin}/>
+                      <div className={`toggle-switch w-12 h-6 rounded-full shadow-inner ${isColorVariation ? 'bg-green-500' : 'bg-gray-300'}`}>
+                          <div className={`toggle-dot w-6 h-6 bg-white rounded-full shadow-lg transform duration-300 ease-in-out ${
+                              isColorVariation ? 'translate-x-6 bg-green-500' : ''}`}>
+                          </div>
+                      </div>
+                  </label>
                 </div>
-                <span className='text-sm text-gray-600'>You can add color variations with enabling it.</span>
+                <span className='text-sm text-gray-600 block mt-2'>You can add color variations enabling it.</span>
             </div>
 
             {isColorVariation && (
                 <>
-                {/* Colors Section */}
-                <div className="mt-6">
-                    <h3 className="text-lg font-semibold">Colors Details</h3>
-                    <div className="flex items-center gap-4 mt-4">
-                    <SketchPicker
-                        color={colorPicker.color}
-                        onChange={(color) => setColorPicker({ ...colorPicker, color: color.hex })}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Color Label"
-                        value={colorPicker.name}
-                        onChange={(e) => setColorPicker({ ...colorPicker, name: e.target.value })}
-                        className="border rounded px-4 py-2 w-1/2"
-                    />
-                    <button
-                        type="button"
-                        onClick={addColor}
-                        className="bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out duration-900"
-                    >
-                        Add Color
-                    </button>
+                  <div className="mt-6">
+                    <div className="flex items-center space-x-1">
+                    <label htmlFor="sku" className="block text-gray-700 text-lg font-semibold mr-2">Choose Color</label>
+                      <div className="relative group">
+                        <FaInfoCircle className="cursor-pointer text-gray-700 hover:text-gray-800" />
+                        <div className="absolute hidden group-hover:block bg-gray-900 text-white text-sm rounded-md p-4 left-0 mt-2 w-64 z-10 shadow-lg">
+                          <div className="before:absolute before:top-[-8px] before:left-6 before:border-8 before:border-transparent before:border-b-gray-900"></div>
+                          <h3 className="font-bold text-lg mb-2">Color Tips</h3>
+                          <ul className="list-disc pl-5 space-y-1 font-semibold">
+                            <li>Choose the color from the color picker then enter the name of the color and submit to add color button to add color.</li>
+                            <li>The color you selected and saved will be the product color variant.</li>
+                            <li>The color will be saved in a hexadecimal format.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="block items-center gap-4 mt-4">
+
+                    <SketchPicker color={colorPicker.color} onChange={(color) => setColorPicker({ ...colorPicker, color: color.hex })}/>
+
+
+                    <label htmlFor="color" className="flex text-gray-700 text-lg font-semibold mt-10">Color Name</label>
+                    <div className="flex space-x-2 items-center">
+                      <div className="block">
+                          <input type="text" placeholder="Enter color name" value={colorPicker.name}
+                            onChange={(e) => setColorPicker({ ...colorPicker, name: e.target.value })}
+                            className="border rounded px-4 py-2 w-full mt-2"/>
+                        </div>
+                        <button type="button" onClick={addColor} className="flex items-center bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out transition-all duration-300">
+                            Add Color
+                        </button>
+                    </div>
+                    <span className='text-sm text-gray-600 block mt-2'>Enter a label name for the color that you have choosen.</span>
+
+                      
                     </div>
                     <table className="w-full mt-4 border-collapse border border-gray-300">
                     <thead>
@@ -734,72 +815,71 @@ const AddProduct = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {colors.map((color, index) => (
-                        <tr key={index}>
-                            <td className="border border-gray-300 px-4 py-2">
-                            <div
-                                className="w-6 h-6 rounded mx-auto"
-                                style={{ backgroundColor: color.color }}
-                            ></div>
+                        {colors.length > 0 ? (
+                          colors.map((color, index) => (
+                            <tr key={index}>
+                              <td className="border border-gray-300 px-4 py-2">
+                                <div className="w-6 h-6 rounded mx-auto" style={{ backgroundColor: color.color }}></div>
+                              </td>
+                              <td className="border border-gray-300 px-4 py-2 text-center">{color.color}</td>
+                              <td className="border border-gray-300 px-4 py-2 text-center">{capitalizeWords(color.name)}</td>
+                              <td className="border border-gray-300 px-4 py-2 flex justify-center">
+                                <button type="button" onClick={() => deleteColor(index)} className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 mx-auto">
+                                  Delete
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={4} className="border border-gray-300 px-4 py-2 text-center text-gray-500">
+                              No color have been selected.
                             </td>
-                            <td className="border border-gray-300 px-4 py-2 text-center">{color.color}</td>
-                            <td className="border border-gray-300 px-4 py-2 text-center">{color.name}</td>
-                            <td className="border border-gray-300 px-4 py-2">
-                            <button
-                                type="button"
-                                onClick={() => deleteColor(index)}
-                                className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                            >
-                                Delete
-                            </button>
-                            </td>
-                        </tr>
-                        ))}
-                    </tbody>
+                          </tr>
+                        )}
+                      </tbody>
+
                     </table>
                 </div>
                 </>
             )}
 
-
             <div className="mt-4">
                 <div className="flex">
-                <label htmlFor="title" className="block text-lg font-semibold mr-4">Size Variation</label>   
-                <label className="flex items-center">
-                    <input
-                        type="checkbox"
-                        className="toggle-checkbox hidden"
-                        checked={isSizeVariation}
-                        onChange={toggleSizeVariation}
-                    />
-                    <div className={`toggle-switch w-12 h-6 rounded-full shadow-inner ${isSizeVariation ? 'bg-green-500' : 'bg-gray-300'}`}>
-                        <div
-                        className={`toggle-dot w-6 h-6 bg-white rounded-full shadow-lg transform duration-300 ease-in-out ${
-                            isSizeVariation ? 'translate-x-6 bg-green-500' : ''
-                        }`}
-                        ></div>
-                    </div>
-                </label>
+                  <label htmlFor="color_variation" className="block text-gray-700 text-lg font-semibold mr-2">Size Variations</label>   
+                  <label className="flex items-center">
+                      <input type="checkbox" className="toggle-checkbox hidden" checked={isSizeVariation} onChange={toggleSizeVariation}/>
+                      <div className={`toggle-switch w-12 h-6 rounded-full shadow-inner ${isSizeVariation ? 'bg-green-500' : 'bg-gray-300'}`}>
+                          <div className={`toggle-dot w-6 h-6 bg-white rounded-full shadow-lg transform duration-300 ease-in-out ${
+                              isSizeVariation ? 'translate-x-6 bg-green-500' : ''}`}>
+                          </div>
+                      </div>
+                  </label>
                 </div>
-                <span className='text-sm text-gray-600'>You can add size variations with enabling it.</span>
+                <span className='text-sm text-gray-600 block mt-2'>You can add size variations enabling it.</span>
             </div>
 
             {isSizeVariation && (
                 <div className="mt-6">
-                    <h3 className="text-lg font-semibold">Size Details</h3>
+                  <div className="flex items-center space-x-1">
+                    <label htmlFor="sku" className="block text-gray-700 text-lg font-semibold mr-2">Size Details</label>
+                      <div className="relative group">
+                        <FaInfoCircle className="cursor-pointer text-gray-700 hover:text-gray-800" />
+                        <div className="absolute hidden group-hover:block bg-gray-900 text-white text-sm rounded-md p-4 left-0 mt-2 w-64 z-10 shadow-lg">
+                          <div className="before:absolute before:top-[-8px] before:left-6 before:border-8 before:border-transparent before:border-b-gray-900"></div>
+                          <h3 className="font-bold text-lg mb-2">Size Details</h3>
+                          <ul className="list-disc pl-5 space-y-1 font-semibold">
+                            <li>You can add your product size that you have available from here, it is a size attribute of a product</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <label htmlFor="productsize" className="flex text-gray-700 text-lg font-semibold mt-10">Product Size</label>
+
                     <div className="flex items-center gap-4 mt-4">
-                    <input
-                        type="text"
-                        placeholder="Size Detail"
-                        value={sizeDetail}
-                        onChange={(e) => setSizeDetail(e.target.value)}
-                        className="border rounded px-4 py-2 w-1/2"
-                    />
-                    <button
-                        type="button"
-                        onClick={addSize}
-                        className="bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out duration-900"
-                    >
+                    <input type="text" placeholder="Size Detail" value={productSizeDetails} onChange={(e) => setProductSizeDetails(e.target.value)} className="border rounded px-4 py-2 w-1/2"/>
+                    <button type="button" onClick={addSize} className="flex items-center bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out transition-all duration-300">
                         Add Size
                     </button>
                     </div>
@@ -811,20 +891,24 @@ const AddProduct = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {sizes.map((size, index) => (
+                      {productSize.length > 0 ? (
+                        productSize.map((size, index)  => (
                         <tr key={index}>
-                            <td className="border border-gray-300 px-4 py-2">{size}</td>
-                            <td className="border border-gray-300 px-4 py-2">
-                            <button
-                                type="button"
-                                onClick={() => deleteSize(index)}
-                                className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                            >
+                            <td className="border border-gray-300 px-4 py-2 text-center">{size}</td>
+                            <td className="border border-gray-300 px-4 py-2 flex justify-center">
+                            <button type="button" onClick={() => deleteSize(index)} className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
                                 Delete
                             </button>
                             </td>
                         </tr>
-                        ))}
+                        )) ): (
+                          <tr>
+                            <td colSpan={4} className="border border-gray-300 px-4 py-2 text-center text-gray-500">
+                              No color have been selected.
+                            </td>
+                          </tr>
+                        )}
+                        
                     </tbody>
                     </table>
                 </div>
@@ -832,110 +916,162 @@ const AddProduct = () => {
 
             <div className="mt-4">
                 <div className="flex">
-                <label htmlFor="title" className="block text-lg font-semibold mr-4">Length and Breadth Variations</label>   
-                <label className="flex items-center">
-                    <input
-                        type="checkbox"
-                        className="toggle-checkbox hidden"
-                        checked={isLengthBreadthVariation}
-                        onChange={toggleLengthBreadthVariation}
-                    />
-                    <div className={`toggle-switch w-12 h-6 rounded-full shadow-inner ${isLengthBreadthVariation ? 'bg-green-500' : 'bg-gray-300'}`}>
-                        <div
-                        className={`toggle-dot w-6 h-6 bg-white rounded-full shadow-lg transform duration-300 ease-in-out ${
-                            isLengthBreadthVariation ? 'translate-x-6 bg-green-500' : ''
-                        }`}
-                        ></div>
-                    </div>
-                </label>
+                  <label htmlFor="color_variation" className="block text-gray-700 text-lg font-semibold mr-2">Dimension Variations</label>   
+                  <label className="flex items-center">
+                      <input type="checkbox" className="toggle-checkbox hidden" checked={isLengthBreadthVariation} onChange={toggleLengthBreadthVariation}/>
+                      <div className={`toggle-switch w-12 h-6 rounded-full shadow-inner ${isLengthBreadthVariation ? 'bg-green-500' : 'bg-gray-300'}`}>
+                          <div className={`toggle-dot w-6 h-6 bg-white rounded-full shadow-lg transform duration-300 ease-in-out ${
+                              isLengthBreadthVariation ? 'translate-x-6 bg-green-500' : ''}`}>
+                          </div>
+                      </div>
+                  </label>
                 </div>
-                <span className='text-sm text-gray-600'>You can add product dimensions enabling it.</span>
+                <span className='text-sm text-gray-600 block mt-2'>You can add product dimensions enabling it.</span>
             </div>
 
             {isLengthBreadthVariation && (
                 <div className="mt-6">
-                <h3 className="text-lg font-semibold">Product dimention details</h3>
-                <div className="flex items-center gap-4 mt-4">
-                  <input
-                    type="text"
-                    placeholder="Product length in cm"
-                    value={dimensionLength}
-                    onChange={(e) => setDimensionLength(e.target.value)}
-                    className="border rounded px-4 py-2 w-[20rem]"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Product breadth in cm"
-                    value={dimensionBreadth}
-                    onChange={(e) => setDimensionBreadth(e.target.value)}
-                    className="border rounded px-4 py-2 w-[20rem]"
-                  />
-                  <button
-                    type="button"
-                    onClick={addSize}
-                    className="bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out duration-900"
-                  >
-                    Add Size
-                  </button>
-                </div>
-                <table className="w-full mt-4 border-collapse border border-gray-300">
-                  <thead>
-                    <tr>
-                      <th className="border border-gray-300 px-4 py-2">Length (cm)</th>
-                      <th className="border border-gray-300 px-4 py-2">Breadth (cm)</th>
-                      <th className="border border-gray-300 px-4 py-2">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sizess.map((size, index) => (
-                      <tr key={index}>
-                        <td className="border border-gray-300 px-4 py-2">{size.length}</td>
-                        <td className="border border-gray-300 px-4 py-2">{size.breadth}</td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          <button
-                            type="button"
-                            onClick={() => deleteSize(index)}
-                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                  <div className="flex items-center space-x-1">
+                    <label htmlFor="sku" className="block text-gray-700 text-lg font-semibold mr-2">Product Dimensions Details</label>
+                      <div className="relative group">
+                        <FaInfoCircle className="cursor-pointer text-gray-700 hover:text-gray-800" />
+                        <div className="absolute hidden group-hover:block bg-gray-900 text-white text-sm rounded-md p-4 left-0 mt-2 w-64 z-10 shadow-lg">
+                          <div className="before:absolute before:top-[-8px] before:left-6 before:border-8 before:border-transparent before:border-b-gray-900"></div>
+                          <h3 className="font-bold text-lg mb-2">Product Dimensions Details</h3>
+                          <ul className="list-disc pl-5 space-y-1 font-semibold">
+                            <li>Here you can add width and height of a product as a dimension attribute of a product.</li>
+                            <li>You are only allowed to add one height and one width of a product here.</li>
+                            <li>The dimensions unit should be measured in cm.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="block">
+                        <label htmlFor="length" className="flex text-gray-700 text-lg font-semibold mt-10">
+                          Length in cm
+                        </label>
+                        <input type="text" placeholder="Product length in cm" value={dimensionLength} onChange={(e) => setDimensionLength(e.target.value)} className="border rounded px-4 py-2 w-[20rem]"/>
+                      </div>
+                      <div className="block">
+                        <label htmlFor="breadth" className="flex text-gray-700 text-lg font-semibold mt-10">
+                          Breadth in cm
+                        </label>
+                        <input type="text" placeholder="Product breadth in cm" value={dimensionBreadth} onChange={(e) => setDimensionBreadth(e.target.value)} className="border rounded px-4 py-2 w-[20rem]"/>
+                      </div>
+                      <button type="button" onClick={addDimension} className="flex items-center bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out transition-all duration-300">
+                        Add Size
+                      </button>
+                    </div>
+
+                    <table className="w-full mt-4 border-collapse border border-gray-300">
+                      <thead>
+                        <tr>
+                          <th className="border border-gray-300 px-4 py-2">Length (cm)</th>
+                          <th className="border border-gray-300 px-4 py-2">Breadth (cm)</th>
+                          <th className="border border-gray-300 px-4 py-2">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {dimension ? (
+                          <tr>
+                            <td className="border border-gray-300 px-4 py-2">{dimension.length}</td>
+                            <td className="border border-gray-300 px-4 py-2">{dimension.breadth}</td>
+                            <td className="border border-gray-300 px-4 py-2 text-center">
+                              <button
+                                type="button"
+                                onClick={deleteDimension}
+                                className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ) : (
+                          <tr>
+                            <td colSpan={3} className="border border-gray-300 px-4 py-2 text-center text-gray-500">
+                              No dimensions added.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                  </table>
               </div>
             )}
 
             <div className='mt-4'>
                 <label htmlFor="brand" className="block text-lg font-semibold">Product Brand Name</label>
                 <span className='text-gray-500 mt-2 text-sm'>Enter the product brand name here.</span>
-                <input type="text" id="title" name="title" className="block w-[30%] p-3 mt-2 border border-gray-300 rounded-md" /> 
+                <input type="text" id="title" name="title" value={productBrand} onChange={(e) => setProductBrand(e.target.value)} className="block w-[30%] p-3 mt-2 border border-gray-300 rounded-md" /> 
             </div>
             <div className='mt-4'>
                 <label htmlFor="product_weight" className="block text-lg font-semibold">Product Weight</label>
                 <span className='text-gray-500 mt-2 text-sm'>Enter the product weight in gram.</span>
-                <input type="text" id="title" name="title" className="block w-[25%] p-3 mt-2 border border-gray-300 rounded-md" /> 
+                <input type="text" id="title" name="title" value={productWeight} onChange={(e) => setProductWeight(e.target.value)} className="block w-[25%] p-3 mt-2 border border-gray-300 rounded-md" /> 
             </div>
 
-            <div className='mt-4'>
-                <label htmlFor="tags" className="block text-lg font-semibold">Tags</label>
-                <span className='text-gray-500 mt-2 text-sm'>Add up to 13 tags to help people search for your listings.</span>
-                <input type="text" id="title" name="title" className="block w-[30%] p-3 mt-2 border border-gray-300 rounded-md" /> 
+            <div className="mt-4">
+              <label htmlFor="tags" className="block text-lg font-semibold">
+                Tags
+              </label>
+              <span className="text-gray-500 mt-2 text-sm">
+                Add up to 13 tags to help people search for your listings.
+              </span>
+              <div className="flex items-center mt-2 gap-2">
+                <input
+                  type="text"
+                  id="tags"
+                  name="tags"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  className="block w-[30%] p-3 border border-gray-300 rounded-md"
+                  placeholder="Enter a tag"
+                />
+                <button
+                  type="button"
+                  onClick={addTag}
+                  className="flex items-center bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out transition-all duration-300"
+                >
+                  Add Tag
+                </button>
+              </div>
+              <div className="mt-4">
+                {tags.length > 0 && (
+                  <ul className="flex flex-wrap gap-2">
+                    {tags.map((tag, index) => (
+                      <li
+                        key={index}
+                        className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md flex items-center"
+                      >
+                        {tag}
+                        <button
+                          onClick={() => deleteTag(index)}
+                          className="ml-2 text-red-500 hover:text-red-700"
+                        >
+                          ×
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {tags.length === 0 && (
+                  <p className="text-gray-500 mt-2">No tags added yet.</p>
+                )}
+              </div>
             </div>
 
             <div className='mt-4'>
                 <label htmlFor="materials" className="block text-lg font-semibold">Materials</label>
                 <span className='text-gray-500 mt-2 text-sm'>Buyers value transparency – tell them what’s used to make your item.</span>
-                <input type="text" id="title" name="title" className="block w-[30%] p-3 mt-2 border border-gray-300 rounded-md" /> 
+                <input type="text" id="material" name="material" value={productMaterial} onChange={(e) => setProductMaterial(e.target.value)} className="block w-[30%] p-3 mt-2 border border-gray-300 rounded-md" /> 
             </div>
             <div className='mt-4'>
                 <label htmlFor="category" className="block text-lg font-semibold">Category</label>
                 <input type="text" id="title" name="title" className="block w-[30%] p-3 mt-2 border border-gray-300 rounded-md" /> 
             </div>
             </section>
-            <section id="section4" className="p-6 bg-white shadow-lg rounded-lg mt-12">
-                <h2 className="text-2xl font-bold text-gray-700">Shipping & Return Settings</h2>
+            <section id="Shipping & Return" className="p-6 bg-white shadow-lg rounded-lg mt-12">
+                <h2 className="text-2xl font-bold text-gray-700">Shipping & Return</h2>
 
                 {/* Shopping Origin Section */}
                 <div className="mt-4 border-gray-200 border p-4 rounded-lg shadow-lg">
@@ -944,7 +1080,7 @@ const AddProduct = () => {
                     <label htmlFor="processingTime" className="block text-lg font-medium mb-2 text-gray-700">
                         Processing Time
                     </label>
-                    <input type="text" id="processingTime" name="processingTime" defaultValue="2-3 days" className="w-[40%] mt-2 p-3 border border-gray-300 rounded-md"/>
+                    <input type="text" id="processingTime" value={domesticShippingTIme} onChange={(e) => setDomesticShippingTime(e.target.value)} name="processingTime" defaultValue="2-3 days" className="w-[40%] mt-2 p-3 border border-gray-300 rounded-md" required/>
 
                     <div className="mt-4 ">
                         <label className="block text-lg font-medium mb-2 text-gray-700">Free Shipping</label>
@@ -962,7 +1098,7 @@ const AddProduct = () => {
                         <label htmlFor="nationalFixedShippingCost" className="block text-lg font-medium text-gray-700">
                         Fixed Shipping Cost ($ USD)
                         </label>
-                        <input type="number" id="nationalFixedShippingCost" name="nationalFixedShippingCost" defaultValue="20" className="w-[20%] mt-2 p-3 border border-gray-300 rounded-md" disabled={isNationalFreeShipping}/>
+                        <input type="number" id="nationalFixedShippingCost" value={domesticShippingCost} onChange={(e) => setDomesticShippingCost(e.target.value)} name="nationalFixedShippingCost" defaultValue="20" className="w-[20%] mt-2 p-3 border border-gray-300 rounded-md" disabled={isNationalFreeShipping}/>
                     </div>
                 </div>
 
@@ -971,15 +1107,15 @@ const AddProduct = () => {
                     <label htmlFor="processingTime" className="block text-lg font-medium text-gray-700">
                         Processing Time
                     </label>
-                    <input type="text" id="internationalProcessingTime" name="internationalProcessingTime" defaultValue="5-7 days" className="w-[40%] mt-2 p-3 border border-gray-300 rounded-md"/>
+                    <input type="text" id="internationalProcessingTime" name="internationalProcessingTime" defaultValue="5-7 days" value={internationalShippingTime} onChange={(e) => setInternationalShippingTime(e.target.value)} className="w-[40%] mt-2 p-3 border border-gray-300 rounded-md" required/>
                     <div className="mt-4">
                         <label className="block text-lg font-medium mb-2 text-gray-700">Free Shipping</label>
                         <div className="flex items-center gap-4 mt-2">
                         <label className="flex items-center">
-                            <input type="radio" name="internationalFreeShipping" value="true" className="mr-2" onChange={(e) => handleShippingToggle(e, "international")} />Yes
+                            <input type="radio" name="internationalFreeShipping" value="true" className="mr-2" onChange={(e) => handleInternationalShippingToggle(e, "international")} />Yes
                         </label>
                         <label className="flex items-center">
-                            <input type="radio" name="internationalFreeShipping" value="false" className="mr-2" defaultChecked onChange={(e) => handleShippingToggle(e, "international")}/> No
+                            <input type="radio" name="internationalFreeShipping" value="false" className="mr-2" defaultChecked onChange={(e) => handleInternationalShippingToggle(e, "international")}/> No
                         </label>
                         </div>
                     </div>
@@ -987,13 +1123,13 @@ const AddProduct = () => {
                             <label htmlFor="internationalFixedShippingCost" className="block text-lg font-medium text-gray-700">
                             Fixed Shipping Cost
                             </label>
-                            <input type="number" id="internationalFixedShippingCost" name="internationalFixedShippingCost" defaultValue="50" className="w-[20%] mt-2 p-3 border border-gray-300 rounded-md" disabled={isInternationalFreeShipping}/>
+                            <input type="number" id="internationalFixedShippingCost" name="internationalFixedShippingCost" defaultValue="50" value={internationalShippingCost} onChange={(e) => setInternationalShippingCost(e.target.value)} className="w-[20%] mt-2 p-3 border border-gray-300 rounded-md" disabled={isInternationalFreeShipping}/>
                         </div>
                     </div>
             </section>
 
 
-            <section id="section5" className="p-6 bg-white shadow-lg rounded-lg mt-12">
+            <section id="Settings" className="p-6 bg-white shadow-lg rounded-lg mt-12">
                 <h2 className="text-2xl font-bold text-gray-700">Settings</h2>
 
                 <div className="mt-4">
@@ -1013,40 +1149,50 @@ const AddProduct = () => {
                             Buyer is responsible for return postage costs and any loss in value if
                             an item isn't returned in original condition.
                         </p>
-                        <button type="button" className="bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out duration-900">
+                        {/* <button type="button" className="bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out duration-900">
                             Change Policy
-                        </button>
+                        </button> */}
                     </div>
-                    
-                    
                     </div>
                 </div>
 
                 <div className="mt-8">
-                    <label htmlFor="renewal" className="block text-lg font-semibold mb-2">
+                  <label htmlFor="renewal" className="block text-lg font-semibold mb-2">
                     Renewal Option
-                    </label>
-                    <div className="flex items-center gap-4">
+                  </label>
+                  <div className="flex items-center gap-4">
                     <label className="flex items-center">
-                        <input
+                      <input
                         type="radio"
                         name="renewal"
                         value="automatic"
                         className="mr-2"
-                        />
-                        Automatic
+                        checked={renewalOption === "automatic"}
+                        onChange={handleRenewalChange}
+                      />
+                      Automatic
                     </label>
                     <label className="flex items-center">
-                        <input type="radio" name="renewal" value="manual" className="mr-2" />
-                        Manual
+                      <input
+                        type="radio"
+                        name="renewal"
+                        value="manual"
+                        className="mr-2"
+                        checked={renewalOption === "manual"}
+                        onChange={handleRenewalChange}
+                      />
+                      Manual
                     </label>
-                    </div>
+                  </div>
+                  <p className="mt-2 text-gray-500">
+                    Expiration Date: <strong>{expirationDate}</strong>
+                  </p>
                 </div>
             </section>
 
             <button
               type="submit"
-              className="mt-6 p-3 bg-blue-500 text-white rounded-md"
+              className="mt-12 flex justify-end items-center bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out transition-all duration-300"
             >
               Submit
             </button>
