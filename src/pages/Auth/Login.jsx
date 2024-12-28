@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext'; 
 import authService from '../../services/authService/authService';
 import { Link } from 'react-router-dom';
-import { LoginSocialFacebook } from 'reactjs-social-login';
-import { FaFacebookF } from "react-icons/fa";
 import Cookies from 'js-cookie';
 import useEncryption from '../../hooks/useEncryption';
 
@@ -80,17 +78,6 @@ const Login = () => {
             <Link to="/signup" className="text-green-500 hover:underline font-bold ml-1">Sign Up</Link>
           </span>
         </div>
-        <LoginSocialFacebook
-          appId="1826756491428940"
-          onResolve={(response) => {
-            console.log('Login successful:', response);
-          }}
-          onReject={(error) => {
-            console.error('Login failed:', error);
-          }}
-        >
-          <FaFacebookF />
-        </LoginSocialFacebook>
       </div>
     </div>
   );

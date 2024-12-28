@@ -1,5 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { SketchPicker } from 'react-color';
+import { FaInfoCircle } from "react-icons/fa";
+import { PiWarningCircleFill } from "react-icons/pi";
+import 'react-quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill';
+import { FaPlus, FaPlay, FaPause, FaTrash } from 'react-icons/fa';
+
 
 
 const AddProduct = () => {
@@ -17,47 +23,52 @@ const AddProduct = () => {
   const [sizess, setSizess] = useState([]);
   const [isNationalFreeShipping, setIsNationalFreeShipping] = useState(false);
   const [isInternationalFreeShipping, setIsInternationalFreeShipping] = useState(false);
-  const [imagePreviews, setImagePreviews] = useState(Array(9).fill(null));
-  const [video, setVideo] = useState(null);
-  const [videoPreview, setVideoPreview] = useState(null);
+  const [isError, setIsError] = useState(false);
+  const [title, settitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [productLimit, setProductLimit] = useState(0);
 
 
-  const handleScroll = () => {
-    const sections = document.querySelectorAll('section');
-    let currentSection = '';
-
-    sections.forEach(section => {
-      const rect = section.getBoundingClientRect();
-      if (rect.top <= 200 && rect.bottom >= 100) { 
-        currentSection = section.id;
-      }
-    });
-
-    setActiveSection(currentSection);
-  };
+  
 
 
-  const handleSmoothScroll = (e, targetId) => {
-    e.preventDefault();
-    const targetSection = document.getElementById(targetId);
 
-    if (targetSection) {
-      const offsetTop = targetSection.offsetTop - 160;
-      window.scrollTo({
-        top: offsetTop,
-        behavior: 'smooth',
+    const handleScroll = () => {
+      const sections = document.querySelectorAll('section');
+      let currentSection = '';
+
+      sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= 200 && rect.bottom >= 100) { 
+          currentSection = section.id;
+        }
       });
-    }
-  };
 
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
+      setActiveSection(currentSection);
     };
-  }, []);
+
+
+    const handleSmoothScroll = (e, targetId) => {
+      e.preventDefault();
+      const targetSection = document.getElementById(targetId);
+
+      if (targetSection) {
+        const offsetTop = targetSection.offsetTop - 160;
+        window.scrollTo({
+          top: offsetTop,
+          behavior: 'smooth',
+        });
+      }
+    };
+
+
+    useEffect(() => {
+      window.addEventListener('scroll', handleScroll);
+
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+      };
+    }, []);
 
 
 
@@ -101,13 +112,11 @@ const AddProduct = () => {
           return;
         }
     
-        // Restrict more than one row
         if (sizess.length > 0) {
             alert("Only one size can be added.");
             return;
         }
 
-        // Add new size
         setSizess([{ length: dimensionLength, breadth: dimensionBreadth }]);
         setDimensionLength("");
         setDimensionBreadth("");
@@ -129,42 +138,182 @@ const AddProduct = () => {
       };
 
 
+      // for media validation
+      const [imageFiles, setImageFiles] = useState(Array(9).fill(null));
+      const [videoFile, setVideoFile] = useState(null);
+      const [isPlaying, setIsPlaying] = useState(false);
+      const videoRef = useRef(null);
+      const videoInputRef = useRef(null);
+
+
       const handleImageChange = (e, index) => {
         const file = e.target.files[0];
         if (file) {
-          const newPreviews = [...imagePreviews];
+          if (file.size > 1 * 1024 * 1024) { 
+            alert("Image size should be less than 1MB.");
+            return;
+          }
+    
+          const newPreviews = [...imageFiles];
           newPreviews[index] = URL.createObjectURL(file);
-          setImagePreviews(newPreviews);
+          setImageFiles(newPreviews);
         }
       };
     
       const handleVideoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-          setVideo(file);
-          setVideoPreview(URL.createObjectURL(file));
+          const videoUrl = URL.createObjectURL(file);
+          setVideoFile(videoUrl);
+        }
+      };
+    
+      const handlePlayPause = () => {
+        if (videoRef.current) {
+          if (isPlaying) {
+            videoRef.current.pause();
+          } else {
+            videoRef.current.play();
+          }
+          setIsPlaying(!isPlaying);
+        }
+      };
+    
+      const removeVideo = () => {
+        setVideoFile(null);
+        setIsPlaying(false);
+      };
+    
+      const removeImage = (index) => {
+        const newPreviews = [...imageFiles];
+        newPreviews[index] = null;
+        setImageFiles(newPreviews);
+      };
+    
+    
+      const handleBlur = (e) => {
+        if (!e.target.value.trim()) {
+          setIsError(true);
         }
       };
 
-      
-      const removeImage = (index) => {
-        const newPreviews = [...imagePreviews];
-        newPreviews[index] = null;
-        setImagePreviews(newPreviews);
+      const handleTitleChange = (e) => {
+        const value = e.target.value;
+        if (value.length <= 140) {
+          settitle(value);
+          setIsError(false); 
+        } else {
+          setIsError(true); 
+        }
+      };
+
+      const handleDescriptionChange = (value) => {
+        setDescription(value);
+    
+        if (value.length > 1400) {
+          setIsError(true);
+        } else {
+          setIsError(false);
+        }
       };
 
 
-      const removeVideo = () => {
-        setVideo(null);
-        setVideoPreview(null);
+      const handleProductLimitChange = (e) => {
+        setProductLimit(e.target.value);
+      }; 
+
+
+      const [productPrice, setProductPrice] = useState('');
+      const [priceError, setPriceError] = useState(false);
+
+
+      const handlePriceChange = (e) => {
+
+        const value = e.target.value;
+    
+        setProductPrice(value);
+    
+        if (!/^\d+$/.test(value) || parseInt(value, 10) <= 0) {
+            setPriceError(true);
+        } else {
+            setPriceError(false); 
+            setProductPrice(value);
+        }
+      };
+
+
+      const [productQuantity, setProductQuantity] = useState('');
+      const [quantityError, setQuantityError] = useState(false);
+
+      const handleProductQuantityChange = (e) => {
+        const value = e.target.value;
+
+        setProductQuantity(value);
+
+        if(value <= 1 || value>=999){
+          setQuantityError(true);
+        }else{
+          setQuantityError(false);
+          setProductQuantity(value);
+        }
+      }
+
+      const [skuData, setSkuData] = useState('');
+      const [skuError, setSkuError] = useState(false);
+
+      const handleSkuValueChange = (e) => {
+        const value = e.target.value;
+        setSkuData(value); 
+
+        if (value.length > 32) { 
+          setSkuError(true);
+        } else {
+          setSkuError(false);
+        }
       };
 
     
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+    
+        const formData = new FormData();
+        formData.append('title', title);
+    
+        imageFiles.forEach((file, index) => {
+            if (file) {
+                formData.append(`image-${index}`, file);
+            }
+        });
+    
+        if (videoFile) {
+            formData.append('video', videoFile);
+        }
+
+        formData.append('description', description);
+        formData.append('ispersonalization', isPersonalizationVisible);
+        formData.append('productLimit', productLimit);
+        formData.append('productPrice', productPrice);
+        formData.append('productQuantity', productQuantity);
+        formData.append('sku', skuData);
+    
+        console.log('Form Data:');
+        for (let [key, value] of formData.entries()) {
+            if (value instanceof File) {
+                console.log(`${key}: ${value.name}`);
+            } else {
+                console.log(`${key}: ${value}`);
+            }
+        }
+    };
+    
+    
+
   return (
     <div className="container mx-auto p-6">
       <nav className="sticky top-[5rem] left-0 w-full bg-white shadow z-10">
         <ul className="flex space-x-4 p-4">
-          {['section1', 'section2', 'section3', 'section4', 'section5'].map(section => (
+          {['Product Details', 'Price & Inventory', 'section3', 'section4', 'section5'].map(section => (
             <li key={section}>
               <a
                 href={`#${section}`}
@@ -181,185 +330,341 @@ const AddProduct = () => {
         </nav>
 
 
-      <form action="#" className='mt-6'>
-        <section id="section1" className='p-6 bg-white shadow-lg rounded-lg'>
+      <form onSubmit={handleSubmit} className='mt-6'>
+        <section id="Product Details" className='p-6 bg-white shadow-lg rounded-lg'>
+          
+
+
           <h2 className='text-2xl font-bold text-gray-700'>Product Details</h2>
           <p className='text-sm text-gray-600 mt-2'>Describe you product details</p>
+          
+
+
+          {/* Product Title */}
           <div className='mt-4'>
-            <label htmlFor="title" className="block text-lg font-semibold">Product Title <span className='text-red-600'>*</span></label>
+            <label htmlFor="title" className="block text-lg font-semibold">
+              <div className="flex items-center space-x-1">
+                <span className='text-gray-700'>Product Title</span>
+                <span className='text-red-600'>*</span>
+                <div className="relative group">
+                  <FaInfoCircle className="cursor-pointer text-gray-700 hover:text-gray-800" />
+                  <div className="absolute hidden group-hover:block bg-gray-900 text-white text-sm rounded-md p-4 left-0 mt-2 w-64 z-10 shadow-lg">
+                    <div className="before:absolute before:top-[-8px] before:left-6 before:border-8 before:border-transparent before:border-b-gray-900"></div>
+                    <h3 className="font-bold text-lg mb-2">Product Title Tips</h3>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>Include relevant keywords buyers might search for.</li>
+                      <li>Keep it concise but descriptive (max 70 characters).</li>
+                      <li>Mention key attributes like brand, model, or color.</li>
+                      <li>Avoid unnecessary words or excessive punctuation.</li>
+                    </ul>
+                    {/* <p className="mt-3 text-gray-300 text-xs">
+                      Example: "Wireless Noise-Cancelling Over-Ear Headphones - Black"
+                    </p> */}
+                  </div>
+                </div>
+              </div>
+            </label>
             <span className='text-sm text-gray-600 mt-2'>Include keywords that buyers would use to search for this item.</span>
-            <input type="text" id="title" name="title" className="w-full p-3 mt-2 border border-gray-300 rounded-md" />
-            <span className='text-red-500 mt-2 text-sm'>message</span>
+            <input type="text" id="title" name="title" placeholder='Enter a product title here' value={title} className={`w-full p-3 mt-2 border rounded-md text-gray-700 ${
+                isError ? 'border-red-700 bg-red-100 placeholder:text-red-400' : 'border-gray-300'}`}
+              onBlur={handleBlur} onFocus={() => setIsError(false)} onChange={handleTitleChange} required
+            />
+            <div className="flex mt-2 justify-between">
+              {isError && (
+                <span className='text-red-500 text-base font-medium flex items-center'>
+                  <PiWarningCircleFill className='mr-1 text-xl'/>
+                  {title.length > 140
+                    ?'Product title cannot exceed 140 characters.'
+                    :'This field is required.'}
+                </span>
+              )}
+              <span className={`ml-auto text-base  ${title.length > 140 ? 'text-red-500' : 'text-gray-700'}`}>
+                {title.length}/140
+              </span>
+            </div>
           </div>
+
 
           
 
 
 
+          {/* Product Media */}
+          <div className="mt-12">
+            <label htmlFor="media" className="block text-lg font-semibold">
+              <div className="flex items-center space-x-1">
+                <span className='text-gray-700'>Photos and Video</span>
+                <span className='text-red-600'>*</span>
+                <div className="relative group">
+                  <FaInfoCircle className="cursor-pointer text-gray-700 hover:text-gray-800" />
+                  <div className="absolute hidden group-hover:block bg-gray-800 text-white text-sm rounded-md p-4 left-0 mt-2 w-64 z-10 shadow-lg">
+                    <div className="before:absolute before:top-[-8px] before:left-4 before:border-8 before:border-transparent before:border-b-gray-800">
+                      <h3 className="font-bold mb-2 text-lg">Photo Requirements</h3>
+                      <ul className="list-disc pl-5 mb-4">
+                        <li>Use a JPG, GIF, or PNG.</li>
+                        <li>The recommended size is 2000px for the shortest side, and a resolution of 72DPI.</li>
+                        <li>Keep it under 1MB for faster uploading.</li>
+                      </ul>
+                      <h3 className="font-bold mb-2 text-lg">Listing Videos</h3>
+                      <ul className="list-disc pl-5">
+                        <li>Most file types are accepted.</li>
+                        <li>Max file size is 100MB.</li>
+                        <li>Can be 3-15 seconds long. If you upload a longer video (up to 60 seconds), we'll automatically trim it to the first 15 seconds.</li>
+                        <li>Keep in mind, your video won't include audio.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </label>
+            <span className='text-sm text-gray-600 mt-2'>Add up to 10 photos and 1 video.</span>
+
+            {/* Image Inputs */}
+            <div className="grid grid-cols-9 gap-4 mt-4">
+              {Array.from({ length: 9 }).map((_, index) => (
+                <div key={index} className="relative">
+                  {index === 0 && (
+                    <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 text-xs font-semibold text-gray-700">
+                      Primary
+                    </span>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    id={`image-${index}`}
+                    onChange={(e) => handleImageChange(e, index)}
+                  />
+                  <label
+                    htmlFor={`image-${index}`}
+                    className="w-full h-32 bg-gray-200 rounded-md cursor-pointer flex justify-center items-center"
+                  >
+                    {imageFiles[index] ? (
+                      <img
+                        src={imageFiles[index]}
+                        alt={`Preview ${index}`}
+                        className="w-full h-full object-cover rounded-md"
+                      />
+                    ) : (
+                      <span className="text-gray-500">Select Image</span>
+                    )}
+                  </label>
+                  {imageFiles[index] && (
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-2 right-2 text-white bg-red-500 p-2 rounded-full"
+                    >
+                      <FaTrash />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Video Field with Thumbnail */}
+            <div className="mt-6">
+
+                <input
+                  type="file"
+                  id="video"
+                  name="video"
+                  accept="video/*"
+                  className="hidden"
+                  ref={videoInputRef}
+                  onChange={handleVideoChange}
+                />
+
+                {/* Video selection button */}
+                {!videoFile ? (
+                  <button
+                    type="button"
+                    onClick={() => videoInputRef.current.click()}
+                    className="w-36 h-32 p-3 mt-2 border border-gray-300 rounded-md text-gray-700 bg-gray-200 hover:bg-gray-300"
+                  >
+                    Select Video
+                  </button>
+                ) : (
+                  <div className="mt-4 relative">
+                    <video
+                      ref={videoRef}
+                      src={videoFile}
+                      className="w-36 h-auto object-cover rounded-md"
+                      controls={false} 
+                      onPause={() => setIsPlaying(false)}
+                      onPlay={() => setIsPlaying(true)}
+                    />
+
+                    <div className="absolute w-32 justify-between bottom-2 left-2 flex items-center space-x-2">
+                      <button
+                        type="button"
+                        onClick={handlePlayPause}
+                        className="text-white bg-black p-2 rounded-full"
+                      >
+                        {isPlaying ? <FaPause /> : <FaPlay />}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={removeVideo}
+                        className="text-white bg-red-500 p-2 rounded-full"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+          </div>
+
 
           <div className="mt-12">
-      <label htmlFor="photos" className="block text-lg font-semibold">
-        Photos and Video <span className="text-red-600">*</span>
-      </label>
-      <span className="text-sm text-gray-600 mt-2">
-        Add up to 10 photos and 1 video.
-      </span>
-
-      <div className="grid grid-cols-9 gap-4 mt-4">
-        {Array.from({ length: 9 }).map((_, index) => (
-          <div key={index} className="relative">
-            {index === 0 && (
-              <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 text-xs font-semibold text-gray-700">
-                Primary
-              </span>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              id={`image-${index}`}
-              onChange={(e) => handleImageChange(e, index)}
-            />
-            <label
-              htmlFor={`image-${index}`}
-              className="w-full h-32 bg-gray-200 rounded-md cursor-pointer flex justify-center items-center"
-            >
-              {imagePreviews[index] ? (
-                <img
-                  src={imagePreviews[index]}
-                  alt={`Preview ${index}`}
-                  className="w-full h-full object-cover rounded-md"
-                />
-              ) : (
-                <span className="text-gray-500">Select Image</span>
-              )}
+            <label htmlFor="description" className="block text-lg font-semibold">
+            <div className="flex items-center space-x-1">
+                <span className='text-gray-700'>Product Description</span>
+                <span className='text-red-600'>*</span>
+                <div className="relative group">
+                  <FaInfoCircle className="cursor-pointer text-gray-700 hover:text-gray-800" />
+                  <div className="absolute hidden group-hover:block bg-gray-900 text-white text-sm rounded-md p-4 left-0 mt-2 w-64 z-10 shadow-lg">
+                    <div className="before:absolute before:top-[-8px] before:left-6 before:border-8 before:border-transparent before:border-b-gray-900"></div>
+                    <h3 className="font-bold text-lg mb-2">Product Description Tips</h3>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>Provide clear and detailed information about the product.</li>
+                      <li>Highlight key features and benefits to attract buyers.</li>
+                      <li>Use bullet points for easy readability and concise details.</li>
+                      <li>Keep it engaging and easy to understand for your audience.</li>
+                      <li>Focus on what makes the product unique compared to similar items.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </label>
-            {imagePreviews[index] && (
-              <button
-                type="button"
-                onClick={() => removeImage(index)}
-                className="absolute top-2 right-2 text-white bg-red-500 p-1 rounded-full"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
+            <span className="text-sm text-gray-600 mt-2">
+              What makes your item special? Buyers will only see the first few lines unless they expand the description.
+            </span>
 
-     {/* Video Field with Preview */}
-     <div className="mt-6">
-        <label htmlFor="video" className="block text-lg font-semibold">
-          Video
-        </label>
-        <input
-          type="file"
-          id="video"
-          name="video"
-          accept="video/*"
-          className="w-full p-3 mt-2 border border-gray-300 rounded-md"
-          onChange={handleVideoChange}
-        />
-        {videoPreview && (
-          <div className="mt-4 relative">
-            <video
-              src={videoPreview}
-              alt="Video Preview"
-              className="w-full h-auto object-cover rounded-md"
-              controls
+            {/* ReactQuill Editor */}
+            <ReactQuill value={description} onChange={handleDescriptionChange} theme="snow" className="mt-2 text-base" 
+              modules={{
+                  toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['blockquote', 'code-block'],
+                    [{ list: 'ordered' }, { list: 'bullet' }],
+                    [{ align: [] }],
+                    ['link'],
+                  ],
+                }}
             />
-            <button
-              type="button"
-              onClick={removeVideo}
-              className="absolute top-2 right-2 text-white bg-red-500 p-1 rounded-full"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-        )}
-      </div>
+            <div className="flex mt-2 justify-between">
+              {isError && (
+                <span className='text-red-500 text-base font-medium flex items-center'>
+                  <PiWarningCircleFill className='mr-1 text-xl'/>
+                  Description cannot exceed 1400 characters.
+                </span>
+              )}
 
-      <span className="text-red-500 mt-2 text-sm">message</span>
-    </div>
-
-
-          <div className='mt-12'>
-            <label htmlFor="title" className="block text-lg font-semibold">Description <span className='text-red-600'>*</span></label>
-            <span className='text-sm text-gray-600 mt-2'>What makes your item special? Buyers will only see the first few lines unless they expand the description.</span>
-            <input type="text" id="title" name="title" className="w-full p-3 mt-2 border border-gray-300 rounded-md" />
-            <span className='text-red-500 mt-2 text-sm'>message</span>
+              <span className={`ml-auto text-base ${description.length > 1400 ? 'text-red-500' : 'text-gray-700'}`}>
+                {description.length}/1400
+              </span>
+            </div>
           </div>
 
           <div className='mt-12'>
-            <label htmlFor="title" className="block text-lg font-semibold">Personalisation</label>
+            <label htmlFor="personalization" className="block text-gray-700 text-lg font-semibold">Personalisation</label>
             <div className="flex justify-between">
                 <span className='text-sm text-gray-600 mt-2'>Collect personalised information for this listing.</span>
-                <button type='button' onClick={togglePersonalization} className='bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out duration-900'>
-                    Add Personalization
+                <button type='button' onClick={togglePersonalization} className='flex items-center bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out transition-all duration-300'>
+                  <FaPlus className='mr-1'/> Add Personalization
                 </button>
             </div>
           </div>
 
           {isPersonalizationVisible && ( 
-            <div className="mt-12"> 
-                <label htmlFor="title" className="block text-lg font-semibold"> 
+            <div className="mt-6"> 
+                <label htmlFor="productLimit" className="block text-gray-700 text-lg font-semibold"> 
                     Character limit for buyer response 
-                <span className="text-red-600">*</span> </label> 
+                </label> 
                 <span className="text-sm text-gray-600 mt-2 block"> Enter number between 1 and 1024 </span> 
-                <input type="number" id="title" name="title" className="block w-[10rem] p-3 mt-2 border border-gray-300 rounded-md" /> 
+                <input type="number" id="productLimit" name="productLimit" value={productLimit} onChange={handleProductLimitChange} className="block w-[10rem] p-3 mt-2 border border-gray-300 rounded-md" /> 
             </div> 
         )}
         </section>
 
 
 
-        <section id="section2" className='p-6 bg-white shadow-lg rounded-lg mt-12'>
+        <section id="Price & Inventory" className='p-6 bg-white shadow-lg rounded-lg mt-12'>
           <h2 className='text-2xl font-bold text-gray-700'>Price & Inventory</h2>
           <p className='text-sm text-gray-600 mt-2'>Set a price for your item and indicate how many are available for sale.</p>
 
-          <div className='mt-4'>
-            <label htmlFor="title" className="block text-lg font-semibold">Price ($USD) <span className='text-red-600'>*</span></label>
-            <input type="number" id="title" name="title" className="block w-[20rem] p-3 mt-2 border border-gray-300 rounded-md" /> 
-            <span className='text-red-500 mt-2 text-sm'>* Price must be a positive number.</span>
+          <div className='mt-12'>
+            <label htmlFor="title" className="block text-lg font-semibold">
+                <div className="flex items-center space-x-1">
+                  <span className='text-gray-700'>Price in ($USD)</span>
+                  <span className='text-red-600'>*</span>
+                  <div className="relative group">
+                    <FaInfoCircle className="cursor-pointer text-gray-700 hover:text-gray-800" />
+                    <div className="absolute hidden group-hover:block bg-gray-900 text-white text-sm rounded-md p-4 left-0 mt-2 w-64 z-10 shadow-lg">
+                      <div className="before:absolute before:top-[-8px] before:left-6 before:border-8 before:border-transparent before:border-b-gray-900"></div>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>The digit shouldnot contain comma ',' and spaces in between numbers.</li>
+                        <li>The price must be positive integer number.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </label>
+              <span className='text-sm text-gray-600 block mt-2'>Enter positive integer number</span>
+              <input type="number" id="price" name="price" className={`w-[20%] p-3 mt-2 border rounded-md text-gray-700 ${
+                  priceError ? 'border-red-700 bg-red-100 placeholder:text-red-400' : 'border-gray-300'}`} onBlur={handleBlur} onFocus={() => setPriceError(false)} onChange={handlePriceChange} required/> 
+                  {priceError && (
+                    <span className='text-red-500 mt-2 text-base font-medium flex items-center'>
+                      <PiWarningCircleFill className='mr-1 text-xl'/>
+                      The price should be a positive integer number.
+                    </span>
+                  )}
           </div>
 
-          <div className='mt-4'>
-            <label htmlFor="title" className="block text-lg font-semibold">Quantity<span className='text-red-600'>*</span></label>
-            <input type="number" id="title" name="title" className="block w-[20rem] p-3 mt-2 border border-gray-300 rounded-md" /> 
-            <span className='text-red-500 mt-2 text-sm'>* Enter a quantity between 1 and 999.</span>
+          <div className='mt-6'>
+            <label htmlFor="quantity" className="block text-gray-700 text-lg font-semibold">Quantity<span className='text-red-600'>*</span></label>
+            <span className='text-sm text-gray-600 block mt-2'>Enter product quantity from range 1 to 999.</span>
+            <input type="number" id="quantity" name="quantity" className={`w-[20%] p-3 mt-2 border rounded-md text-gray-700 ${
+                quantityError ? 'border-red-700 bg-red-100 placeholder:text-red-400' : 'border-gray-300'}`}  onBlur={handleBlur} onFocus={() => setQuantityError(false)}  onChange={handleProductQuantityChange} required/> 
+              {quantityError && (
+                    <span className='text-red-500 mt-2 text-base font-medium flex items-center'>
+                      <PiWarningCircleFill className='mr-1 text-xl'/>
+                      Enter a quantity between 1 and 999.
+                    </span>
+                  )}
           </div>
 
-          <div className='mt-4'>
-            <label htmlFor="title" className="block text-lg font-semibold">SKU</label>
-            <input type="text" id="title" name="title" className="block w-[20rem] p-3 mt-2 border border-gray-300 rounded-md" /> 
-            <span className='text-gray-500 mt-2 text-sm'>0/32</span>
+          <div className='mt-6'>
+            <label htmlFor="sku" className="block text-gray-700 text-lg font-semibold">
+              SKU <span>(Optional)</span>
+            </label>
+            <span className='text-sm text-gray-600 block mt-2'>Enter Stock Keeping Unit (SKU) up to 32 characters.</span>
+            <input
+              type="text"
+              id="sku"
+              name="sku"
+              className={`w-[20%] p-3 mt-2 border rounded-md text-gray-700 ${
+                skuError ? 'border-red-700 bg-red-100 placeholder:text-red-400' : 'border-gray-300'
+              }`}
+              onBlur={() => setSkuError(skuData.length > 32)} 
+              onFocus={() => setSkuError(false)} 
+              onChange={handleSkuValueChange} 
+            />
+            <div className="flex mt-2 justify-between">
+              {skuError && (
+                <span className='text-red-500 text-base font-medium flex items-center'>
+                  <PiWarningCircleFill className='mr-1 text-xl'/>
+                  SKU cannot exceed 32 characters.
+                </span>
+              )}
+              <span className={`ml-auto text-base ${skuData.length > 32 ? 'text-red-500' : 'text-gray-700'}`}>
+                {skuData.length || 0}/32
+              </span>
+            </div>
           </div>
+
         </section>
 
 
@@ -739,6 +1044,12 @@ const AddProduct = () => {
                 </div>
             </section>
 
+            <button
+              type="submit"
+              className="mt-6 p-3 bg-blue-500 text-white rounded-md"
+            >
+              Submit
+            </button>
       </form>
     </div>
   );
