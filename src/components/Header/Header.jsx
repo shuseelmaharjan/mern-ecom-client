@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
-import logo from '../../assets/felthub-logo.png';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { FaSearch, FaBars, FaShoppingCart, FaRegHeart, FaUser } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -9,13 +8,20 @@ import { useLocation } from 'react-router-dom';
 import ProfileMenu from './ProfileMenu';
 import ShowCategories from './ShowCategories';
 import MobileOptions from './MobileOptions';
+import siteService from '../../services/site/siteService';
+import config from '../../services/config';
+
 
 
 const Header = () => {
+
+  const BASE_URL = config.API_BASE_URL;
+
   const [showCategory, setShowCategory] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const location = useLocation(); 
+  const [siteLogo, setSiteLogo] = useState('');
 
 
   const {
@@ -33,11 +39,41 @@ const Header = () => {
     setShowMobileMenu(false);
   }, [location]);
 
+  const siteManager = useCallback(async () => {
+    try {
+      const data = await siteService.getData();
+  
+      if (data.data && data.data.length > 0) {
+        const siteData = data.data[0];
+  
+        setSiteLogo(BASE_URL + siteData.logo);
+  
+        const siteDetails = {
+          title: siteData.title,
+          narration: siteData.narration,
+          primaryColor: siteData.primaryColor,
+          secondaryColor: siteData.secondaryColor,
+          buttonColor: siteData.buttonColor,
+          hoverButtonColor: siteData.hoverButtonColor,
+        };
+  
+        sessionStorage.setItem('siteDetails', JSON.stringify(siteDetails));
+      } else {
+        setSiteLogo('Logo');
+      }
+    } catch (error) {
+      console.error('Server error:', error);
+    }
+  }, [BASE_URL]); 
+
+  useEffect(() => {
+    siteManager();
+  }, [siteManager]);
+
   return (
     <>
       <header className="bg-white h-15 shadow-md border-b border-gray-200 z-50">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          {/* Logo and Categories */}
           <div className="flex items-center space-x-4">
           <button
               onClick={() => setShowMobileMenu(!showMobileMenu)}
@@ -47,7 +83,7 @@ const Header = () => {
             </button>
 
             <Link to="/">
-              <img src={logo} alt="Logo" className="w-32" />
+              <img src={siteLogo} alt="Logo" className="w-32" />
             </Link>
             <button
               onClick={() => setShowCategory(!showCategory)}

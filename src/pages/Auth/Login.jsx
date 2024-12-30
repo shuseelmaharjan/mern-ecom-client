@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext'; 
 import authService from '../../services/authService/authService';
@@ -11,10 +11,11 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [msg, setMsg] = useState('');
+  const [buttonColor, setButtonColor] = useState('#000'); 
+  const [hoverButtonColor, setHoverButtonColor] = useState('#3e3e3ee'); 
 
   const { setAccessToken } = useAuth();
   const navigate = useNavigate();
-
   const { encrypt } = useEncryption();
 
   const handleSubmit = async (e) => {
@@ -36,6 +37,14 @@ const Login = () => {
       console.error('Login Error:', error);
     }
   };
+
+  useEffect(() => {
+    const siteDetails = JSON.parse(sessionStorage.getItem('siteDetails'));
+    if (siteDetails) {
+      setButtonColor(siteDetails.buttonColor);
+      setHoverButtonColor(siteDetails.hoverButtonColor);
+    }
+  }, []);
 
   return (
     <div className="h-[80vh] bg-gray-100 flex items-center justify-center p-4">
@@ -67,7 +76,16 @@ const Login = () => {
               required
             />
           </div>
-          <button type="submit" className="w-full py-2 bg-green-500 font-bold text-base text-white rounded-md hover:bg-green-600">
+          <button 
+            type="submit" 
+            className="w-full py-2 font-bold text-base text-white rounded-md"
+            style={{
+              backgroundColor: buttonColor,
+              transition: 'background-color 0.3s',
+            }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = hoverButtonColor} 
+            onMouseLeave={(e) => e.target.style.backgroundColor = buttonColor} 
+          >
             Login
           </button>
         </form>

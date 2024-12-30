@@ -10,6 +10,10 @@ import { LuShapes, LuMessageSquareText, LuUsersRound } from "react-icons/lu";
 import { LiaBullhornSolid } from "react-icons/lia";
 import { AiOutlineBank } from "react-icons/ai";
 
+import Logout from '../../pages/Auth/Logout';
+import { useAuth } from '../../context/AuthContext';
+
+
 const Sidebar = ({ isSidebarExpanded, setIsSidebarExpanded }) => {
   const [isProfilePopupOpen, setIsProfilePopupOpen] = useState(false);
   const [isShopPopupOpen, setIsShopPopupOpen] = useState(false);
@@ -34,6 +38,9 @@ const Sidebar = ({ isSidebarExpanded, setIsSidebarExpanded }) => {
   const isActive = (path) => {
     return location.pathname.includes(path);
   };
+  
+  const { showLogoutModal, setShowLogoutModal } = useAuth();
+
 
   return (
     <div className="flex flex-col h-full border-r border-gray-300">
@@ -94,57 +101,57 @@ const Sidebar = ({ isSidebarExpanded, setIsSidebarExpanded }) => {
         <ul>
           <Link to="/dashboard">
             <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/dashboard") ? 'bg-gray-300' : ''}`}>
-              <IoHomeOutline />
+              <IoHomeOutline className={`${isSidebarExpanded ? "" : "mx-auto"}`}/>
               {isSidebarExpanded && <span className="mx-2">Dashboard</span>}
             </li>
           </Link>
           <Link to="/listing">
             <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/listing") ? 'bg-gray-300' : ''}`}>
-              <LuShapes />
+              <LuShapes className={`${isSidebarExpanded ? "" : "mx-auto"}`}/>
               {isSidebarExpanded && <span className="mx-2">Listing</span>}
             </li>
           </Link>
           <Link to="/messages">
             <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/messages") ? 'bg-gray-300' : ''}`}>
-              <LuMessageSquareText />
+              <LuMessageSquareText className={`${isSidebarExpanded ? "" : "mx-auto"}`}/>
               {isSidebarExpanded && <span className="mx-2">Messages</span>}
             </li>
           </Link>
           <Link to="/order-and-delivery">
             <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/order-and-delivery") ? 'bg-gray-300' : ''}`}>
-              <BsClipboard2Data />
+              <BsClipboard2Data className={`${isSidebarExpanded ? "" : "mx-auto"}`}/>
               {isSidebarExpanded && <span className="mx-2">Order & Delivery</span>}
             </li>
           </Link>
           <div className="my-4 border-t border-gray-500"></div>
           <Link to="/statistics">
             <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/statistics") ? 'bg-gray-300' : ''}`}>
-              <IoBarChartOutline />
+              <IoBarChartOutline className={`${isSidebarExpanded ? "" : "mx-auto"}`}/>
               {isSidebarExpanded && <span className="mx-2">Stats</span>}
             </li>
           </Link>
           <Link to="/marketing">
             <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/marketing") ? 'bg-gray-300' : ''}`}>
-              <LiaBullhornSolid />
+              <LiaBullhornSolid className={`${isSidebarExpanded ? "" : "mx-auto"}`}/>
               {isSidebarExpanded && <span className="mx-2">Marketing</span>}
             </li>
           </Link>
           <div className="my-4 border-t border-gray-500"></div>
           <Link to="/finances">
             <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/finances") ? 'bg-gray-300' : ''}`}>
-              <AiOutlineBank />
+              <AiOutlineBank className={`${isSidebarExpanded ? "" : "mx-auto"}`}/>
               {isSidebarExpanded && <span className="mx-2">Finances</span>}
             </li>
           </Link>
           <Link to="/help">
             <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/help") ? 'bg-gray-300' : ''}`}>
-              <LuUsersRound />
+              <LuUsersRound className={`${isSidebarExpanded ? "" : "mx-auto"}`}/>
               {isSidebarExpanded && <span className="mx-2">Help</span>}
             </li>
           </Link>
           <Link to="/settings">
             <li className={`hover:bg-gray-300 px-4 py-3 flex items-center text-sm sm:text-base md:text-lg lg:text-xl ${isActive("/settings") ? 'bg-gray-300' : ''}`}>
-              <PiGearSix />
+              <PiGearSix className={`${isSidebarExpanded ? "" : "mx-auto"}`}/>
               {isSidebarExpanded && <span className="mx-2">Settings</span>}
             </li>
           </Link>
@@ -179,26 +186,24 @@ const Sidebar = ({ isSidebarExpanded, setIsSidebarExpanded }) => {
           )}
         </button>
         {isProfilePopupOpen && (
-          <div className="absolute left-4 bottom-full bg-white text-black shadow-lg rounded-lg w-64">
-            <ul className="space-y-2 text-sm sm:text-base lg:text-lg">
-              <li className="flex items-center hover:bg-gray-300 px-4 py-2 cursor-pointer">
-                <IoIosInformationCircleOutline className="mx-2" />
-                <span>Your Information</span>
-              </li>
-              <li className="flex items-center hover:bg-gray-300 px-4 py-2 cursor-pointer">
-                <FaRegUserCircle className="mx-2" />
-                <span>Your Profile</span>
-              </li>
-              <li className="flex items-center hover:bg-gray-300 px-4 py-2 cursor-pointer text-red-500">
-                <MdLogout className="mx-2" />
-                <span>Logout</span>
-              </li>
-            </ul>
-          </div>
-        )}
+        <div className="absolute left-4 bottom-full bg-white text-black shadow-lg rounded-lg w-64">
+          <ul className="space-y-2 text-sm">
+            <li className="flex items-center hover:bg-gray-300 px-4 py-2 cursor-pointer">
+              <IoIosInformationCircleOutline className="mx-2" />
+              <span>Your Information</span>
+            </li>
+            <li className="flex items-center hover:bg-gray-300 px-4 py-2 cursor-pointer text-red-500" onClick={() => setShowLogoutModal(true)}>
+              <MdLogout className="mx-2" />
+              <span>Logout</span>
+            </li>
+          </ul>
+        </div>
+      )}
+            {showLogoutModal && <Logout />}
+
       </div>
     </div>
-  );
-};
+    );
+  };
 
-export default Sidebar;
+  export default Sidebar;

@@ -6,10 +6,17 @@ import 'react-quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
 import { FaPlus, FaPlay, FaPause, FaTrash } from 'react-icons/fa';
 import { capitalizeWords } from '../../utils/textUtils';
-
+import productService from '../../services/productService/productService';
+import { useAuth } from '../../context/AuthContext';
 
 
 const AddProduct = () => {
+
+
+  const { accessToken } = useAuth();
+
+
+
   const [activeSection, setActiveSection] = useState('');
   const [isPersonalizationVisible, setIsPersonalizationVisible] = useState(false)
   const [isColorVariation, setisColorVariation] = useState(false);
@@ -352,9 +359,9 @@ const AddProduct = () => {
 
 
 
-      const handleSubmit = (e) => {
+      const handleSubmit = async (e) => {
         e.preventDefault();
-    
+      
         const formData = {
           title,
           description,
@@ -371,6 +378,7 @@ const AddProduct = () => {
           productWeight,
           tags,
           productMaterial,
+          productCategory: '676a6c07179d581d95d520e1',
           domesticShippingTIme,
           domesticShippingCost,
           domesticFreeShipping,
@@ -378,14 +386,84 @@ const AddProduct = () => {
           internationalFreeShipping,
           internationalShippingCost,
           expirationDate,
-          images: imageFiles.map((file) => (file ? file.name : null)).filter(Boolean), 
+          images: imageFiles.map((file) => (file ? file.name : null)).filter(Boolean),
           video: videoFile ? videoFile.name : null,
         };
-    
-        console.log('Form Data in JSON:', JSON.stringify(formData, null, 2)); 
+      
+        const transformFormData = (formData) => {
+          return {
+            title: formData.title || "",
+            media: {
+              images: formData.images.map((image, index) => ({
+                url: `media/${image}`,
+                primary: index === 0,
+              })),
+            },
+            description: formData.description || "",
+            personalization: {
+              enabled: formData.ispersonalization,
+              productLimit: formData.productLimit,
+            },
+            price: formData.productPrice.toString(),
+            quantity: formData.productQuantity.toString(),
+            SKU: formData.sku,
+            variants: {
+              enabled: formData.enableColorVariation,
+              colors: {
+                enabled: formData.enableColorVariation,
+                values: formData.colors.map((color) => ({
+                  code: color.code,
+                  name: color.name,
+                })),
+              },
+              sizes: {
+                enabled: !!formData.productSize,
+                values: formData.productSize.map((size) => ({ name: size })),
+              },
+            },
+            tags: formData.tags,
+            materials: formData.productMaterial,
+            shoppingOrigin: {
+              processingTime: formData.domesticShippingTIme,
+              services: {
+                national: {
+                  freeShipping: formData.domesticFreeShipping,
+                  fixedShipping: {
+                    costOfDelivery: formData.domesticShippingCost,
+                  },
+                },
+              },
+            },
+            returnAndExchange: {
+              enabled: true,
+              details: {
+                returnEnabled: true,
+                exchangeEnabled: true,
+                returnDays: 30,
+              },
+            },
+            renewal: false,
+            expirationDate: formData.expirationDate,
+            expired: new Date() > new Date(formData.expirationDate),
+            active: true,
+          };
+        };
+      
+        const transformedData = transformFormData(formData);
+      
+        console.log(JSON.stringify(transformedData, null, 2));
+      
+        try {
+          const response = await productService.addProduct(transformedData, accessToken);
+          console.log('Product added successfully:', response);
+        } catch (error) {
+          console.error('Error adding product:', error.message || error);
+        }
       };
+      
     
     
+      
 
   return (
     <div className="container mx-auto p-6">

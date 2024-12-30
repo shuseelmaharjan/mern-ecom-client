@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { IoSettingsOutline } from "react-icons/io5";
 import { LuMessageSquareMore } from "react-icons/lu";
 import { FaBox } from "react-icons/fa6";
@@ -13,6 +13,14 @@ const ProfileMenu = () => {
 
   const { role,} = useAuth()
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [companyName, setCompanyName] = useState('');
+
+  useEffect(() => {
+    const siteDetails = JSON.parse(sessionStorage.getItem('siteDetails'));
+    if (siteDetails) {
+      setCompanyName(siteDetails.title);
+    }
+  }, []);
 
     
   return (
@@ -102,6 +110,16 @@ const ProfileMenu = () => {
               <LuMessageSquareMore className="mr-2 text-gray-500 group-hover:text-gray-700" />
               <span className="text-base font-medium text-gray-700 group-hover:text-gray-900">
                 Messages
+              </span>
+            </Link>
+          </li>
+          <li className="group">
+            <Link
+              to="/be-a-member"
+              className="flex items-center px-4 py-2 hover:bg-gray-100" target="_blank" rel="noopener noreferrer">
+              <LuMessageSquareMore className="mr-2 text-gray-500 group-hover:text-gray-700" />
+              <span className="text-base font-medium text-gray-700 group-hover:text-gray-900">
+                {companyName ? `Sell on ${companyName}` : 'Loading...'}              
               </span>
             </Link>
           </li>

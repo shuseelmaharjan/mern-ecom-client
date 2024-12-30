@@ -3,7 +3,7 @@ import Sidebar from "./Sidebar";
 import MobileNav from "./MobileNav";
 import { MdMenu } from "react-icons/md";
 import { useAuth } from '../../context/AuthContext';
-import PageNotFound from "../Other/PageNotFound";
+import PageNotFound from "../../pages/PageNotFound/PageNotFound";
 import PathName from "./PathName";
 import { capitalizeWords } from "../../utils/textUtils";
 

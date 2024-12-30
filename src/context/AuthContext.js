@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState('');
   const [userId, setUserId] = useState('');
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // Add this state
 
   const { decrypt, encrypt } = useEncryption(); 
 
@@ -104,7 +105,17 @@ export const AuthProvider = ({ children }) => {
   }, [fetchUserId]);
 
   return (
-    <AuthContext.Provider value={{ accessToken, setAccessToken, isLoggedIn, role, userId}}>
+    <AuthContext.Provider 
+      value={{
+        accessToken, 
+        setAccessToken, 
+        isLoggedIn, 
+        role, 
+        userId, 
+        showLogoutModal, 
+        setShowLogoutModal, 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
