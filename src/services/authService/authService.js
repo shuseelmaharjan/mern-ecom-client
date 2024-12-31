@@ -50,6 +50,23 @@ class AuthService {
           throw new Error(error.response ? error.response.data.message : 'Error logging out');
         }
       }
+
+      //user info
+      async userInfo(accessToken){
+        try{
+          const response = await this.api.get('/api/v1/user-info',{
+            headers:{
+              'Content-Type':'application/json',
+              'Authorization': `Bearer ${accessToken}`
+            }
+          });
+          return response.data;
+
+        }catch(error){
+          throw new Error(error.response ? error.response.data.message : 'Error fetching user info');
+        }
+        
+      }
       
 
 }

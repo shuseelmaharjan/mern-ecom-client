@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import MobileNav from "./MobileNav";
 import { MdMenu } from "react-icons/md";
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from "../../context/AuthContext";
 import PageNotFound from "../../pages/PageNotFound/PageNotFound";
 import PathName from "./PathName";
 import { capitalizeWords } from "../../utils/textUtils";
@@ -23,7 +23,7 @@ const DashLoadout = ({ children }) => {
     setIsMobileNavOpen(!isMobileNavOpen);
   };
 
-  if (role === 'admin' || role === 'vendor' || role === 'staff') {
+  if (role === "admin" || role === "vendor" || role === "staff") {
     return (
       <div className="flex h-screen">
         <aside
@@ -48,19 +48,17 @@ const DashLoadout = ({ children }) => {
             <button className="text-2xl md:hidden" onClick={toggleMobileNav}>
               <MdMenu />
             </button>
-            <span className="text-2xl font-bold text-gray-800">{capitalizeWords(PathName())}</span>
+            <span className="text-2xl font-bold text-gray-800">
+              {capitalizeWords(PathName())}
+            </span>
           </header>
 
-          <div className="flex-1 mt-20 p-6 bg-gray-100">
-            {children}
-          </div>
+          <div className="flex-1 mt-20 p-6 bg-gray-100">{children}</div>
         </div>
       </div>
     );
   } else {
-    return (
-      <PageNotFound/>
-    );
+    return <PageNotFound />;
   }
 };
 

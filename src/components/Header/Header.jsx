@@ -1,38 +1,38 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { FaSearch, FaBars, FaShoppingCart, FaRegHeart, FaUser } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import Logout from '../../pages/Auth/Logout';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import {
+  FaSearch,
+  FaBars,
+  FaShoppingCart,
+  FaRegHeart,
+  FaUser,
+} from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import Logout from "../../pages/Auth/Logout";
+import { useLocation } from "react-router-dom";
 
-import ProfileMenu from './ProfileMenu';
-import ShowCategories from './ShowCategories';
-import MobileOptions from './MobileOptions';
-import siteService from '../../services/site/siteService';
-import config from '../../services/config';
-
-
+import ProfileMenu from "./ProfileMenu";
+import ShowCategories from "./ShowCategories";
+import MobileOptions from "./MobileOptions";
+import siteService from "../../services/site/siteService";
+import config from "../../services/config";
+import authService from "../../services/authService/authService";
 
 const Header = () => {
-
   const BASE_URL = config.API_BASE_URL;
 
   const [showCategory, setShowCategory] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const location = useLocation(); 
-  const [siteLogo, setSiteLogo] = useState('');
+  const location = useLocation();
+  const [siteLogo, setSiteLogo] = useState("");
 
+  const { showLogoutModal, setShowLogoutModal, handleLogout, isLoggedIn, accessToken } =
+    useAuth();
 
-  const {
-    showLogoutModal,
-    setShowLogoutModal,
-    handleLogout,
-    isLoggedIn,
-  } = useAuth()
+  const categoriesButtonRef = useRef(null);
 
-  const categoriesButtonRef = useRef(null); 
-
+  const [name, setUserName] = useState('');
   
   useEffect(() => {
     setShowCategory(false);
@@ -42,12 +42,12 @@ const Header = () => {
   const siteManager = useCallback(async () => {
     try {
       const data = await siteService.getData();
-  
+
       if (data.data && data.data.length > 0) {
         const siteData = data.data[0];
-  
+
         setSiteLogo(BASE_URL + siteData.logo);
-  
+
         const siteDetails = {
           title: siteData.title,
           narration: siteData.narration,
@@ -56,26 +56,40 @@ const Header = () => {
           buttonColor: siteData.buttonColor,
           hoverButtonColor: siteData.hoverButtonColor,
         };
-  
-        sessionStorage.setItem('siteDetails', JSON.stringify(siteDetails));
+
+        sessionStorage.setItem("siteDetails", JSON.stringify(siteDetails));
       } else {
-        setSiteLogo('Logo');
+        setSiteLogo("Logo");
       }
     } catch (error) {
-      console.error('Server error:', error);
+      console.error("Server error:", error);
     }
-  }, [BASE_URL]); 
+  }, [BASE_URL]);
 
   useEffect(() => {
     siteManager();
   }, [siteManager]);
+
+const fetchUserInfo = async() => {
+  try{
+    const response = await authService.getData(accessToken);
+    setUserName(response.data.name);
+  }catch(error){
+    console.error(error);
+  }
+
+};
+
+useEffect(() => {
+  fetchUserInfo();
+});
 
   return (
     <>
       <header className="bg-white h-15 shadow-md border-b border-gray-200 z-50">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-          <button
+            <button
               onClick={() => setShowMobileMenu(!showMobileMenu)}
               className="lg:hidden text-gray-700 hover:text-green-500 transition"
             >
@@ -133,12 +147,9 @@ const Header = () => {
                     className="text-gray-700 hover:text-green-500 flex items-center space-x-2 transition"
                   >
                     <FaUser className="text-2xl" />
-                    <span className="hidden lg:block">Hello, User</span>
+                    <span className="hidden lg:block">Hello, {name? name : 'user'}</span>
                   </button>
-                  {showProfileMenu && (
-                   <ProfileMenu/>
-                  
-                  )}
+                  {showProfileMenu && <ProfileMenu />}
                 </>
               ) : (
                 <Link
@@ -156,19 +167,19 @@ const Header = () => {
         {/* Dropdown for Categories */}
         {showCategory && (
           <div
-                    className="absolute bg-white shadow-lg border rounded-md z-100"
-                    style={{
-                        left: categoriesButtonRef.current?.offsetLeft, 
-                        width: categoriesButtonRef.current?.offsetWidth + 80, 
-                      }}
-                    >
-          <ShowCategories/>
+            className="absolute bg-white shadow-lg border rounded-md z-100"
+            style={{
+              left: categoriesButtonRef.current?.offsetLeft,
+              width: categoriesButtonRef.current?.offsetWidth + 80,
+            }}
+          >
+            <ShowCategories />
           </div>
         )}
 
         {/* Mobile Menu */}
         {showMobileMenu && (
-          <MobileOptions setShowMobileMenu={setShowMobileMenu}/>
+          <MobileOptions setShowMobileMenu={setShowMobileMenu} />
         )}
         <div className="lg:hidden px-4 py-2 flex">
           <input
@@ -181,18 +192,17 @@ const Header = () => {
               className="flex-grow py-2 px-4 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-green-500 focus:outline-none"
               placeholder="Search for products..."
             /> */}
-            <button className="bg-green-500 w-[20vw] text-white px-4 py-2 rounded-r-md hover:bg-green-600 transition flex items-center justify-center">
-              <FaSearch className="text-xl h-full" />
-            </button>
+          <button className="bg-green-500 w-[20vw] text-white px-4 py-2 rounded-r-md hover:bg-green-600 transition flex items-center justify-center">
+            <FaSearch className="text-xl h-full" />
+          </button>
         </div>
 
         {showLogoutModal && (
-        <Logout
-          onClose={() => setShowLogoutModal(false)}
-          onConfirm={handleLogout}
-        />
-      )}
-
+          <Logout
+            onClose={() => setShowLogoutModal(false)}
+            onConfirm={handleLogout}
+          />
+        )}
       </header>
     </>
   );

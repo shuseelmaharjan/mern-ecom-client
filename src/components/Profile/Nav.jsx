@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const Nav = () => {
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState(location.pathname); 
+  const [activeTab, setActiveTab] = useState(location.pathname);
 
   const navItems = [
-    { label: 'Account', to: '/account-settings' },
-    { label: 'Security', to: '/account-security' },
-    { label: 'Public Profile', to: '/public-profile' },
-    { label: 'Address', to: '/account-address' },
-    { label: 'Credit Card', to: '/credit-card' },
+    { label: "Account", to: "/account-settings" },
+    { label: "Security", to: "/account-security" },
+    { label: "Public Profile", to: "/public-profile" },
+    { label: "Address", to: "/account-address" },
+    { label: "Credit Card", to: "/credit-card" },
   ];
 
   return (
@@ -23,7 +23,9 @@ const Nav = () => {
                 to={item.to}
                 onClick={() => setActiveTab(item.to)}
                 className={`cursor-pointer text-gray-700 hover:text-green-500 transition text-lg ${
-                  activeTab === item.to ? 'border-b-4 border-green-500 font-semibold' : ''
+                  activeTab === item.to
+                    ? "border-b-4 border-green-500 font-semibold"
+                    : ""
                 }`}
               >
                 {item.label}
