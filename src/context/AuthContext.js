@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState('');
   const [userId, setUserId] = useState('');
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // Add this state
+  const [showLogoutModal, setShowLogoutModal] = useState(false); 
 
   const { decrypt, encrypt } = useEncryption(); 
 

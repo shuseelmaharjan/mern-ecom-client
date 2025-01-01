@@ -1,8 +1,7 @@
 import "./App.css";
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import PrivateRoutes from "./context/PrivateRoutes";
-import Layout from "./components/Layouts/Layout";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Products from "./pages/Products/Products";
 import Message from "./pages/Messages/Messages";
@@ -14,7 +13,7 @@ import Settings from "./pages/Settings/Settings";
 import Finances from "./pages/Finances/Finances";
 import AddProduct from "./pages/Products/AddProduct";
 import BeMember from "./pages/BeMember/BeMember";
-import Homepage from "./pages/Homepage/Homepage";
+import HomePage from "./pages/Homepage/Homepage";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 import MyProfile from "./pages/Profile/MyProfile";
@@ -27,79 +26,86 @@ import Wishlist from "./pages/Wishlist/Wishlist";
 import Cart from "./components/Cart/Cart";
 import OrderHistory from "./pages/OrderHistory/OrderHistory";
 import Rewards from "./pages/Rewards/Rewards";
+import Header from './components/Header/Header';
+import DashLoadout from './components/Layouts/DashLoadout';
 
 function App() {
-  const publicRoutes = [
-    { path: "/", component: Homepage, showHeader: true },
-    { path: "/signup", component: Register, showHeader: true },
-    { path: "/profile", component: MyProfile, showHeader: true },
-    { path: "/account-settings", component: Accounts, showHeader: true },
-    { path: "/account-security", component: Security, showHeader: true },
-    { path: "/public-profile", component: PublicProfile, showHeader: true },
-    { path: "/account-address", component: Address, showHeader: true },
-    { path: "/credit-card", component: CreditCard, showHeader: true },
-    { path: "/wishlist", component: Wishlist, showHeader: true },
-    { path: "/cart", component: Cart, showHeader: true },
-    { path: "/myorders", component: OrderHistory, showHeader: true },
-    { path: "/rewards", component: Rewards, showHeader: true },
+  const location = useLocation();
+
+  const routeConfig = [
+    // Public routes with Header only
+    { path: "/", element: <HomePage />, showHeader: true, private: false },
+    { path: "/login", element: <Login />, showHeader: true, private: false },
+    { path: "/signup", element: <Register />, showHeader: true, private: false },
+    { path: "/public-profile", element: <PublicProfile />, showHeader: true, private: false },
+
+    // Private routes with Header (no DashLoadout)
+    { path: "/profile", element: <MyProfile />, showHeader: true, private: true, dashLoadout: false },
+    { path: "/be-a-member", element: <BeMember />, showHeader: true, private: true, dashLoadout: false },
+    { path: "/account-settings", element: <Accounts />, showHeader: true, private: true, dashLoadout: false },
+    { path: "/account-security", element: <Security />, showHeader: true, private: true, dashLoadout: false },
+    { path: "/account-address", element: <Address />, showHeader: true, private: true, dashLoadout: false },
+    { path: "/wishlist", element: <Wishlist />, showHeader: true, private: true, dashLoadout: false },
+    { path: "/cart", element: <Cart />, showHeader: true, private: true, dashLoadout: false },
+    { path: "/myorders", element: <OrderHistory />, showHeader: true, private: true, dashLoadout: false },
+    { path: "/rewards", element: <Rewards />, showHeader: true, private: true, dashLoadout: false },
+    { path: "/credit-card", element: <CreditCard />, showHeader: true, private: true, dashLoadout: false },
+
+    // Private routes with DashLoadout (no Header)
+    { path: "/dashboard", element: <Dashboard />, showHeader: false, private: true, dashLoadout: true },
+    { path: "/listing", element: <Products />, showHeader: false, private: true, dashLoadout: true },
+    { path: "/messages", element: <Message />, showHeader: false, private: true, dashLoadout: true },
+    { path: "/order-and-delivery", element: <OrderAndDelivery />, showHeader: false, private: true, dashLoadout: true },
+    { path: "/statistics", element: <Stats />, showHeader: false, private: true, dashLoadout: true },
+    { path: "/marketing", element: <Marketing />, showHeader: false, private: true, dashLoadout: true },
+    { path: "/finances", element: <Finances />, showHeader: false, private: true, dashLoadout: true },
+    { path: "/help", element: <Help />, showHeader: false, private: true, dashLoadout: true },
+    { path: "/settings", element: <Settings />, showHeader: false, private: true, dashLoadout: true },
+    { path: "/listing/create-product", element: <AddProduct />, showHeader: false, private: true, dashLoadout: true },
   ];
 
-  const privateRoutes = [
-    { path: "/dashboard", component: Dashboard, showDashLoadout: true },
-    { path: "/listing", component: Products, showDashLoadout: true },
-    { path: "/messages", component: Message, showDashLoadout: true },
-    {
-      path: "/order-and-delivery",
-      component: OrderAndDelivery,
-      showDashLoadout: true,
-    },
-    { path: "/statistics", component: Stats, showDashLoadout: true },
-    { path: "/marketing", component: Marketing, showDashLoadout: true },
-    { path: "/finances", component: Finances, showDashLoadout: true },
-    { path: "/help", component: Help, showDashLoadout: true },
-    { path: "/settings", component: Settings, showDashLoadout: true },
-    {
-      path: "/listing/create-product",
-      component: AddProduct,
-      showDashLoadout: true,
-    },
-    { path: "/be-a-member", component: BeMember, showDashLoadout: false },
-  ];
+  const currentRoute = routeConfig.find((route) =>
+    route.path === location.pathname
+  );
+  const shouldShowHeader = currentRoute?.showHeader && !currentRoute?.dashLoadout;
+  
 
   return (
-    <Routes>
-      {publicRoutes.map((route, index) => (
-        <Route
-          key={index}
-          path={route.path}
-          element={
-            <Layout showHeader={route.showHeader}>
-              {React.createElement(route.component)}
-            </Layout>
+    <>
+      {shouldShowHeader && <Header />}
+      <Routes>
+        {routeConfig.map((route, index) => {
+          const { path, element, private: isPrivate, dashLoadout } = route;
+  
+          if (isPrivate) {
+            if (dashLoadout) {
+              // Private route with DashLoadout
+              return (
+                <Route
+                  key={index}
+                  path={path}
+                  element={<PrivateRoutes><DashLoadout>{element}</DashLoadout></PrivateRoutes>}
+                />
+              );
+            } else {
+              // Private route without DashLoadout
+              return (
+                <Route
+                  key={index}
+                  path={path}
+                  element={<PrivateRoutes>{element}</PrivateRoutes>}
+                />
+              );
+            }
+          } else {
+            // Public route
+            return <Route key={index} path={path} element={element} />;
           }
-        />
-      ))}
-
-      {privateRoutes.map((route, index) => (
-        <Route
-          key={index}
-          path={route.path}
-          element={
-            <PrivateRoutes>
-              {route.showDashLoadout ? (
-                <Layout showDashLoadout={route.showDashLoadout}>
-                  {React.createElement(route.component)}
-                </Layout>
-              ) : (
-                React.createElement(route.component) 
-              )}
-            </PrivateRoutes>
-          }
-        />
-      ))}
-      <Route path="/login" element={<Login/>}/>
-    </Routes>
+        })}
+      </Routes>
+    </>
   );
+  
 }
 
 export default App;

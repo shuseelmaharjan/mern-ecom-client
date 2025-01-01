@@ -24,21 +24,21 @@ const Header = () => {
   const [showCategory, setShowCategory] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const location = useLocation();
   const [siteLogo, setSiteLogo] = useState("");
+  const [name, setUserName] = useState("");
 
-  const { showLogoutModal, setShowLogoutModal, handleLogout, isLoggedIn, accessToken } =
-    useAuth();
-
+  const location = useLocation();
   const categoriesButtonRef = useRef(null);
 
-  const [name, setUserName] = useState('');
-  
-  useEffect(() => {
-    setShowCategory(false);
-    setShowMobileMenu(false);
-  }, [location]);
+  const {
+    accessToken,
+    isLoggedIn,
+    showLogoutModal,
+    handleLogout,
+    setShowLogoutModal,
+  } = useAuth();
 
+  // Fetch site details
   const siteManager = useCallback(async () => {
     try {
       const data = await siteService.getData();
@@ -70,19 +70,27 @@ const Header = () => {
     siteManager();
   }, [siteManager]);
 
-const fetchUserInfo = async() => {
-  try{
-    const response = await authService.getData(accessToken);
-    setUserName(response.data.name);
-  }catch(error){
-    console.error(error);
-  }
+  // Fetch user info
+  const fetchUserInfo = useCallback(async () => {
+    try {
+      const response = await authService.userInfo(accessToken);
+      setUserName(response.name);
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  }, [accessToken]);
 
-};
+  useEffect(() => {
+    if (accessToken) {
+      fetchUserInfo();
+    }
+  }, [accessToken, fetchUserInfo]);
 
-useEffect(() => {
-  fetchUserInfo();
-});
+  // Close menus on location change
+  useEffect(() => {
+    setShowCategory(false);
+    setShowMobileMenu(false);
+  }, [location]);
 
   return (
     <>
@@ -90,7 +98,7 @@ useEffect(() => {
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              onClick={() => setShowMobileMenu((prev) => !prev)}
               className="lg:hidden text-gray-700 hover:text-green-500 transition"
             >
               <FaBars className="text-2xl" />
@@ -100,7 +108,7 @@ useEffect(() => {
               <img src={siteLogo} alt="Logo" className="w-32" />
             </Link>
             <button
-              onClick={() => setShowCategory(!showCategory)}
+              onClick={() => setShowCategory((prev) => !prev)}
               className="hidden lg:flex items-center space-x-2 text-gray-700 hover:text-green-500 transition"
               ref={categoriesButtonRef}
             >
@@ -134,7 +142,6 @@ useEffect(() => {
               className="text-gray-700 hover:text-green-500 transition relative"
             >
               <FaShoppingCart className="text-2xl" />
-              {/* Example Badge */}
               <span className="absolute -top-1 -right-2 bg-green-500 text-white text-xs font-bold rounded-full px-1">
                 0
               </span>
@@ -143,11 +150,13 @@ useEffect(() => {
               {isLoggedIn ? (
                 <>
                   <button
-                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    onClick={() => setShowProfileMenu((prev) => !prev)}
                     className="text-gray-700 hover:text-green-500 flex items-center space-x-2 transition"
                   >
                     <FaUser className="text-2xl" />
-                    <span className="hidden lg:block">Hello, {name? name : 'user'}</span>
+                    <span className="hidden lg:block">
+                      Hello, {name || "User"}
+                    </span>
                   </button>
                   {showProfileMenu && <ProfileMenu />}
                 </>
@@ -187,11 +196,6 @@ useEffect(() => {
             className="w-[80vw] py-2 px-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:outline-none"
             placeholder="Search for products..."
           />
-          {/* <input
-              type="text"
-              className="flex-grow py-2 px-4 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-green-500 focus:outline-none"
-              placeholder="Search for products..."
-            /> */}
           <button className="bg-green-500 w-[20vw] text-white px-4 py-2 rounded-r-md hover:bg-green-600 transition flex items-center justify-center">
             <FaSearch className="text-xl h-full" />
           </button>
