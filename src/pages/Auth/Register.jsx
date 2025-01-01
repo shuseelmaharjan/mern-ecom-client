@@ -4,7 +4,7 @@ import authService from '../../services/authService/authService';
 
 const Register = () => {
   // State variables for form fields
-  const [fullName, setFullName] = useState('');
+  const [name, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -31,7 +31,7 @@ const Register = () => {
 
     // Prepare the form data
     const formData = {
-      fullName,
+      name,
       email,
       password
     };
@@ -64,7 +64,7 @@ const Register = () => {
             <label className="block text-base font-medium text-gray-700">Full Name</label>
             <input
               type="text"
-              value={fullName}
+              value={name}
               onChange={(e) => setFullName(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               placeholder="Enter your full name"

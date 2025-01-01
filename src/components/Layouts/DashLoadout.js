@@ -44,7 +44,7 @@ const DashLoadout = ({ children }) => {
             isSidebarExpanded ? "md:ml-72" : "md:ml-24"
           } ${isMobileNavOpen ? "ml-0" : ""} md:ml-0`}
         >
-          <header className="bg-gray-100 text-gray-800 px-4 py-6 fixed w-full z-10 shadow flex items-center justify-between">
+          <header className="bg-gray-100 text-gray-800 px-4 py-6 fixed w-full shadow flex items-center justify-between">
             <button className="text-2xl md:hidden" onClick={toggleMobileNav}>
               <MdMenu />
             </button>

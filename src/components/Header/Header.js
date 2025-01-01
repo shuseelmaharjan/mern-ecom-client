@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { jwtDecode } from "jwt-decode";
 import {
   FaSearch,
   FaBars,
@@ -16,7 +17,7 @@ import ShowCategories from "./ShowCategories";
 import MobileOptions from "./MobileOptions";
 import siteService from "../../services/site/siteService";
 import config from "../../services/config";
-import authService from "../../services/authService/authService";
+import Cookies from 'js-cookie';
 
 const Header = () => {
   const BASE_URL = config.API_BASE_URL;
@@ -25,18 +26,26 @@ const Header = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [siteLogo, setSiteLogo] = useState("");
-  const [name, setUserName] = useState("");
+  const [name, setName] = useState("");
 
   const location = useLocation();
   const categoriesButtonRef = useRef(null);
 
   const {
-    accessToken,
     isLoggedIn,
     showLogoutModal,
     handleLogout,
     setShowLogoutModal,
   } = useAuth();
+
+  useEffect(() => {
+    const token = Cookies.get('_r');
+    
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      setName(decodedToken.name);
+    }
+  }, []);
 
   // Fetch site details
   const siteManager = useCallback(async () => {
@@ -70,21 +79,21 @@ const Header = () => {
     siteManager();
   }, [siteManager]);
 
-  // Fetch user info
-  const fetchUserInfo = useCallback(async () => {
-    try {
-      const response = await authService.userInfo(accessToken);
-      setUserName(response.name);
-    } catch (error) {
-      console.error("Error fetching user info:", error);
-    }
-  }, [accessToken]);
+  // // Fetch user info
+  // const fetchUserInfo = useCallback(async () => {
+  //   try {
+  //     const response = await authService.userInfo(accessToken);
+  //     setUserName(response.name);
+  //   } catch (error) {
+  //     console.error("Error fetching user info:", error);
+  //   }
+  // }, [accessToken]);
 
-  useEffect(() => {
-    if (accessToken) {
-      fetchUserInfo();
-    }
-  }, [accessToken, fetchUserInfo]);
+  // useEffect(() => {
+  //   if (accessToken) {
+  //     fetchUserInfo();
+  //   }
+  // }, [accessToken, fetchUserInfo]);
 
   // Close menus on location change
   useEffect(() => {
