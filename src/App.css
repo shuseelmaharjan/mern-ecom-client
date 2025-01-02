@@ -10,3 +10,12 @@
 #nav::-webkit-scrollbar-thumb:hover {
     background: #c9c9c9;
   }
+
+.ql-container{
+  height: 100px!important;
+  font-size: 1rem!important;
+}
+
+.sketch-picker{
+  width: 250px;
+}
