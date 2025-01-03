@@ -57,15 +57,187 @@ const AddProduct = () => {
   }, []);
 
   const [img1, setImg1] = useState(null);
+  const [img1Thubnail, setImg1Thumbnail] = useState(null);
+  const fileInputRef = useRef(null);
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImg1(file);
+      setImg1Thumbnail(URL.createObjectURL(file))
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImg1(null);
+  };
+
+  const handleSelectImage = () => {
+    fileInputRef.current.click(); 
+  };
+
+
   const [img2, setImg2] = useState(null);
+  const [img2Thumbnail, setImg2Thumbnail] = useState(null);
+  const fileInputRef2 = useRef(null);
+  const handleFileChange2 = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImg2(file);
+      setImg2Thumbnail(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemoveImage2 = () => {
+    setImg2(null);
+  };
+
+  const handleSelectImage2 = () => {
+    fileInputRef2.current.click(); 
+  };
+
+
   const [img3, setImg3] = useState(null);
+  const [img3Thumbnail, setImg3Thumbnail] = useState(null);
+  const fileInputRef3 = useRef(null);
+  const handleFileChange3 = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImg3(file);
+      setImg3Thumbnail(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemoveImage3 = () => {
+    setImg3(null);
+  };
+
+  const handleSelectImage3 = () => {
+    fileInputRef3.current.click(); 
+  };
+
+
   const [img4, setImg4] = useState(null);
+  const [ig4T, setig4T] = useState(null);
+  const fileInputRef4 = useRef(null);
+  const handleFileChange4 = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImg4(file);
+      setig4T(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemoveImage4 = () => {
+    setImg4(null);
+  };
+
+  const handleSelectImage4 = () => {
+    fileInputRef4.current.click(); 
+  };
+
+
   const [img5, setImg5] = useState(null);
+  const [ig5, setIg5] = useState(null);
+
+  const fileInputRef5 = useRef(null);
+  const handleFileChange5 = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImg5(file);
+      setIg5(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemoveImage5 = () => {
+    setImg5(null);
+  };
+
+  const handleSelectImage5 = () => {
+    fileInputRef5.current.click(); 
+  };
+
+
   const [img6, setImg6] = useState(null);
+  const [ig6, setIg6] = useState(null);
+  const fileInputRef6 = useRef(null);
+  const handleFileChange6 = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImg6(file);
+      setIg6(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemoveImage6 = () => {
+    setImg6(null);
+  };
+
+  const handleSelectImage6 = () => {
+    fileInputRef6.current.click(); 
+  };
+
+
   const [img7, setImg7] = useState(null);
+  const [ig7, setIg7] = useState(null);
+  const fileInputRef7 = useRef(null);
+  const handleFileChange7 = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImg7(file);
+      setIg7(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemoveImage7 = () => {
+    setImg7(null);
+  };
+
+  const handleSelectImage7 = () => {
+    fileInputRef7.current.click(); 
+  };
+
+
   const [img8, setImg8] = useState(null);
-  const [img9, setImg9] = useState(null);
+  const [ig8, setIg8] = useState(null);
+
+  const fileInputRef8 = useRef(null);
+  const handleFileChange8 = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImg8(file);
+      setIg8(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemoveImage8 = () => {
+    setImg8(null);
+  };
+
+  const handleSelectImage8 = () => {
+    fileInputRef8.current.click(); 
+  };
+
   const [video, setVideo] = useState(null);
+  const [videoT, setVideoT] = useState(null);
+  const videoRef = useRef(null);
+
+  const handleVideoChanged = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setVideo(file);
+      setVideoT(URL.createObjectURL(file));
+    }
+  };
+
+  const handleVideoRemove = () => {
+    setVideo(null);
+  };
+
+  const handleSelectVideo = () => {
+    videoRef.current.click();
+  };
+
+
   const [shippingService, setShippingService] = useState(false);
   const [shippingTime, setShippingTime] = useState("");
   const [freeShipping, setFreeShipping] = useState(false);
@@ -289,6 +461,9 @@ const AddProduct = () => {
     }
   };
 
+  
+  
+
   const returnExchange = false;
   const returningDays = 1;
   const returningDescription = "test";
@@ -321,7 +496,6 @@ const AddProduct = () => {
     formData.append("img6", img6);
     formData.append("img7", img7);
     formData.append("img8", img8);
-    formData.append("img9", img9);
     formData.append("video", video);
     formData.append("productLimit", productLimit);
     formData.append("brand", brand);
@@ -511,61 +685,303 @@ const AddProduct = () => {
             </span>
 
             {/* Image Inputs */}
-            <div className="grid grid-cols-4 gap-4 mt-4">
-              {/* Thumbnail Field */}
-              <div className="relative">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setImg1(e.target.files[0])}
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setImg2(e.target.files[0])}
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setImg3(e.target.files[0])}
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setImg4(e.target.files[0])}
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setImg5(e.target.files[0])}
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setImg6(e.target.files[0])}
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setImg7(e.target.files[0])}
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setImg8(e.target.files[0])}
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setImg9(e.target.files[0])}
-                />
-
-                <input
-                  type="file"
-                  accept="video/mp4"
-                  onChange={(e) => setVideo(e.target.files[0])}
-                />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4 mt-4">
+            {/* Thumbnail Field */}
+              <div className="relative h-40 w-40">
+                {!img1 ? (
+                  <>
+                    <div
+                      className="h-full w-full border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100"
+                      onClick={handleSelectImage}
+                    >
+                      <span className="text-gray-600">Select Image</span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                  </>
+                ) : (
+                  <div className="h-full w-full relative">
+                    <img
+                      src={img1Thubnail}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                    />
+                    <FaTrash
+                      className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                      onClick={handleRemoveImage}
+                    />
+                  </div>
+                )}
               </div>
+
+              <div className="relative h-40 w-40">
+                {!img2 ? (
+                  <>
+                    <div
+                      className="h-full w-full border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100"
+                      onClick={handleSelectImage2}
+                    >
+                      <span className="text-gray-600">Select Image</span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef2}
+                      onChange={handleFileChange2}
+                      className="hidden"
+                    />
+                  </>
+                ) : (
+                  <div className="h-full w-full relative">
+                    <img
+                      src={img2Thumbnail}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                    />
+                    <FaTrash
+                      className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                      onClick={handleRemoveImage2}
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="relative h-40 w-40">
+                {!img3 ? (
+                  <>
+                    <div
+                      className="h-full w-full border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100"
+                      onClick={handleSelectImage3}
+                    >
+                      <span className="text-gray-600">Select Image</span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef3}
+                      onChange={handleFileChange3}
+                      className="hidden"
+                    />
+                  </>
+                ) : (
+                  <div className="h-full w-full relative">
+                    <img
+                      src={img3Thumbnail}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                    />
+                    <FaTrash
+                      className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                      onClick={handleRemoveImage3}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="relative h-40 w-40">
+                {!img4 ? (
+                  <>
+                    <div
+                      className="h-full w-full border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100"
+                      onClick={handleSelectImage4}
+                    >
+                      <span className="text-gray-600">Select Image</span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef4}
+                      onChange={handleFileChange4}
+                      className="hidden"
+                    />
+                  </>
+                ) : (
+                  <div className="h-full w-full relative">
+                    <img
+                      src={ig4T}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                    />
+                    <FaTrash
+                      className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                      onClick={handleRemoveImage4}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="relative h-40 w-40">
+                {!img5 ? (
+                  <>
+                    <div
+                      className="h-full w-full border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100"
+                      onClick={handleSelectImage5}
+                    >
+                      <span className="text-gray-600">Select Image</span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef5}
+                      onChange={handleFileChange5}
+                      className="hidden"
+                    />
+                  </>
+                ) : (
+                  <div className="h-full w-full relative">
+                    <img
+                      src={ig5}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                    />
+                    <FaTrash
+                      className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                      onClick={handleRemoveImage5}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="relative h-40 w-40">
+                {!img6 ? (
+                  <>
+                    <div
+                      className="h-full w-full border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100"
+                      onClick={handleSelectImage6}
+                    >
+                      <span className="text-gray-600">Select Image</span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef6}
+                      onChange={handleFileChange6}
+                      className="hidden"
+                    />
+                  </>
+                ) : (
+                  <div className="h-full w-full relative">
+                    <img
+                      src={ig6}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                    />
+                    <FaTrash
+                      className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                      onClick={handleRemoveImage6}
+                    />
+                  </div>
+                )}
+              </div>
+
+
+              <div className="relative h-40 w-40">
+                {!img7 ? (
+                  <>
+                    <div
+                      className="h-full w-full border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100"
+                      onClick={handleSelectImage7}
+                    >
+                      <span className="text-gray-600">Select Image</span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef7}
+                      onChange={handleFileChange7}
+                      className="hidden"
+                    />
+                  </>
+                ) : (
+                  <div className="h-full w-full relative">
+                    <img
+                      src={ig7}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                    />
+                    <FaTrash
+                      className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                      onClick={handleRemoveImage7}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="relative h-40 w-40">
+                {!img8 ? (
+                  <>
+                    <div
+                      className="h-full w-full border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100"
+                      onClick={handleSelectImage8}
+                    >
+                      <span className="text-gray-600">Select Image</span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef8}
+                      onChange={handleFileChange8}
+                      className="hidden"
+                    />
+                  </>
+                ) : (
+                  <div className="h-full w-full relative">
+                    <img
+                      src={ig8}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                    />
+                    <FaTrash
+                      className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                      onClick={handleRemoveImage8}
+                    />
+                  </div>
+                )}
+              </div>
+
+
+
+              
+
+
+              <div className="relative h-40 w-40">
+                {!video ? (
+                  <>
+                    <div
+                      className="h-full w-full border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100"
+                      onClick={handleSelectVideo}
+                    >
+                      <span className="text-gray-600">Select Video</span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="video/*"
+                      ref={videoRef}
+                      onChange={handleVideoChanged}
+                      className="hidden"
+                    />
+                  </>
+                ) : (
+                  <div className="h-full w-full relative">
+                    <video
+                      src={videoT}
+                      className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                      muted
+                      playsInline
+                    />
+                    <FaTrash
+                      className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                      onClick={handleVideoRemove}
+                    />
+                  </div>
+                )}
+              </div>
+
+
             </div>
           </div>
 
