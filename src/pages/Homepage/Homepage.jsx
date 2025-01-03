@@ -48,7 +48,7 @@ const Homepage = () => {
       const response = await fetch('http://localhost:5000/api/v1/create-product', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJlbWFpbCI6InZlbmRvcjFAZ21haWwuY29tIiwiaWQiOiI2Nzc1MTQxOGU3N2YzZmM0MzgwMjdmNGIiLCJyb2xlIjoidmVuZG9yIn0sImlhdCI6MTczNTgxMzMxNCwiZXhwIjoxNzM1ODE2OTE0fQ.ITmzRXHjdzfXq5jGpSjr5FKydiFzM6vW66lQFMSZG74`,
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJlbWFpbCI6InZlbmRvcjFAZ21haWwuY29tIiwiaWQiOiI2Nzc1MTQxOGU3N2YzZmM0MzgwMjdmNGIiLCJyb2xlIjoidmVuZG9yIn0sImlhdCI6MTczNTg4MzcwNSwiZXhwIjoxNzM1ODg3MzA1fQ.OqLAOj2rNKRY5Wqbb2IsZD-GbeMDAhq6IG9vCfO61TA`,
         },
         body: formData,
       });

@@ -13,8 +13,7 @@ const AddProduct = () => {
   const { accessToken } = useAuth();
 
   const [activeSection, setActiveSection] = useState("");
-  const [isPersonalizationVisible, setIsPersonalizationVisible] =
-    useState(false);
+
   const [isColorVariation, setisColorVariation] = useState(false);
   const [isSizeVariation, setIsSizeVariation] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -68,17 +67,18 @@ const AddProduct = () => {
   const [img9, setImg9] = useState(null);
   const [video, setVideo] = useState(null);
   const [shippingService, setShippingService] = useState(false);
-  const [shippingTime, setShippingTime] = useState('');
+  const [shippingTime, setShippingTime] = useState("");
   const [freeShipping, setFreeShipping] = useState(false);
-  const [cod, setCod] = useState('');
-  const [internationalShippingService, setInternationalShippingService] = useState(false);
-  const [internationalShippingTime, setInternationalShippingTime] = useState('');
-  const [internationalFreeShipping, setInternationalFreeShipping] = useState(false);
-  const [internationalCod, setInternationalCod] = useState('');
+  const [cod, setCod] = useState("");
+  const [internationalShippingService, setInternationalShippingService] =
+    useState(false);
+  const [internationalShippingTime, setInternationalShippingTime] =
+    useState("");
+  const [internationalFreeShipping, setInternationalFreeShipping] =
+    useState(false);
+  const [internationalCod, setInternationalCod] = useState("");
 
-  const togglePersonalization = () => {
-    setIsPersonalizationVisible(!isPersonalizationVisible);
-  };
+
 
   const toggleColorVariatioin = () => {
     setisColorVariation(!isColorVariation);
@@ -120,9 +120,6 @@ const AddProduct = () => {
       JSON.stringify(updatedColors, null, 2)
     );
   };
-
-  
-
 
   const handleBlur = (e) => {
     if (!e.target.value.trim()) {
@@ -276,9 +273,6 @@ const AddProduct = () => {
 
   const [materials, setMaterial] = useState("");
 
-
-
-
   const [renewalOption, setRenewalOption] = useState("automatic");
   const [expirationDate, setExpirationDate] = useState("");
 
@@ -295,9 +289,25 @@ const AddProduct = () => {
     }
   };
 
+  const returnExchange = false;
+  const returningDays = 1;
+  const returningDescription = "test";
+  const newTags = ["test1", "test2"];
+  const sizes = ["m", "l"];
+
+  const productDimension = true;
+  const productHeight = 11;
+  const productWidth = 15;
+
+  const productColor = false;
+  const productColors = [
+    { code: "#ffffff", color: "white" },
+    { code: "#000000", color: "black" },
+  ];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
@@ -322,10 +332,24 @@ const AddProduct = () => {
     formData.append("shippingTime", shippingTime);
     formData.append("freeShipping", freeShipping);
     formData.append("cod", cod);
-    formData.append("internationalShippingService", internationalShippingService);
+    formData.append(
+      "internationalShippingService",
+      internationalShippingService
+    );
     formData.append("internationalShippingTime", internationalShippingTime);
     formData.append("internationalFreeShipping", internationalFreeShipping);
     formData.append("internationalCod", internationalCod);
+    formData.append("returnExchange", returnExchange);
+    formData.append("returningDays", returningDays.toString());
+    formData.append("returningDescription", returningDescription);
+    formData.append("tags", newTags.join(","));
+    formData.append("size", sizes);
+    formData.append("productDimension", productDimension);
+    formData.append("productHeight", productHeight);
+    formData.append("productWidth", productWidth);
+
+    formData.append("productColor", productColor);
+    formData.append("productColors", JSON.stringify(productColors));
 
     try {
       const response = await productService.addProduct(formData, accessToken);
@@ -334,11 +358,6 @@ const AddProduct = () => {
       console.error("Error adding product:", error.message || error);
     }
   };
-  
-  
-  
-  
-  
 
   return (
     <div className="container mx-auto p-6">
@@ -546,12 +565,7 @@ const AddProduct = () => {
                   accept="video/mp4"
                   onChange={(e) => setVideo(e.target.files[0])}
                 />
-
-                
-                
               </div>
-
-              
             </div>
           </div>
 
@@ -633,50 +647,7 @@ const AddProduct = () => {
               </span>
             </div>
           </div>
-
-          <div className="mt-12">
-            <label
-              htmlFor="personalization"
-              className="block text-gray-700 text-lg font-semibold"
-            >
-              Personalisation
-            </label>
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600 mt-2">
-                Collect personalised information for this listing.
-              </span>
-              <button
-                type="button"
-                onClick={togglePersonalization}
-                className="flex items-center bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out transition-all duration-300"
-              >
-                <FaPlus className="mr-1" /> Add Personalization
-              </button>
-            </div>
-          </div>
-
-          {isPersonalizationVisible && (
-            <div className="mt-6">
-              <label
-                htmlFor="productLimit"
-                className="block text-gray-700 text-lg font-semibold"
-              >
-                Character limit for buyer response
-              </label>
-              <span className="text-sm text-gray-600 mt-2 block">
-                {" "}
-                Enter number between 1 and 1024{" "}
-              </span>
-              <input
-                type="number"
-                id="productLimit"
-                name="productLimit"
-                value={productLimit}
-                onChange={handleProductLimitChange}
-                className="block w-[10rem] p-3 mt-2 border border-gray-300 rounded-md"
-              />
-            </div>
-          )}
+      
         </section>
 
         <section
@@ -767,6 +738,27 @@ const AddProduct = () => {
               </span>
             )}
           </div>
+
+          <div className="mt-6">
+              <label
+                htmlFor="productLimit"
+                className="block text-gray-700 text-lg font-semibold"
+              >
+                Character limit for buyer response
+              </label>
+              <span className="text-sm text-gray-600 mt-2 block">
+                {" "}
+                Enter number between 1 and 1024{" "}
+              </span>
+              <input
+                type="number"
+                id="productLimit"
+                name="productLimit"
+                value={productLimit}
+                onChange={handleProductLimitChange}
+                className="block w-[10rem] p-3 mt-2 border border-gray-300 rounded-md"
+              />
+            </div>
 
           <div className="mt-6">
             <label
@@ -1378,194 +1370,208 @@ const AddProduct = () => {
           </div>
         </section>
 
-        <section id="Shipping & Return" className="p-6 bg-white shadow-lg rounded-lg mt-12">
-  <h2 className="text-2xl font-bold text-gray-700">Shipping & Return</h2>
+        <section
+          id="Shipping & Return"
+          className="p-6 bg-white shadow-lg rounded-lg mt-12"
+        >
+          <h2 className="text-2xl font-bold text-gray-700">
+            Shipping & Return
+          </h2>
 
-  {/* Domestic Shipping Section */}
-  <div className="mt-4 border-gray-200 border p-4 rounded-lg shadow-lg">
-    <h3 className="text-lg font-bold text-gray-700 mb-4">Domestic Shipping</h3>
+          {/* Domestic Shipping Section */}
+          <div className="mt-4 border-gray-200 border p-4 rounded-lg shadow-lg">
+            <h3 className="text-lg font-bold text-gray-700 mb-4">
+              Domestic Shipping
+            </h3>
 
-    {/* Shipping Service Toggle */}
-    <div className="flex items-center gap-4">
-      <label className="text-lg font-medium text-gray-700">Enable Shipping</label>
-      <input
-        type="checkbox"
-        checked={shippingService}
-        onChange={(e) => setShippingService(e.target.checked)}
-        className="toggle-checkbox"
-      />
-    </div>
-
-    {shippingService && (
-      <>
-        {/* Shipping Time */}
-        <div className="mt-4">
-          <label
-            htmlFor="domesticShippingTime"
-            className="block text-lg font-medium text-gray-700"
-          >
-            Shipping Time (in days)
-          </label>
-          <input
-            type="text"
-            id="domesticShippingTime"
-            value={shippingTime}
-            onChange={(e) => setShippingTime(e.target.value)}
-            className="w-full mt-2 p-3 border border-gray-300 rounded-md"
-            min="1"
-            required
-          />
-        </div>
-
-        {/* Free Shipping */}
-        <div className="mt-4">
-          <label className="block text-lg font-medium text-gray-700">
-            Free Shipping
-          </label>
-          <div className="flex items-center gap-4 mt-2">
-            <label className="flex items-center">
+            {/* Shipping Service Toggle */}
+            <div className="flex items-center gap-4">
+              <label className="text-lg font-medium text-gray-700">
+                Enable Shipping
+              </label>
               <input
-                type="radio"
-                name="domesticFreeShipping"
-                value="true"
-                checked={freeShipping}
-                onChange={() => setFreeShipping(true)}
-                className="mr-2"
+                type="checkbox"
+                checked={shippingService}
+                onChange={(e) => setShippingService(e.target.checked)}
+                className="toggle-checkbox"
               />
-              Yes
-            </label>
-            <label className="flex items-center">
+            </div>
+
+            {shippingService && (
+              <>
+                {/* Shipping Time */}
+                <div className="mt-4">
+                  <label
+                    htmlFor="domesticShippingTime"
+                    className="block text-lg font-medium text-gray-700"
+                  >
+                    Shipping Time (in days)
+                  </label>
+                  <input
+                    type="text"
+                    id="domesticShippingTime"
+                    value={shippingTime}
+                    onChange={(e) => setShippingTime(e.target.value)}
+                    className="w-full mt-2 p-3 border border-gray-300 rounded-md"
+                    min="1"
+                    required
+                  />
+                </div>
+
+                {/* Free Shipping */}
+                <div className="mt-4">
+                  <label className="block text-lg font-medium text-gray-700">
+                    Free Shipping
+                  </label>
+                  <div className="flex items-center gap-4 mt-2">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="domesticFreeShipping"
+                        value="true"
+                        checked={freeShipping}
+                        onChange={() => setFreeShipping(true)}
+                        className="mr-2"
+                      />
+                      Yes
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="domesticFreeShipping"
+                        value="false"
+                        checked={!freeShipping}
+                        onChange={() => setFreeShipping(false)}
+                        className="mr-2"
+                      />
+                      No
+                    </label>
+                  </div>
+                </div>
+
+                {/* Shipping Cost */}
+                {!freeShipping && (
+                  <div className="mt-4">
+                    <label
+                      htmlFor="domesticCod"
+                      className="block text-lg font-medium text-gray-700"
+                    >
+                      Fixed Shipping Cost ($ USD)
+                    </label>
+                    <input
+                      type="number"
+                      id="domesticCod"
+                      value={cod}
+                      onChange={(e) => setCod(e.target.value)}
+                      className="w-full mt-2 p-3 border border-gray-300 rounded-md"
+                      min="0"
+                      required
+                    />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* International Shipping Section */}
+          <div className="mt-4 border-gray-200 border p-4 rounded-lg shadow-lg">
+            <h3 className="text-lg font-bold text-gray-700 mb-4">
+              International Shipping
+            </h3>
+
+            {/* Shipping Service Toggle */}
+            <div className="flex items-center gap-4">
+              <label className="text-lg font-medium text-gray-700">
+                Enable International Shipping
+              </label>
               <input
-                type="radio"
-                name="domesticFreeShipping"
-                value="false"
-                checked={!freeShipping}
-                onChange={() => setFreeShipping(false)}
-                className="mr-2"
+                type="checkbox"
+                checked={internationalShippingService}
+                onChange={(e) =>
+                  setInternationalShippingService(e.target.checked)
+                }
+                className="toggle-checkbox"
               />
-              No
-            </label>
+            </div>
+
+            {internationalShippingService && (
+              <>
+                {/* Shipping Time */}
+                <div className="mt-4">
+                  <label
+                    htmlFor="internationalShippingTime"
+                    className="block text-lg font-medium text-gray-700"
+                  >
+                    Shipping Time (in days)
+                  </label>
+                  <input
+                    type="text"
+                    id="internationalShippingTime"
+                    value={internationalShippingTime}
+                    onChange={(e) =>
+                      setInternationalShippingTime(e.target.value)
+                    }
+                    className="w-full mt-2 p-3 border border-gray-300 rounded-md"
+                    min="1"
+                    required
+                  />
+                </div>
+
+                {/* Free Shipping */}
+                <div className="mt-4">
+                  <label className="block text-lg font-medium text-gray-700">
+                    Free Shipping
+                  </label>
+                  <div className="flex items-center gap-4 mt-2">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="internationalFreeShipping"
+                        value="true"
+                        checked={internationalFreeShipping}
+                        onChange={() => setInternationalFreeShipping(true)}
+                        className="mr-2"
+                      />
+                      Yes
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="internationalFreeShipping"
+                        value="false"
+                        checked={!internationalFreeShipping}
+                        onChange={() => setInternationalFreeShipping(false)}
+                        className="mr-2"
+                      />
+                      No
+                    </label>
+                  </div>
+                </div>
+
+                {/* Shipping Cost */}
+                {!internationalFreeShipping && (
+                  <div className="mt-4">
+                    <label
+                      htmlFor="internationalCod"
+                      className="block text-lg font-medium text-gray-700"
+                    >
+                      Fixed Shipping Cost ($ USD)
+                    </label>
+                    <input
+                      type="number"
+                      id="internationalCod"
+                      value={internationalCod}
+                      onChange={(e) => setInternationalCod(e.target.value)}
+                      className="w-full mt-2 p-3 border border-gray-300 rounded-md"
+                      min="0"
+                      required
+                    />
+                  </div>
+                )}
+              </>
+            )}
           </div>
-        </div>
-
-        {/* Shipping Cost */}
-        {!freeShipping && (
-          <div className="mt-4">
-            <label
-              htmlFor="domesticCod"
-              className="block text-lg font-medium text-gray-700"
-            >
-              Fixed Shipping Cost ($ USD)
-            </label>
-            <input
-              type="number"
-              id="domesticCod"
-              value={cod}
-              onChange={(e) => setCod(e.target.value)}
-              className="w-full mt-2 p-3 border border-gray-300 rounded-md"
-              min="0"
-              required
-            />
-          </div>
-        )}
-      </>
-    )}
-  </div>
-
-  {/* International Shipping Section */}
-  <div className="mt-4 border-gray-200 border p-4 rounded-lg shadow-lg">
-    <h3 className="text-lg font-bold text-gray-700 mb-4">International Shipping</h3>
-
-    {/* Shipping Service Toggle */}
-    <div className="flex items-center gap-4">
-      <label className="text-lg font-medium text-gray-700">
-        Enable International Shipping
-      </label>
-      <input
-        type="checkbox"
-        checked={internationalShippingService}
-        onChange={(e) => setInternationalShippingService(e.target.checked)}
-        className="toggle-checkbox"
-      />
-    </div>
-
-    {internationalShippingService && (
-      <>
-        {/* Shipping Time */}
-        <div className="mt-4">
-          <label
-            htmlFor="internationalShippingTime"
-            className="block text-lg font-medium text-gray-700"
-          >
-            Shipping Time (in days)
-          </label>
-          <input
-            type="text"
-            id="internationalShippingTime"
-            value={internationalShippingTime}
-            onChange={(e) => setInternationalShippingTime(e.target.value)}
-            className="w-full mt-2 p-3 border border-gray-300 rounded-md"
-            min="1"
-            required
-          />
-        </div>
-
-        {/* Free Shipping */}
-        <div className="mt-4">
-          <label className="block text-lg font-medium text-gray-700">
-            Free Shipping
-          </label>
-          <div className="flex items-center gap-4 mt-2">
-            <label className="flex items-center">
-              <input
-                type="radio"
-                name="internationalFreeShipping"
-                value="true"
-                checked={internationalFreeShipping}
-                onChange={() => setInternationalFreeShipping(true)}
-                className="mr-2"
-              />
-              Yes
-            </label>
-            <label className="flex items-center">
-              <input
-                type="radio"
-                name="internationalFreeShipping"
-                value="false"
-                checked={!internationalFreeShipping}
-                onChange={() => setInternationalFreeShipping(false)}
-                className="mr-2"
-              />
-              No
-            </label>
-          </div>
-        </div>
-
-        {/* Shipping Cost */}
-        {!internationalFreeShipping && (
-          <div className="mt-4">
-            <label
-              htmlFor="internationalCod"
-              className="block text-lg font-medium text-gray-700"
-            >
-              Fixed Shipping Cost ($ USD)
-            </label>
-            <input
-              type="number"
-              id="internationalCod"
-              value={internationalCod}
-              onChange={(e) => setInternationalCod(e.target.value)}
-              className="w-full mt-2 p-3 border border-gray-300 rounded-md"
-              min="0"
-              required
-            />
-          </div>
-        )}
-      </>
-    )}
-  </div>
-</section>
-
+        </section>
 
         <section
           id="Settings"
