@@ -4,10 +4,11 @@ import { FaInfoCircle } from "react-icons/fa";
 import { PiWarningCircleFill } from "react-icons/pi";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
-import { FaPlus, FaPlay, FaPause, FaTrash } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import { capitalizeWords } from "../../utils/textUtils";
 import productService from "../../services/productService/productService";
 import { useAuth } from "../../context/AuthContext";
+import { ToastContainer, toast, Flip } from 'react-toastify';
 
 const AddProduct = () => {
   const { accessToken } = useAuth();
@@ -392,16 +393,21 @@ const AddProduct = () => {
     setIsLengthBreadthVariation(!isLengthBreadthVariation);
   };
 
+
+
   const [dimensionLength, setDimensionLength] = useState("");
   const [dimensionBreadth, setDimensionBreadth] = useState("");
   const [dimension, setDimension] = useState(null);
 
-  const addDimension = () => {
+  const addOrUpdateDimension = () => {
+    // Ensure both fields are not empty
     if (dimensionLength.trim() !== "" && dimensionBreadth.trim() !== "") {
+      // Store the values in the dimension state
       setDimension({
-        length: dimensionLength.trim(),
-        breadth: dimensionBreadth.trim(),
+        length: parseFloat(dimensionLength.trim()),
+        breadth: parseFloat(dimensionBreadth.trim()),
       });
+      // Clear the inputs after storing
       setDimensionLength("");
       setDimensionBreadth("");
     } else {
@@ -410,7 +416,7 @@ const AddProduct = () => {
   };
 
   const deleteDimension = () => {
-    setDimension(null);
+    setDimension(null); // Clear the dimension state
   };
 
   const [brand, setBrand] = useState("");
@@ -467,12 +473,8 @@ const AddProduct = () => {
   const returnExchange = false;
   const returningDays = 1;
   const returningDescription = "test";
-  const newTags = ["test1", "test2"];
-  const sizes = ["m", "l"];
 
-  const productDimension = true;
-  const productHeight = 11;
-  const productWidth = 15;
+
 
   const productColor = false;
   const productColors = [
@@ -482,6 +484,7 @@ const AddProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
 
     const formData = new FormData();
     formData.append("title", title);
@@ -516,15 +519,19 @@ const AddProduct = () => {
     formData.append("returnExchange", returnExchange);
     formData.append("returningDays", returningDays.toString());
     formData.append("returningDescription", returningDescription);
-    formData.append("tags", newTags.join(","));
-    formData.append("size", sizes);
-    formData.append("productDimension", productDimension);
-    formData.append("productHeight", productHeight);
-    formData.append("productWidth", productWidth);
+    // formData.append("tags", newTags.join(","));
+    formData.append("tags", tags);
+    formData.append("size", size);
+    formData.append("productDimension", isLengthBreadthVariation);
+    formData.append("productHeight", dimension.breadth);
+    formData.append("productWidth", dimension.length);
 
     formData.append("productColor", productColor);
     formData.append("productColors", JSON.stringify(productColors));
 
+
+    toast.success('Data saved successfully!');
+    
     try {
       const response = await productService.addProduct(formData, accessToken);
       console.log("Product added successfully:", response);
@@ -598,9 +605,6 @@ const AddProduct = () => {
                       </li>
                       <li>Avoid unnecessary words or excessive punctuation.</li>
                     </ul>
-                    {/* <p className="mt-3 text-gray-300 text-xs">
-                      Example: "Wireless Noise-Cancelling Over-Ear Headphones - Black"
-                    </p> */}
                   </div>
                 </div>
               </div>
@@ -1124,11 +1128,15 @@ const AddProduct = () => {
           </div>
 
           <div className="mt-6">
+            <label htmlFor="estimateProfit" className="block text-gray-700 text-lg font-semibold">Estimate Profit</label>
+          </div>
+
+          <div className="mt-6">
             <label
               htmlFor="quantity"
               className="block text-gray-700 text-lg font-semibold"
             >
-              Quantity<span className="text-red-600">*</span>
+              Quantity <span className="text-red-600">*</span>
             </label>
             <span className="text-sm text-gray-600 block mt-2">
               Enter product quantity from range 1 to 999.
@@ -1160,7 +1168,7 @@ const AddProduct = () => {
                 htmlFor="productLimit"
                 className="block text-gray-700 text-lg font-semibold"
               >
-                Character limit for buyer response
+                Character limit for buyer response <span className="text-red-600">*</span>
               </label>
               <span className="text-sm text-gray-600 mt-2 block">
                 {" "}
@@ -1173,6 +1181,7 @@ const AddProduct = () => {
                 value={productLimit}
                 onChange={handleProductLimitChange}
                 className="block w-[10rem] p-3 mt-2 border border-gray-300 rounded-md"
+                required
               />
             </div>
 
@@ -1553,122 +1562,124 @@ const AddProduct = () => {
           </div>
 
           {isLengthBreadthVariation && (
-            <div className="mt-6">
-              <div className="flex items-center space-x-1">
-                <label
-                  htmlFor="sku"
-                  className="block text-gray-700 text-lg font-semibold mr-2"
-                >
+        <div className="mt-6">
+          <div className="flex items-center space-x-1">
+            <label
+              htmlFor="sku"
+              className="block text-gray-700 text-lg font-semibold mr-2"
+            >
+              Product Dimensions Details
+            </label>
+            <div className="relative group">
+              <FaInfoCircle className="cursor-pointer text-gray-700 hover:text-gray-800" />
+              <div className="absolute hidden group-hover:block bg-gray-900 text-white text-sm rounded-md p-4 left-0 mt-2 w-64 z-10 shadow-lg">
+                <div className="before:absolute before:top-[-8px] before:left-6 before:border-8 before:border-transparent before:border-b-gray-900"></div>
+                <h3 className="font-bold text-lg mb-2">
                   Product Dimensions Details
-                </label>
-                <div className="relative group">
-                  <FaInfoCircle className="cursor-pointer text-gray-700 hover:text-gray-800" />
-                  <div className="absolute hidden group-hover:block bg-gray-900 text-white text-sm rounded-md p-4 left-0 mt-2 w-64 z-10 shadow-lg">
-                    <div className="before:absolute before:top-[-8px] before:left-6 before:border-8 before:border-transparent before:border-b-gray-900"></div>
-                    <h3 className="font-bold text-lg mb-2">
-                      Product Dimensions Details
-                    </h3>
-                    <ul className="list-disc pl-5 space-y-1 font-semibold">
-                      <li>
-                        Here you can add width and height of a product as a
-                        dimension attribute of a product.
-                      </li>
-                      <li>
-                        You are only allowed to add one height and one width of
-                        a product here.
-                      </li>
-                      <li>The dimensions unit should be measured in cm.</li>
-                    </ul>
-                  </div>
-                </div>
+                </h3>
+                <ul className="list-disc pl-5 space-y-1 font-semibold">
+                  <li>
+                    Here you can add width and height of a product as a
+                    dimension attribute of a product.
+                  </li>
+                  <li>
+                    You are only allowed to add one height and one width of a
+                    product here.
+                  </li>
+                  <li>The dimensions unit should be measured in cm.</li>
+                </ul>
               </div>
-              <div className="flex items-start gap-4">
-                <div className="block">
-                  <label
-                    htmlFor="length"
-                    className="flex text-gray-700 text-lg font-semibold mt-10"
-                  >
-                    Length in cm
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Product length in cm"
-                    value={dimensionLength}
-                    onChange={(e) => setDimensionLength(e.target.value)}
-                    className="border rounded px-4 py-2 w-[20rem]"
-                  />
-                </div>
-                <div className="block">
-                  <label
-                    htmlFor="breadth"
-                    className="flex text-gray-700 text-lg font-semibold mt-10"
-                  >
-                    Breadth in cm
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Product breadth in cm"
-                    value={dimensionBreadth}
-                    onChange={(e) => setDimensionBreadth(e.target.value)}
-                    className="border rounded px-4 py-2 w-[20rem]"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={addDimension}
-                  className="flex items-center bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out transition-all duration-300"
-                >
-                  Add Size
-                </button>
-              </div>
-
-              <table className="w-full mt-4 border-collapse border border-gray-300">
-                <thead>
-                  <tr>
-                    <th className="border border-gray-300 px-4 py-2">
-                      Length (cm)
-                    </th>
-                    <th className="border border-gray-300 px-4 py-2">
-                      Breadth (cm)
-                    </th>
-                    <th className="border border-gray-300 px-4 py-2">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dimension ? (
-                    <tr>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {dimension.length}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {dimension.breadth}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2 text-center">
-                        <button
-                          type="button"
-                          onClick={deleteDimension}
-                          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan={3}
-                        className="border border-gray-300 px-4 py-2 text-center text-gray-500"
-                      >
-                        No dimensions added.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
             </div>
-          )}
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="block">
+              <label
+                htmlFor="length"
+                className="flex text-gray-700 text-lg font-semibold mt-10"
+              >
+                Length in cm
+              </label>
+              <input
+                type="number"
+                placeholder="Product length in cm"
+                value={dimensionLength}
+                onChange={(e) => setDimensionLength(e.target.value)}
+                disabled={dimension !== null}
+                className="border rounded px-4 py-2 w-[20rem]"
+              />
+            </div>
+            <div className="block">
+              <label
+                htmlFor="breadth"
+                className="flex text-gray-700 text-lg font-semibold mt-10"
+              >
+                Breadth in cm
+              </label>
+              <input
+                type="number"
+                placeholder="Product breadth in cm"
+                value={dimensionBreadth}
+                onChange={(e) => setDimensionBreadth(e.target.value)}
+                disabled={dimension !== null}
+                className="border rounded px-4 py-2 w-[20rem]"
+              />
+            </div>
+
+          {dimension ? " " : 
+            <button
+              type="button"
+              onClick={addOrUpdateDimension}
+              disabled={dimension !== null}
+              className={`flex items-center bg-white border-gray-800 border-2 py-2 px-4 font-bold text-base rounded-full hover:bg-gray-800 hover:text-gray-100 ease-in-out transition-all duration-300 ${
+                dimension !== null ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              Add Size
+            </button>
+            }
+          </div>
+
+          <table className="w-full mt-4 border-collapse border border-gray-300">
+            <thead>
+              <tr>
+                <th className="border border-gray-300 px-4 py-2">Length (cm)</th>
+                <th className="border border-gray-300 px-4 py-2">Breadth (cm)</th>
+                <th className="border border-gray-300 px-4 py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dimension ? (
+                <tr>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {dimension.length}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {dimension.breadth}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    <button
+                      type="button"
+                      onClick={deleteDimension}
+                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ) : (
+                <tr>
+                  <td
+                    colSpan={3}
+                    className="border border-gray-300 px-4 py-2 text-center text-gray-500"
+                  >
+                    No dimensions added.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
 
           <div className="mt-4">
             <label htmlFor="brand" className="block text-lg font-semibold">
@@ -2063,6 +2074,19 @@ const AddProduct = () => {
           Submit
         </button>
       </form>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        transition={Flip}
+      />
     </div>
   );
 };

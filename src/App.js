@@ -26,8 +26,8 @@ import Wishlist from "./pages/Wishlist/Wishlist";
 import Cart from "./components/Cart/Cart";
 import OrderHistory from "./pages/OrderHistory/OrderHistory";
 import Rewards from "./pages/Rewards/Rewards";
-import Header from './components/Header/Header';
-import DashLoadout from './components/Layouts/DashLoadout';
+import Header from "./components/Header/Header";
+import DashLoadout from "./components/Layouts/DashLoadout";
 
 function App() {
   const location = useLocation();
@@ -36,39 +36,169 @@ function App() {
     // Public routes with Header only
     { path: "/", element: <HomePage />, showHeader: true, private: false },
     { path: "/login", element: <Login />, showHeader: true, private: false },
-    { path: "/signup", element: <Register />, showHeader: true, private: false },
-    { path: "/public-profile", element: <PublicProfile />, showHeader: true, private: false },
+    {
+      path: "/signup",
+      element: <Register />,
+      showHeader: true,
+      private: false,
+    },
+    {
+      path: "/public-profile",
+      element: <PublicProfile />,
+      showHeader: true,
+      private: false,
+    },
 
     // Private routes with Header (no DashLoadout)
-    { path: "/profile", element: <MyProfile />, showHeader: true, private: true, dashLoadout: false },
-    { path: "/be-a-member", element: <BeMember />, showHeader: true, private: true, dashLoadout: false },
-    { path: "/account-settings", element: <Accounts />, showHeader: true, private: true, dashLoadout: false },
-    { path: "/account-security", element: <Security />, showHeader: true, private: true, dashLoadout: false },
-    { path: "/account-address", element: <Address />, showHeader: true, private: true, dashLoadout: false },
-    { path: "/wishlist", element: <Wishlist />, showHeader: true, private: true, dashLoadout: false },
-    { path: "/cart", element: <Cart />, showHeader: true, private: true, dashLoadout: false },
-    { path: "/myorders", element: <OrderHistory />, showHeader: true, private: true, dashLoadout: false },
-    { path: "/rewards", element: <Rewards />, showHeader: true, private: true, dashLoadout: false },
-    { path: "/credit-card", element: <CreditCard />, showHeader: true, private: true, dashLoadout: false },
+    {
+      path: "/profile",
+      element: <MyProfile />,
+      showHeader: true,
+      private: true,
+      dashLoadout: false,
+    },
+    {
+      path: "/be-a-member",
+      element: <BeMember />,
+      showHeader: true,
+      private: true,
+      dashLoadout: false,
+    },
+    {
+      path: "/account-settings",
+      element: <Accounts />,
+      showHeader: true,
+      private: true,
+      dashLoadout: false,
+    },
+    {
+      path: "/account-security",
+      element: <Security />,
+      showHeader: true,
+      private: true,
+      dashLoadout: false,
+    },
+    {
+      path: "/account-address",
+      element: <Address />,
+      showHeader: true,
+      private: true,
+      dashLoadout: false,
+    },
+    {
+      path: "/wishlist",
+      element: <Wishlist />,
+      showHeader: true,
+      private: true,
+      dashLoadout: false,
+    },
+    {
+      path: "/cart",
+      element: <Cart />,
+      showHeader: true,
+      private: true,
+      dashLoadout: false,
+    },
+    {
+      path: "/myorders",
+      element: <OrderHistory />,
+      showHeader: true,
+      private: true,
+      dashLoadout: false,
+    },
+    {
+      path: "/rewards",
+      element: <Rewards />,
+      showHeader: true,
+      private: true,
+      dashLoadout: false,
+    },
+    {
+      path: "/credit-card",
+      element: <CreditCard />,
+      showHeader: true,
+      private: true,
+      dashLoadout: false,
+    },
 
     // Private routes with DashLoadout (no Header)
-    { path: "/dashboard", element: <Dashboard />, showHeader: false, private: true, dashLoadout: true },
-    { path: "/listing", element: <Products />, showHeader: false, private: true, dashLoadout: true },
-    { path: "/messages", element: <Message />, showHeader: false, private: true, dashLoadout: true },
-    { path: "/order-and-delivery", element: <OrderAndDelivery />, showHeader: false, private: true, dashLoadout: true },
-    { path: "/statistics", element: <Stats />, showHeader: false, private: true, dashLoadout: true },
-    { path: "/marketing", element: <Marketing />, showHeader: false, private: true, dashLoadout: true },
-    { path: "/finances", element: <Finances />, showHeader: false, private: true, dashLoadout: true },
-    { path: "/help", element: <Help />, showHeader: false, private: true, dashLoadout: true },
-    { path: "/settings", element: <Settings />, showHeader: false, private: true, dashLoadout: true },
-    { path: "/listing/create-product", element: <AddProduct />, showHeader: false, private: true, dashLoadout: true },
+    {
+      path: "/dashboard",
+      element: <Dashboard />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/listing",
+      element: <Products />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/messages",
+      element: <Message />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/order-and-delivery",
+      element: <OrderAndDelivery />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/statistics",
+      element: <Stats />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/marketing",
+      element: <Marketing />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/finances",
+      element: <Finances />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/help",
+      element: <Help />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/settings",
+      element: <Settings />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/listing/create-product",
+      element: <AddProduct />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
   ];
 
-  const currentRoute = routeConfig.find((route) =>
-    route.path === location.pathname
+  const currentRoute = routeConfig.find(
+    (route) => route.path === location.pathname
   );
-  const shouldShowHeader = currentRoute?.showHeader && !currentRoute?.dashLoadout;
-  
+  const shouldShowHeader =
+    currentRoute?.showHeader && !currentRoute?.dashLoadout;
 
   return (
     <>
@@ -76,7 +206,7 @@ function App() {
       <Routes>
         {routeConfig.map((route, index) => {
           const { path, element, private: isPrivate, dashLoadout } = route;
-  
+
           if (isPrivate) {
             if (dashLoadout) {
               // Private route with DashLoadout
@@ -84,7 +214,11 @@ function App() {
                 <Route
                   key={index}
                   path={path}
-                  element={<PrivateRoutes><DashLoadout>{element}</DashLoadout></PrivateRoutes>}
+                  element={
+                    <PrivateRoutes>
+                      <DashLoadout>{element}</DashLoadout>
+                    </PrivateRoutes>
+                  }
                 />
               );
             } else {
@@ -105,7 +239,6 @@ function App() {
       </Routes>
     </>
   );
-  
 }
 
 export default App;
