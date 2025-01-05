@@ -68,8 +68,6 @@ const Sidebar = ({ isSidebarExpanded, setIsSidebarExpanded }) => {
 
   useEffect(() => {
     const token = Cookies.get("_r");
-    console.log(jwtDecode(token));
-
     if (token) {
       const decodedToken = jwtDecode(token);
       setName(decodedToken.name);
