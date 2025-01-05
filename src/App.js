@@ -29,7 +29,12 @@ import OrderHistory from "./pages/OrderHistory/OrderHistory";
 import Rewards from "./pages/Rewards/Rewards";
 import Header from "./components/Header/Header";
 import DashLoadout from "./components/Layouts/DashLoadout";
+<<<<<<< HEAD
 import DummyProducts from "./components/Cart/DummyProducts";
+=======
+import DummyProducts from "./components/Cart/DummyProducts"; // dummy products API
+import CheckOut from "./components/Cart/Checkout";
+>>>>>>> add-to-cart
 
 function App() {
   const location = useLocation();
@@ -54,6 +59,13 @@ function App() {
     {
       path: "/dummy-products",
       element: <DummyProducts />,
+      showHeader: true,
+      private: false,
+    },
+
+    {
+      path: "/checkout",
+      element: <CheckOut />,
       showHeader: true,
       private: false,
     },
