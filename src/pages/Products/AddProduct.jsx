@@ -274,24 +274,12 @@ const AddProduct = () => {
         { code: colorPicker.color, name: colorPicker.name },
       ]);
       setColorPicker({ color: "#000000", name: "" });
-      console.log(
-        "Updated Colors:",
-        JSON.stringify(
-          [...colors, { code: colorPicker.color, name: colorPicker.name }],
-          null,
-          2
-        )
-      );
     }
   };
 
   const deleteColor = (index) => {
     const updatedColors = colors.filter((_, i) => i !== index);
     setColors(updatedColors);
-    console.log(
-      "Updated Colors After Deletion:",
-      JSON.stringify(updatedColors, null, 2)
-    );
   };
 
   const handleBlur = (e) => {
@@ -485,6 +473,8 @@ const AddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log(colors);
+
 
     const formData = new FormData();
     formData.append("title", title);
@@ -530,12 +520,13 @@ const AddProduct = () => {
     formData.append("productColors", JSON.stringify(productColors));
 
 
-    toast.success('Data saved successfully!');
     
     try {
       const response = await productService.addProduct(formData, accessToken);
+      toast.success('Product added successfully');
       console.log("Product added successfully:", response);
     } catch (error) {
+      toast.error('Error adding product', error.message || error);
       console.error("Error adding product:", error.message || error);
     }
   };
