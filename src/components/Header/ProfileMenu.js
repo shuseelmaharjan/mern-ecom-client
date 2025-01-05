@@ -102,7 +102,7 @@ const ProfileMenu = () => {
           </li>
           <li className="group">
             <Link
-              to="/messages"
+              to="/chat"
               className="flex items-center px-4 py-2 hover:bg-gray-100"
             >
               <LuMessageSquareMore className="mr-2 text-gray-500 group-hover:text-gray-700" />

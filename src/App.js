@@ -5,6 +5,7 @@ import PrivateRoutes from "./context/PrivateRoutes";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Products from "./pages/Products/Products";
 import Message from "./pages/Messages/Messages";
+import Messages from "./pages/Messages/UserMessages";
 import OrderAndDelivery from "./pages/OrderAndDelivery/OrderAndDelivery";
 import Stats from "./pages/Stats/Stats";
 import Marketing from "./pages/Marketing/Marketing";
@@ -28,7 +29,7 @@ import OrderHistory from "./pages/OrderHistory/OrderHistory";
 import Rewards from "./pages/Rewards/Rewards";
 import Header from "./components/Header/Header";
 import DashLoadout from "./components/Layouts/DashLoadout";
-import DummyProducts from "./components/Cart/DummyProducts"; // dummy products API
+import DummyProducts from "./components/Cart/DummyProducts";
 
 function App() {
   const location = useLocation();
@@ -150,6 +151,13 @@ function App() {
       showHeader: false,
       private: true,
       dashLoadout: true,
+    },
+    {
+      path: "/chat",
+      element: <Messages />,
+      showHeader: true,
+      private: true,
+      dashLoadout: false,
     },
     {
       path: "/order-and-delivery",
