@@ -26,6 +26,19 @@ class ProductService {
       );
     }
   }
+
+  async getVendorsProduct(token) {
+    try {
+      const response = await this.api.get("/api/v1/vendor-product", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 const productService = new ProductService();

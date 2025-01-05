@@ -1,31 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaPlus } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import productService from '../../services/productService/productService';
+import { useAuth } from '../../context/AuthContext';
 
 const Products = () => {
   const [viewType, setViewType] = useState('grid');
 
-  const products = [
-    { id: 1, name: 'Product 1' },
-    { id: 2, name: 'Product 2' },
-    { id: 3, name: 'Product 3' },
-    { id: 4, name: 'Product 4' },
-    { id: 5, name: 'Product 5' },
-  ];
+  const [products, setProducts] = useState('');
+
+  const { accessToken } = useAuth();
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const data = await productService.getVendorsProduct(accessToken);
+        setProducts(data.products);
+        console.log(data.products);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getData();
+  }, [accessToken]);
 
 
   return (
     <div className="flex flex-col md:flex-row p-4 bg-white text-gray-800">
       <div className="w-full md:w-3/4 p-4">
         <h2 className="text-xl font-semibold mb-4">Product List</h2>
-        <div className={`grid ${viewType === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4' : ''}`}>
+        {/* <div className={`grid ${viewType === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4' : ''}`}>
           {products.map((product) => (
             <div key={product.id} className="p-4 border border-gray-300 rounded bg-gray-100">
               {product.name}
             </div>
           ))}
-        </div>
-        {viewType === 'list' && (
+        </div> */}
+        {/* {viewType === 'list' && (
           <ul>
             {products.map((product) => (
               <li key={product.id} className="p-2 border-b border-gray-300">
@@ -33,7 +45,7 @@ const Products = () => {
               </li>
             ))}
           </ul>
-        )}
+        )} */}
       </div>
 
       {/* Right Column */}
@@ -43,7 +55,7 @@ const Products = () => {
             <FaPlus/> <span>Add Product</span>
           </span>
         </Link>
-        <div className="flex items-center mb-4">
+        {/* <div className="flex items-center mb-4">
           <button className="py-2 px-4 bg-black text-white rounded mr-2">
             Stats Toggle
           </button>
@@ -59,7 +71,7 @@ const Products = () => {
           >
             List View
           </button>
-        </div>
+        </div> */}
         <div className="mb-4">
           <label htmlFor="sort" className="block text-gray-600 mb-2">Sort By</label>
           <select
