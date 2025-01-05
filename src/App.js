@@ -130,7 +130,6 @@ function App() {
       dashLoadout: false,
     },
 
-    // Private routes with DashLoadout (no Header)
     {
       path: "/dashboard",
       element: <Dashboard />,

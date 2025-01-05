@@ -139,7 +139,7 @@ const Messages = ({ vendorId }) => {
                         }`}
                       >
                         <p className="text-sm">{message.message}</p>
-                        <span className="text-xs text-gray-500 block mt-1">
+                        <span className={`text-xs ${isMyMessage ? 'text-white' : 'text-gray-500'} block mt-1`}>
                           {new Date(message.timestamp).toLocaleTimeString()}
                         </span>
                       </div>
