@@ -1,5 +1,6 @@
 import React from 'react';
 import { useCart } from '../../context/CartContext';
+import { Link } from 'react-router-dom';
 
 const Cart = ({ cart }) => {
   const { cartItems, getCartTotal, removeFromCart, clearCart } = useCart();
@@ -26,6 +27,9 @@ const Cart = ({ cart }) => {
         </div>
       )}
       <button onClick={() => clearCart()} className='border 1px p-2'>Clear All</button>
+      <Link to="/checkout" className='border p-2 bg-green-500 text-white'>
+        Proceed to Checkout
+      </Link>
     </div>
   );
 };
