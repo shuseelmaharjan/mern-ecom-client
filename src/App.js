@@ -104,7 +104,7 @@ function App() {
       path: "/cart",
       element: <Cart />,
       showHeader: true,
-      private: true,
+      private: false,
       dashLoadout: false,
     },
     {
