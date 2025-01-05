@@ -28,6 +28,7 @@ import OrderHistory from "./pages/OrderHistory/OrderHistory";
 import Rewards from "./pages/Rewards/Rewards";
 import Header from "./components/Header/Header";
 import DashLoadout from "./components/Layouts/DashLoadout";
+import DummyProducts from "./components/Cart/DummyProducts"; // dummy products API
 
 function App() {
   const location = useLocation();
@@ -45,6 +46,13 @@ function App() {
     {
       path: "/public-profile",
       element: <PublicProfile />,
+      showHeader: true,
+      private: false,
+    },
+    // Dummy route for dummy products API
+    {
+      path: "/dummy-products",
+      element: <DummyProducts />,
       showHeader: true,
       private: false,
     },
