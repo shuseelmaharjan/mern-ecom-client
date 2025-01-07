@@ -1,207 +1,86 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
+import CategoryList from "./CategoryList";
+import FlashSale from "./FlashSale";
 
 const Homepage = () => {
-  // Define state variables for each field
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [img1, setImg1] = useState(null);
-  const [returnExchange, setReturnExchange] = useState(false);
-  const [returningDays, setReturningDays] = useState('');
-  const [returningDescription, setReturningDescription] = useState('');
+  const [carouselImages, setCarouselImages] = useState([]);
+  const [bannerAds, setBannerAds] = useState([]);
 
-  // State for dynamic colors
-  const [colors, setColors] = useState([{ code: '', name: '' }]);
+  useEffect(() => {
+    setCarouselImages([
+      {
+        src: "https://img.ltwebstatic.com/images3_ccc/2025/01/06/7b/17361330377fbd4275700432e0deee8b25cd6168e7_thumbnail_2000x.webp",
+        link: "/product/1",
+      },
+      {
+        src: "https://img.ltwebstatic.com/images3_ccc/2025/01/06/d0/1736133057759fc7e2b13a8890fdb5e856eb9b01b1_thumbnail_2000x.webp",
+        link: "/product/2",
+      },
+      {
+        src: "https://img.ltwebstatic.com/images3_ccc/2025/01/06/be/1736133242ecb1caa6d29ba63482b04b35f9bf74f8_thumbnail_2000x.webp",
+        link: "/product/3",
+      },
+    ]);
 
-  // Handle adding new color fields
-  const handleAddColor = () => {
-    setColors([...colors, { code: '', name: '' }]);
-  };
-
-  // Handle color change
-  const handleColorChange = (index, field, value) => {
-    const updatedColors = [...colors];
-    updatedColors[index][field] = value;
-    setColors(updatedColors);
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Prepare the form data using FormData to handle file uploads
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('description', description);
-    formData.append('price', parseFloat(price));
-    formData.append('quantity', parseInt(quantity));
-    formData.append('img1', img1);
-
-    formData.append('returnExchange', returnExchange);
-    if (returnExchange) {
-      formData.append('returningDays', returningDays);
-      formData.append('returningDescription', returningDescription);
-    }
-
-    try {
-      const response = await fetch('http://localhost:5000/api/v1/create-product', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJlbWFpbCI6InZlbmRvcjFAZ21haWwuY29tIiwiaWQiOiI2Nzc1MTQxOGU3N2YzZmM0MzgwMjdmNGIiLCJyb2xlIjoidmVuZG9yIn0sImlhdCI6MTczNTg4MzcwNSwiZXhwIjoxNzM1ODg3MzA1fQ.OqLAOj2rNKRY5Wqbb2IsZD-GbeMDAhq6IG9vCfO61TA`,
-        },
-        body: formData,
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        console.log('Product created successfully:', data);
-      } else {
-        console.error('Failed to create product:', data);
-      }
-    } catch (error) {
-      console.error('Error sending data:', error.message || error);
-    }
-  };
+    setBannerAds([
+      {
+        src: "https://rukminim2.flixcart.com/fk-p-flap/1620/270/image/d92000a0eed16cc8.jpg?q=20",
+        link: "/category/1",
+      },
+      {
+        src: "https://rukminim2.flixcart.com/fk-p-flap/1620/270/image/d9290fb51138d286.png?q=20",
+        link: "/category/2",
+      },
+      {
+        src: "https://rukminim2.flixcart.com/fk-p-flap/1620/270/image/7f3cde58a30f6024.jpg?q=20",
+        link: "/category/3",
+      },
+    ]);
+  }, []);
 
   return (
-    <div className="max-w-lg mx-auto p-4">
-      <h2 className="text-2xl font-bold text-center mb-6">Create Product</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Title Field */}
-        <div className="flex flex-col">
-          <label className="font-medium">Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="p-2 border border-gray-300 rounded-lg"
-            required
-          />
-        </div>
-
-        {/* Description Field */}
-        <div className="flex flex-col">
-          <label className="font-medium">Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="p-2 border border-gray-300 rounded-lg"
-            required
-          />
-        </div>
-
-        {/* Price Field */}
-        <div className="flex flex-col">
-          <label className="font-medium">Price</label>
-          <input
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            className="p-2 border border-gray-300 rounded-lg"
-            required
-          />
-        </div>
-
-        {/* Quantity Field */}
-        <div className="flex flex-col">
-          <label className="font-medium">Quantity</label>
-          <input
-            type="number"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            className="p-2 border border-gray-300 rounded-lg"
-            required
-          />
-        </div>
-
-        {/* Image Fields */}
-        <div className="flex flex-col">
-          <label className="font-medium">Img 1</label>
-          <input
-            type="file"
-            onChange={(e) => setImg1(e.target.files[0])}
-            className="p-2 border border-gray-300 rounded-lg"
-            required
-          />
-        </div>
-
-        {/* Dynamic Colors */}
-        <div>
-          <h3 className="font-medium">Colors</h3>
-          {colors.map((color, index) => (
-            <div key={index} className="flex space-x-4 mb-2">
-              <div className="flex flex-col flex-1">
-                <label className="font-medium">Color Code</label>
-                <input
-                  type="text"
-                  value={color.code}
-                  onChange={(e) => handleColorChange(index, 'code', e.target.value)}
-                  className="p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-              <div className="flex flex-col flex-1">
-                <label className="font-medium">Color Name</label>
-                <input
-                  type="text"
-                  value={color.name}
-                  onChange={(e) => handleColorChange(index, 'name', e.target.value)}
-                  className="p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-            </div>
+    <>
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-[30%_70%] gap-4">
+        <div className="flex flex-col w-full hidden md:block">
+          {bannerAds.map((ad, index) => (
+            <a key={index} href={ad.link} className="block">
+              <img
+                src={ad.src}
+                alt={`Banner ${index + 1}`}
+                className="w-full h-[100px] rounded-lg shadow-lg hover:opacity-90 object-cover"
+              />
+            </a>
           ))}
-          <button
-            type="button"
-            onClick={handleAddColor}
-            className="text-blue-500 hover:underline"
-          >
-            Add Color
-          </button>
         </div>
 
-        <div className="flex flex-col">
-          <label className="font-medium">Allow Return and Exchange?</label>
-          <select
-            value={returnExchange}
-            onChange={(e) => setReturnExchange(e.target.value === 'true')}
-            className="p-2 border border-gray-300 rounded-lg"
+        <div>
+          <Carousel
+            autoPlay
+            infiniteLoop
+            showThumbs={false}
+            showStatus={false}
+            showArrows={true}
+            dynamicHeight={false}
+            interval={3000}
           >
-            <option value="false">No</option>
-            <option value="true">Yes</option>
-          </select>
+            {carouselImages.map((image, index) => (
+              <a key={index} href={image.link}>
+                <img
+                  src={image.src}
+                  alt={`Carousel ${index + 1}`}
+                  className="w-full h-[300px] rounded-lg shadow-lg object-cover"
+                />
+              </a>
+            ))}
+          </Carousel>
         </div>
+      </div>
 
-        {returnExchange && (
-          <>
-            <div className="flex flex-col">
-              <label className="font-medium">Returning Days</label>
-              <input
-                type="number"
-                value={returningDays}
-                onChange={(e) => setReturningDays(e.target.value)}
-                className="p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="font-medium">Returning Description</label>
-              <textarea
-                value={returningDescription}
-                onChange={(e) => setReturningDescription(e.target.value)}
-                className="p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-          </>
-        )}
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="w-full p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-        >
-          Submit
-        </button>
-      </form>
-    </div>
+      <CategoryList />
+      <FlashSale/>
+    </>
   );
 };
 

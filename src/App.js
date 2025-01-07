@@ -27,7 +27,7 @@ import Wishlist from "./pages/Wishlist/Wishlist";
 import Cart from "./components/Cart/Cart";
 import OrderHistory from "./pages/OrderHistory/OrderHistory";
 import Rewards from "./pages/Rewards/Rewards";
-import Header from "./components/Header/Header";
+import Header from "./components/Header/Headers";
 import DashLoadout from "./components/Layouts/DashLoadout";
 import DummyProducts from "./components/Cart/DummyProducts";
 import CheckOut from "./components/Cart/Checkout";
@@ -36,7 +36,6 @@ function App() {
   const location = useLocation();
 
   const routeConfig = [
-    // Public routes with Header only
     { path: "/", element: <HomePage />, showHeader: true, private: false },
     { path: "/login", element: <Login />, showHeader: true, private: false },
     {

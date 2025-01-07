@@ -34,7 +34,7 @@ const UserMessages = ({ vendorId }) => {
     return () => {
       newSocket.disconnect();
     };
-  }, [selectedUser, userId]);
+  }, [selectedUser, userId, BASE_URL]);
 
   useEffect(() => {
     const fetchChatHistory = async () => {
