@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 
 const PrivateRoutes = ({ children }) => {
   const { decrypt } = useEncryption();
-  const [isLoggedIn, setIsLoggedIn] = useState(null); // Keep the state as null to represent loading
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
 
   useEffect(() => {
     const encryptedSession = Cookies.get("_session");
@@ -13,7 +13,6 @@ const PrivateRoutes = ({ children }) => {
 
     if (encryptedSession && encryptedR) {
       const decryptedSession = decrypt(encryptedSession);
-      // Check if the session is valid (decrypted value is "true")
       if (decryptedSession === "true") {
         setIsLoggedIn(true);
       } else {
@@ -24,17 +23,14 @@ const PrivateRoutes = ({ children }) => {
     }
   }, [decrypt]);
 
-  // While checking login status, show a loading message
   if (isLoggedIn === null) {
     return <div>Loading...</div>;
   }
 
-  // If not logged in, redirect to login page with message in URL
   if (!isLoggedIn) {
     return <Navigate to="/?message=Please login" />;
   }
 
-  // If logged in, render the protected content (children)
   return children;
 };
 
