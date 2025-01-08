@@ -17,7 +17,7 @@ import ShowCategories from "./ShowCategories";
 import MobileOptions from "./MobileOptions";
 import siteService from "../../services/site/siteService";
 import config from "../../services/config";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 const Header = () => {
   const BASE_URL = config.API_BASE_URL;
@@ -31,16 +31,12 @@ const Header = () => {
   const location = useLocation();
   const categoriesButtonRef = useRef(null);
 
-  const {
-    isLoggedIn,
-    showLogoutModal,
-    handleLogout,
-    setShowLogoutModal,
-  } = useAuth();
+  const { isLoggedIn, showLogoutModal, handleLogout, setShowLogoutModal } =
+    useAuth();
 
   useEffect(() => {
-    const token = Cookies.get('_r');
-    
+    const token = Cookies.get("_r");
+
     if (token) {
       const decodedToken = jwtDecode(token);
       setName(decodedToken.name);

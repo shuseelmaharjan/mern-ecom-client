@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import config from "../../services/config";
 import axios from "axios";
@@ -8,6 +8,9 @@ import { HiOutlineXMark } from "react-icons/hi2";
 import AuthLogin from "../../pages/Auth/AuthLogin";
 import AuthRegister from "../../pages/Auth/AuthRegister";
 import ForgetPassword from "../../pages/Auth/ForgetPassword";
+import { useAuth } from "../../context/AuthContext";
+import ProfileMenu from "./ProfileMenu";
+import { useLocation } from "react-router-dom";
 
 const Headers = () => {
   const [logo, setLogo] = useState("");
@@ -58,6 +61,20 @@ const Headers = () => {
   const closeReisterModal = () => setIsRegisterModalOpen(false);
   const closeForgetPasswordModal = () => setForgetPasswordModalOpen(false);
 
+  const { isLoggedIn } = useAuth();
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const location = useLocation();
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const message = queryParams.get("message");
+
+    if (message === "Please login") {
+      setIsLoginModalOpen(true);
+    }
+  }, [location.search]);
+
   return (
     <>
       <header className="w-full border-b border-gray-200 bg-white shadow-md sticky top-0 z-50">
@@ -70,8 +87,8 @@ const Headers = () => {
           </Link>
         )}
 
-        <div className="container mx-auto px-4 py-2 bg-white">
-          <div className="flex sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+        <div className="container mx-auto px-4 bg-white h-full">
+          <div className="flex sm:flex-row items-center justify-between h-full">
             {/* Logo */}
             <div className="flex items-center space-x-2">
               <Link to={"/"}>
@@ -79,7 +96,7 @@ const Headers = () => {
                   <img
                     src={`${BASE_URL}${logo}`}
                     alt="Logo"
-                    className="h-12 sm:h-16 object-contain"
+                    className="h-12 sm:h-16 object-contain py-2"
                   />
                 ) : (
                   <span className="text-sm text-gray-500">Loading logo...</span>
@@ -88,7 +105,7 @@ const Headers = () => {
             </div>
 
             {/* Search and Categories */}
-            <div className="flex items-center justify-center mx-auto w-full hidden md:flex space-x-4">
+            <div className="flex items-center justify-center mx-auto w-full hidden md:flex space-x-4 py-2 h-12">
               <div className="relative">
                 <button
                   className="px-4 py-2 bg-gray-800 text-white font-semibold hover:bg-gray-700"
@@ -127,13 +144,31 @@ const Headers = () => {
             </div>
 
             {/* User Actions */}
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={openLoginModal}
-                className="text-gray-600 hover:text-gray-800"
-              >
-                <FaRegUser className="w-6 h-6" />
-              </button>
+            <div className="flex items-center space-x-4 h-16 relative">
+              {isLoggedIn && (
+                <div
+                  className="relative h-full"
+                  onMouseEnter={() => setIsDropdownOpen(true)}
+                  onMouseLeave={() => setIsDropdownOpen(false)}
+                >
+                  <button className="text-gray-600 hover:text-gray-800 h-full">
+                    <FaRegUser className="w-6 h-6" />
+                  </button>
+                  {isDropdownOpen && (
+                    <ul className="absolute top-full -left-4 w-56 bg-white border border-gray-200 rounded shadow-md z-10">
+                      <ProfileMenu />
+                    </ul>
+                  )}
+                </div>
+              )}
+              {!isLoggedIn && (
+                <button
+                  onClick={openLoginModal}
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  <FaRegUser className="w-6 h-6" />
+                </button>
+              )}
               <Link to={"/cart"} className="text-gray-600 hover:text-gray-800">
                 <IoCartOutline className="w-6 h-6" />
               </Link>

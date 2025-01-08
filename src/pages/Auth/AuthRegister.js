@@ -36,10 +36,9 @@ const AuthRegister = ({ setIsLoginModalOpen, setIsRegisterModalOpen }) => {
 
     try {
       const response = await authService.signup(formData);
-      setMsg(response);
-      console.log(response);
-
-      navigate("/login");
+      setMsg(response.message);
+      navigate("/?message=User registered successfully.");
+      openLoginModal();
     } catch (error) {
       setError("Error signing up. Please try again.");
       console.error(error);
@@ -58,13 +57,33 @@ const AuthRegister = ({ setIsLoginModalOpen, setIsRegisterModalOpen }) => {
     setIsLoginModalOpen(true);
     setIsRegisterModalOpen(false);
   };
+
   return (
     <>
-      {msg && (
-        <div className="text-green-500 text-base text-center mb-4">{msg}</div>
+      {error && !msg && (
+        <div
+          class="bg-red-500 border-t-4 border-red-700 rounded-b text-white px-4 py-3 shadow-md mx-4 mt-6"
+          role="alert"
+        >
+          <div class="flex">
+            <div>
+              <p class="font-bold">{error}</p>
+            </div>
+          </div>
+        </div>
       )}
-      {error && (
-        <div className="text-red-500 text-base text-center mb-4">{error}</div>
+
+      {msg && !error && (
+        <div
+          class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md mx-4 mt-6"
+          role="alert"
+        >
+          <div class="flex">
+            <div>
+              <p class="font-bold">{msg}</p>
+            </div>
+          </div>
+        </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-12 mt-12 px-4">

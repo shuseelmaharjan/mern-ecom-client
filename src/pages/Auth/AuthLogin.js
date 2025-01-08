@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import authService from "../../services/authService/authService";
@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import useEncryption from "../../hooks/useEncryption";
 import { FaEye, FaEyeSlash, FaFacebook, FaGoogle } from "react-icons/fa";
 import "./Login.css";
+import { useLocation } from "react-router-dom";
 
 const AuthLogin = ({
   setIsLoginModalOpen,
@@ -16,7 +17,6 @@ const AuthLogin = ({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [msg, setMsg] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { setAccessToken } = useAuth();
   const navigate = useNavigate();
@@ -38,9 +38,7 @@ const AuthLogin = ({
         secure: false,
         sameSite: "Lax",
       });
-      setMsg("Login successful!");
       navigate("/");
-      window.location.reload();
     } catch (error) {
       setError(
         "Error logging in. Please check your credentials and try again."
@@ -63,15 +61,46 @@ const AuthLogin = ({
     setIsLoginModalOpen(false);
     setIsRegisterModalOpen(false);
   };
+
+  const [successRegisterMsg, setSuccessRegisterMsg] = useState("");
+
+  const location = useLocation();
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const message = queryParams.get("message");
+
+    if (message === "User registered successfully.") {
+      setSuccessRegisterMsg("User registered successfully.");
+    }
+  }, [location.search]);
+
   return (
     <>
-      {msg && (
-        <div className="text-green-500 text-base text-center mb-4">{msg}</div>
-      )}
       {error && (
-        <div className="text-red-500 text-base text-center mb-4">{error}</div>
+        <div
+          class="bg-red-500 border-t-4 border-red-700 rounded-b text-white px-4 py-3 shadow-md mx-4 mt-6"
+          role="alert"
+        >
+          <div class="flex">
+            <div>
+              <p class="font-bold">{error}</p>
+            </div>
+          </div>
+        </div>
       )}
 
+      {successRegisterMsg && !error && (
+        <div
+          class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md mx-4 mt-6"
+          role="alert"
+        >
+          <div class="flex">
+            <div>
+              <p class="font-bold">{successRegisterMsg}</p>
+            </div>
+          </div>
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-12 mt-12 px-4">
         <div className="relative">
           <input
