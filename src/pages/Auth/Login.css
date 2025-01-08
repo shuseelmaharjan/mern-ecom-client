@@ -1,0 +1,29 @@
+/* Custom label behavior */
+input:focus + label,
+input:not(:placeholder-shown) + label {
+  top: -2rem;
+  color: #000; 
+  left:0;
+}
+
+label {
+  transition: all 0.3s ease-in-out;
+  top: 0.75rem;
+  color: #6B7280; /* Tailwind's gray-500 */
+}
+
+input {
+  padding-top: 20px; /* Adds space for the label */
+}
+
+/* For smaller screens */
+@media (max-width: 640px) {
+  input,
+  button {
+    font-size: 1rem; /* Adjust font size for mobile */
+  }
+
+  label {
+    font-size: 0.875rem; /* Adjust label size for mobile */
+  }
+}
