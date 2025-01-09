@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { GoDotFill } from "react-icons/go";
 import siteService from "../../services/site/siteService";
 import { useAuth } from "../../context/AuthContext";
 import config from "../../services/config";
+import LogoEditModal from "./LogoEditModal";
+import { toast } from 'react-toastify';
+import TitleModal from "./TitleModal";
 
 const Site = () => {
   const [siteLogo, setSiteLogo] = useState(null);
@@ -13,28 +16,71 @@ const Site = () => {
   const [logs, setLogs] = useState([]);
   const { accessToken } = useAuth();
   const BASE_URL = config.API_BASE_URL;
+  const[dataId, setDataId] = useState('');
+  const [message, setMessage] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const hasShownToast = useRef(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await siteService.getData(accessToken);
+  const fetchData = useCallback(async () => {
+    try {
+      const data = await siteService.getData(accessToken);
 
-        setSiteTitle(data.siteData.title);
-        setSiteTagline(data.siteData.tagline);
-        setSiteDescription(
-          data.siteData.description || "No description available."
-        );
-        setSiteLogo(data.siteData.logo);
-        setAdmins(data.admins);
-        setLogs(data.logs);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchData();
+      setDataId(data.siteData._id);
+      setSiteTitle(data.siteData.title);
+      setSiteTagline(data.siteData.tagline);
+      setSiteDescription(data.siteData.description || "No description available.");
+      setSiteLogo(data.siteData.logo);
+      setAdmins(data.admins);
+      setLogs(data.logs);
+    } catch (error) {
+      console.error(error);
+    }
   }, [accessToken]);
 
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const [logoModal, setLogoModal] = useState(false);
+  const handleEditLogoModal = () => {
+    setLogoModal(true);
+
+  }
+
+  useEffect(() => {
+    if (message && !hasShownToast.current) {
+      toast.success(message);
+      hasShownToast.current = true; 
+    }
+  }, [message]);  
+
+  useEffect(() => {
+    if(errorMsg && !hasShownToast.current){
+      toast.error(errorMsg);
+      hasShownToast.current = true;
+    }
+  }, [errorMsg]);
+
+  const [titleModal, setTitleModel] = useState(false);
+  const handleTitleModel =() => {
+    setTitleModel(true);
+  }
+  const [titleMsg, setTitleMessage] = useState('');
+  const [titleError, setTitleErrorMsg] = useState('');
+  useEffect(() => {
+    if (titleMsg && !hasShownToast.current) {
+      toast.success(titleMsg);
+      hasShownToast.current = true; 
+    }
+  }, [titleMsg]);  
+
+  useEffect(() => {
+    if(titleError && !hasShownToast.current){
+      toast.error(titleError);
+      hasShownToast.current = true;
+    }
+  }, [titleError]);
+  
   return (
     <div className="flex flex-col lg:flex-row w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
       {/* Main Content */}
@@ -43,7 +89,9 @@ const Site = () => {
         <div className="flex flex-col mb-6">
           <span className="flex justify-between items-center">
             <h4 className="text-lg font-semibold">Site Logo</h4>
-            <button className="bg-gray-800 hover:bg-gray-900 p-2 text-white font-semibold text-sm">
+            <button className="bg-gray-800 hover:bg-gray-900 p-2 text-white font-semibold text-sm"               
+            onClick={handleEditLogoModal}
+            >
               Edit Logo
             </button>
           </span>
@@ -51,7 +99,7 @@ const Site = () => {
             <img
               src={`${BASE_URL}${siteLogo}`}
               alt="Site Logo"
-              className="h-32 w-32 md:h-48 md:w-48 mt-4 rounded-lg object-cover"
+              className="h-32 md:h-48 md:w-48 mt-4 rounded-lg object-cover"
             />
           ) : (
             <div className="h-32 w-32 md:h-48 md:w-48 border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100">
@@ -64,7 +112,7 @@ const Site = () => {
         <div className="flex flex-col mb-6">
           <span className="flex justify-between items-center">
             <h4 className="text-lg font-semibold">Site Title</h4>
-            <button className="bg-gray-800 hover:bg-gray-900 p-2 text-white font-semibold text-sm">
+            <button onClick={handleTitleModel} className="bg-gray-800 hover:bg-gray-900 p-2 text-white font-semibold text-sm">
               Edit Site Title
             </button>
           </span>
@@ -131,6 +179,36 @@ const Site = () => {
           )}
         </div>
       </div>
+      
+      <>
+      {
+        logoModal && (
+          <LogoEditModal
+          setLogoModal={setLogoModal}
+          dataId={dataId}
+          fetchData={fetchData}
+          accessToken={accessToken}
+          setMessage={setMessage} 
+          setErrorMsg={setErrorMsg}
+        />
+        )
+      }
+      </>
+
+      <>
+      {titleModal && (
+        <TitleModal
+        setTitleModel={setTitleModel}
+          dataId={dataId}
+          fetchData={fetchData}
+          accessToken={accessToken}
+          setTitleMessage={setTitleMessage} 
+          setTitleErrorMsg={setTitleErrorMsg}
+          siteTitle={siteTitle}
+        />
+      )}
+      </>
+
     </div>
   );
 };
