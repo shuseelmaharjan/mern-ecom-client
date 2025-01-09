@@ -3,7 +3,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import CategoryList from "./CategoryList";
 import FlashSale from "./FlashSale";
-import JustForYou from "./JustForYou";
+// import JustForYou from "./JustForYou";
 
 const Homepage = () => {
   const [carouselImages, setCarouselImages] = useState([]);
@@ -81,7 +81,7 @@ const Homepage = () => {
 
       <CategoryList />
       <FlashSale/>
-      <JustForYou/>
+      {/* <JustForYou/> */}
     </>
   );
 };

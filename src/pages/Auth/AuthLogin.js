@@ -38,6 +38,7 @@ const AuthLogin = ({
         secure: false,
         sameSite: "Lax",
       });
+      window.location.reload();
       navigate("/");
     } catch (error) {
       setError(

@@ -31,6 +31,8 @@ import Header from "./components/Header/Headers";
 import DashLoadout from "./components/Layouts/DashLoadout";
 import DummyProducts from "./components/Cart/DummyProducts";
 import CheckOut from "./components/Cart/Checkout";
+import Employee from "./pages/Employee/Employee";
+import Site from "./pages/Site/Site";
 
 function App() {
   const location = useLocation();
@@ -210,6 +212,20 @@ function App() {
     {
       path: "/listing/create-product",
       element: <AddProduct />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/employee",
+      element: <Employee />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/site",
+      element: <Site />,
       showHeader: false,
       private: true,
       dashLoadout: true,
