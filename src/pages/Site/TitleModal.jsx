@@ -46,7 +46,7 @@ const TitleModal = ({
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           placeholder="Enter new site title"
-          className="w-full border border-gray-300 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-blue-500 outline-none"
+          className="w-full border border-gray-500 p-2 mb-4 outline-none"
         />
         <div className="flex justify-end gap-4">
           <button
