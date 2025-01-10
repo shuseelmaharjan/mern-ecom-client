@@ -4,8 +4,11 @@ import siteService from "../../services/site/siteService";
 import { useAuth } from "../../context/AuthContext";
 import config from "../../services/config";
 import LogoEditModal from "./LogoEditModal";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import TitleModal from "./TitleModal";
+import TaglineModal from "./TaglineModal";
+import DescriptionModal from "./DescriptionModal";
+import DOMPurify from "dompurify";
 
 const Site = () => {
   const [siteLogo, setSiteLogo] = useState(null);
@@ -16,7 +19,7 @@ const Site = () => {
   const [logs, setLogs] = useState([]);
   const { accessToken } = useAuth();
   const BASE_URL = config.API_BASE_URL;
-  const[dataId, setDataId] = useState('');
+  const [dataId, setDataId] = useState("");
   const [message, setMessage] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const hasShownToast = useRef(false);
@@ -28,7 +31,9 @@ const Site = () => {
       setDataId(data.siteData._id);
       setSiteTitle(data.siteData.title);
       setSiteTagline(data.siteData.tagline);
-      setSiteDescription(data.siteData.description || "No description available.");
+      setSiteDescription(
+        data.siteData.description || "No description available."
+      );
       setSiteLogo(data.siteData.logo);
       setAdmins(data.admins);
       setLogs(data.logs);
@@ -44,43 +49,88 @@ const Site = () => {
   const [logoModal, setLogoModal] = useState(false);
   const handleEditLogoModal = () => {
     setLogoModal(true);
-
-  }
+  };
 
   useEffect(() => {
     if (message && !hasShownToast.current) {
       toast.success(message);
-      hasShownToast.current = true; 
+      hasShownToast.current = true;
     }
-  }, [message]);  
+  }, [message]);
 
   useEffect(() => {
-    if(errorMsg && !hasShownToast.current){
+    if (errorMsg && !hasShownToast.current) {
       toast.error(errorMsg);
       hasShownToast.current = true;
     }
   }, [errorMsg]);
 
   const [titleModal, setTitleModel] = useState(false);
-  const handleTitleModel =() => {
+  const handleTitleModel = () => {
     setTitleModel(true);
-  }
-  const [titleMsg, setTitleMessage] = useState('');
-  const [titleError, setTitleErrorMsg] = useState('');
+  };
+  const [titleMsg, setTitleMessage] = useState("");
+  const [titleError, setTitleErrorMsg] = useState("");
   useEffect(() => {
-    if (titleMsg && !hasShownToast.current) {
+    if (titleMsg) {
       toast.success(titleMsg);
-      hasShownToast.current = true; 
+      hasShownToast.current = false;
+      setTitleMessage("");
     }
-  }, [titleMsg]);  
+  }, [titleMsg]);
 
   useEffect(() => {
-    if(titleError && !hasShownToast.current){
+    if (titleError) {
       toast.error(titleError);
-      hasShownToast.current = true;
+      hasShownToast.current = false;
+      setTitleErrorMsg("");
     }
   }, [titleError]);
-  
+
+  const [taglineModal, setTaglineModal] = useState(false);
+  const handleTaglineModal = () => {
+    setTaglineModal(true);
+  };
+  const [taglineMsg, setTaglineMessage] = useState("");
+  const [taglineError, setTaglineErrorMsg] = useState("");
+  useEffect(() => {
+    if (taglineMsg) {
+      toast.success(taglineMsg);
+      hasShownToast.current = false;
+      setTaglineMessage("");
+    }
+  }, [taglineMsg]);
+
+  useEffect(() => {
+    if (taglineError) {
+      toast.error(taglineError);
+      hasShownToast.current = false;
+      setTaglineErrorMsg("");
+    }
+  }, [taglineError]);
+
+  const [descriptionModal, setDescriptionModal] = useState(false);
+  const handleDescriptionModal = () => {
+    setDescriptionModal(true);
+  };
+  const [descriptionMsg, setDescriptionMsg] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
+  useEffect(() => {
+    if (descriptionMsg) {
+      toast.success(descriptionMsg);
+      hasShownToast.current = false;
+      setDescriptionMsg("");
+    }
+  }, [descriptionMsg]);
+
+  useEffect(() => {
+    if (descriptionError) {
+      toast.error(descriptionError);
+      hasShownToast.current = false;
+      setDescriptionError("");
+    }
+  }, [descriptionError]);
+
   return (
     <div className="flex flex-col lg:flex-row w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
       {/* Main Content */}
@@ -89,8 +139,9 @@ const Site = () => {
         <div className="flex flex-col mb-6">
           <span className="flex justify-between items-center">
             <h4 className="text-lg font-semibold">Site Logo</h4>
-            <button className="bg-gray-800 hover:bg-gray-900 p-2 text-white font-semibold text-sm"               
-            onClick={handleEditLogoModal}
+            <button
+              className="bg-gray-800 hover:bg-gray-900 p-2 text-white font-semibold text-sm"
+              onClick={handleEditLogoModal}
             >
               Edit Logo
             </button>
@@ -112,7 +163,10 @@ const Site = () => {
         <div className="flex flex-col mb-6">
           <span className="flex justify-between items-center">
             <h4 className="text-lg font-semibold">Site Title</h4>
-            <button onClick={handleTitleModel} className="bg-gray-800 hover:bg-gray-900 p-2 text-white font-semibold text-sm">
+            <button
+              onClick={handleTitleModel}
+              className="bg-gray-800 hover:bg-gray-900 p-2 text-white font-semibold text-sm"
+            >
               Edit Site Title
             </button>
           </span>
@@ -123,22 +177,33 @@ const Site = () => {
         <div className="flex flex-col mb-6">
           <span className="flex justify-between items-center">
             <h4 className="text-lg font-semibold">Site Tagline</h4>
-            <button className="bg-gray-800 hover:bg-gray-900 p-2 text-white font-semibold text-sm">
+            <button
+              className="bg-gray-800 hover:bg-gray-900 p-2 text-white font-semibold text-sm"
+              onClick={handleTaglineModal}
+            >
               Edit Site Tagline
             </button>
           </span>
-          <h2 className="font-bold text-lg mt-2">{siteTagline}</h2>
+          <h2 className="font-semibold text-lg mt-2">{siteTagline}</h2>
         </div>
 
         {/* Site Description */}
         <div className="flex flex-col mb-6">
           <span className="flex justify-between items-center">
             <h4 className="text-lg font-semibold">Site Description</h4>
-            <button className="bg-gray-800 hover:bg-gray-900 p-2 text-white font-semibold text-sm">
+            <button
+              onClick={handleDescriptionModal}
+              className="bg-gray-800 hover:bg-gray-900 p-2 text-white font-semibold text-sm"
+            >
               Edit Description
             </button>
           </span>
-          <p className="font-normal text-lg mt-4">{siteDescription}</p>
+          <p
+            className="font-normal text-lg mt-4"
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(siteDescription),
+            }}
+          ></p>{" "}
         </div>
       </div>
 
@@ -163,52 +228,77 @@ const Site = () => {
           ))}
         </div>
 
-        <h4 className="text-lg font-semibold px-4 mt-4">Last 30 days site activities</h4>
-        <div className="p-4 space-y-4">
-          {logs.length > 0 ? (
-            logs.map((log, index) => (
-              <div
-                key={index}
-                className="bg-gray-100 p-4 rounded-lg shadow-md"
-              >
-                <p className="text-sm text-gray-700">{log}</p>
-              </div>
-            ))
-          ) : (
-            <p className="text-sm text-gray-500">No activity logs available.</p>
-          )}
-        </div>
+        <h4 className="text-lg font-semibold px-4 mt-4">
+          Last 30 days site activities
+        </h4>
+        <div className="p-4 space-y-4 h-96 overflow-y-auto" id="nav">
+        {logs.length > 0 ? (
+          logs.map((log, index) => (
+            <div key={index} className="bg-gray-100 p-4 rounded-lg shadow-md">
+              <p className="text-sm text-gray-700">{log}</p>
+            </div>
+          ))
+        ) : (
+          <p className="text-sm text-gray-500">No activity logs available.</p>
+        )}
       </div>
-      
+
+      </div>
+
       <>
-      {
-        logoModal && (
+        {logoModal && (
           <LogoEditModal
-          setLogoModal={setLogoModal}
-          dataId={dataId}
-          fetchData={fetchData}
-          accessToken={accessToken}
-          setMessage={setMessage} 
-          setErrorMsg={setErrorMsg}
-        />
-        )
-      }
+            setLogoModal={setLogoModal}
+            dataId={dataId}
+            fetchData={fetchData}
+            accessToken={accessToken}
+            setMessage={setMessage}
+            setErrorMsg={setErrorMsg}
+          />
+        )}
       </>
 
       <>
-      {titleModal && (
-        <TitleModal
-        setTitleModel={setTitleModel}
-          dataId={dataId}
-          fetchData={fetchData}
-          accessToken={accessToken}
-          setTitleMessage={setTitleMessage} 
-          setTitleErrorMsg={setTitleErrorMsg}
-          siteTitle={siteTitle}
-        />
-      )}
+        {titleModal && (
+          <TitleModal
+            setTitleModel={setTitleModel}
+            dataId={dataId}
+            fetchData={fetchData}
+            accessToken={accessToken}
+            setTitleMessage={setTitleMessage}
+            setTitleErrorMsg={setTitleErrorMsg}
+            siteTitle={siteTitle}
+          />
+        )}
       </>
 
+      <>
+        {taglineModal && (
+          <TaglineModal
+            setTaglineModal={setTaglineModal}
+            dataId={dataId}
+            fetchData={fetchData}
+            accessToken={accessToken}
+            setTaglineMessage={setTaglineMessage}
+            setTaglineErrorMsg={setTaglineErrorMsg}
+            siteTagline={siteTagline}
+          />
+        )}
+      </>
+
+      <>
+        {descriptionModal && (
+          <DescriptionModal
+            setDescriptionModal={setDescriptionModal}
+            dataId={dataId}
+            fetchData={fetchData}
+            accessToken={accessToken}
+            setDescriptionMsg={setDescriptionMsg}
+            setDescriptionError={setDescriptionError}
+            siteDescription={siteDescription}
+          />
+        )}
+      </>
     </div>
   );
 };
