@@ -102,7 +102,12 @@ const DashLoadout = ({ children }) => {
   const handleShopManager = () => {
     navigate("/dashboard");
   };
-  if (role === "admin" || role === "vendor" || role === "staff") {
+  if (
+    role === "admin" ||
+    role === "vendor" ||
+    role === "staff" ||
+    role === "hr"
+  ) {
     return (
       <div className="flex h-screen">
         {/* Sidebar */}

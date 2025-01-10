@@ -1,35 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaSearch, FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../helper/Pagination";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
+import employeeService from "../../services/employeeService/employeeService";
+import { useAuth } from "../../context/AuthContext";
+import { FaUserShield, FaBullhorn, FaUserSecret } from "react-icons/fa";
+import { FaUserTie } from "react-icons/fa6";
+import DateUtils from "../../utils/dateUtils";
 
-const employeeData = [
-  { id: 1, name: 'John Doe', designation: 'Software Engineer', status: 'Active' },
-  { id: 2, name: 'Jane Smith', designation: 'Product Manager', status: 'Inactive' },
-  { id: 3, name: 'Alice Brown', designation: 'UX Designer', status: 'Active' },
-  { id: 4, name: 'Bob White', designation: 'QA Engineer', status: 'Active' },
-  { id: 5, name: 'Charlie Green', designation: 'DevOps Engineer', status: 'Inactive' },
-  { id: 6, name: 'John Dooe', designation: 'Software Engineer', status: 'Active' },
-  { id: 7, name: 'Jane Smith', designation: 'Product Manager', status: 'Inactive' },
-  { id: 8, name: 'Alice Brown', designation: 'UX Designer', status: 'Active' },
-  { id: 9, name: 'Bob White', designation: 'QA Engineer', status: 'Active' },
-  { id: 10, name: 'Charlie Green', designation: 'DevOps Engineer', status: 'Inactive' },
-  { id: 11, name: 'John Doee', designation: 'Software Engineer', status: 'Active' },
-  { id: 12, name: 'Jane Smith', designation: 'Product Manager', status: 'Inactive' },
-  { id: 13, name: 'Alice Brown', designation: 'UX Designer', status: 'Active' },
-  { id: 14, name: 'Bob White', designation: 'QA Engineer', status: 'Active' },
-  { id: 15, name: 'Charlie Green', designation: 'DevOps Engineer', status: 'Inactive' },
-];
 const Employee = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' });
+  const [sortConfig, setSortConfig] = useState({
+    key: "name",
+    direction: "asc",
+  });
+  const [employeeData, setEmployeeData] = useState("");
+
+  const { accessToken } = useAuth();
+  const token = Cookies.get("_r");
+  const decodeToken = jwtDecode(token);
+  const role = decodeToken.role;
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        if (role === "admin") {
+          const res = await employeeService.employees(accessToken);
+          setEmployeeData(res);
+        } else if (role === "hr") {
+          const hrdata = await employeeService.staffs(accessToken);
+          setEmployeeData(hrdata);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getUserData();
+  }, [accessToken, role]);
+
 
   const sortedEmployees = [...employeeData].sort((a, b) => {
     if (a[sortConfig.key] < b[sortConfig.key]) {
-      return sortConfig.direction === 'asc' ? -1 : 1;
+      return sortConfig.direction === "asc" ? -1 : 1;
     }
     if (a[sortConfig.key] > b[sortConfig.key]) {
-      return sortConfig.direction === 'asc' ? 1 : -1;
+      return sortConfig.direction === "asc" ? 1 : -1;
     }
     return 0;
   });
@@ -55,12 +73,12 @@ const Employee = () => {
     if (sortConfig.key === key) {
       setSortConfig({
         key: key,
-        direction: sortConfig.direction === 'asc' ? 'desc' : 'asc',
+        direction: sortConfig.direction === "asc" ? "desc" : "asc",
       });
     } else {
       setSortConfig({
         key: key,
-        direction: 'asc',
+        direction: "asc",
       });
     }
   };
@@ -88,10 +106,13 @@ const Employee = () => {
           <thead className="bg-black text-white">
             <tr>
               <th className="px-6 py-3 text-left">S.N.</th>
-              <th className="px-6 py-3 text-left cursor-pointer" onClick={() => handleSort('name')}>
+              <th
+                className="px-6 py-3 text-left cursor-pointer"
+                onClick={() => handleSort("name")}
+              >
                 Employee
-                {sortConfig.key === 'name' ? (
-                  sortConfig.direction === 'asc' ? (
+                {sortConfig.key === "name" ? (
+                  sortConfig.direction === "asc" ? (
                     <FaSortUp className="inline ml-2" />
                   ) : (
                     <FaSortDown className="inline ml-2" />
@@ -100,10 +121,13 @@ const Employee = () => {
                   <FaSort className="inline ml-2" />
                 )}
               </th>
-              <th className="px-6 py-3 text-left cursor-pointer" onClick={() => handleSort('designation')}>
+              <th
+                className="px-6 py-3 text-left cursor-pointer"
+                onClick={() => handleSort("designation")}
+              >
                 Designation
-                {sortConfig.key === 'designation' ? (
-                  sortConfig.direction === 'asc' ? (
+                {sortConfig.key === "designation" ? (
+                  sortConfig.direction === "asc" ? (
                     <FaSortUp className="inline ml-2" />
                   ) : (
                     <FaSortDown className="inline ml-2" />
@@ -112,28 +136,71 @@ const Employee = () => {
                   <FaSort className="inline ml-2" />
                 )}
               </th>
-              <th className="px-6 py-3 text-left">Status</th>
+              <th className="px-6 py-3 text-left">Email</th>
+              <th className="px-6 py-3 text-left">Date of Joined</th>
               <th className="px-6 py-3 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
             {currentItems.map((employee, index) => (
               <tr key={employee.id} className="border-t border-gray-200">
-                <td className="px-6 py-4 text-gray-800">{indexOfFirstItem + index + 1}</td>
-                <td className="px-6 py-4 text-gray-800">{employee.name}</td>
-                <td className="px-6 py-4 text-gray-800">{employee.designation}</td>
                 <td className="px-6 py-4 text-gray-800">
-                  <span
-                    className={`px-2 py-1 rounded-full ${
-                      employee.status === 'Active' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                    }`}
-                  >
-                    {employee.status}
-                  </span>
+                  {indexOfFirstItem + index + 1}
+                </td>
+                <td className="px-6 py-4 text-gray-800">{employee.name}</td>
+                <td className="px-6 py-4 text-gray-800 flex items-center space-x-2">
+                  {employee.designation === "admin" && (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-red-500">
+                        <FaUserShield />
+                      </span>
+                      <span className="bg-red-100 text-red-700 text-sm font-medium px-2 py-1 rounded-full">
+                        Admin
+                      </span>
+                    </div>
+                  )}
+                  {employee.designation === "marketing manager" && (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-blue-500">
+                        <FaBullhorn />
+                      </span>
+                      <span className="bg-blue-100 text-blue-700 text-sm font-medium px-2 py-1 rounded-full">
+                        Marketing Manager
+                      </span>
+                    </div>
+                  )}
+                  {employee.designation === "hr" && (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-green-500">
+                        <FaUserSecret />
+                      </span>
+                      <span className="bg-green-100 text-green-700 text-sm font-medium px-2 py-1 rounded-full">
+                        HR
+                      </span>
+                    </div>
+                  )}
+                  {employee.designation === "staff" && (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-yellow-500">
+                        <FaUserTie />
+                      </span>
+                      <span className="bg-yellow-100 text-yellow-700 text-sm font-medium px-2 py-1 rounded-full">
+                        Staff
+                      </span>
+                    </div>
+                  )}
+                </td>
+                <td className="px-6 py-4 text-gray-800">{employee.email}</td>
+                <td className="px-6 py-4 text-gray-800">
+                  {DateUtils.formatDate(employee.joinedDate)}
                 </td>
                 <td className="px-6 py-4 text-gray-800">
-                  <button className="text-blue-500 hover:text-blue-700">Edit</button>
-                  <button className="ml-2 text-red-500 hover:text-red-700">Delete</button>
+                  <button className="text-blue-500 hover:text-blue-700">
+                    <FaEdit />
+                  </button>
+                  <button className="ml-2 text-red-500 hover:text-red-700">
+                    <FaTrash />
+                  </button>
                 </td>
               </tr>
             ))}
