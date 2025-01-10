@@ -208,7 +208,7 @@ const Site = () => {
       </div>
 
       {/* Site Members */}
-      <div className="block w-full lg:w-4/12">
+      <div className="block w-full lg:w-4/12 border-gray-200 border-l">
         <h4 className="text-lg font-semibold px-4">Site Members</h4>
         <div className="p-4 space-y-4">
           {admins.map((admin) => (

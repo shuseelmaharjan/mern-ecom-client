@@ -12,14 +12,23 @@ import { FaUser } from "react-icons/fa";
 import { IoLogOut } from "react-icons/io5";
 import { IoSettingsSharp } from "react-icons/io5";
 import { IoMdNotifications } from "react-icons/io";
+import config from "../../services/config";
+import siteService from "../../services/site/siteService";
+import { FaShop } from "react-icons/fa6";
+import { useNavigate } from "react-router";
 
 const DashLoadout = ({ children }) => {
-  const { role } = useAuth();
+  const { role, accessToken } = useAuth();
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [name, setName] = useState("");
   const [isProfileOptions, setProfileOptions] = useState(false);
   const [notificationBox, setNotificationBox] = useState(false);
+  const [logo, setLogo] = useState("");
+  const [title, setTitle] = useState("");
+
+  const BASE_URL = config.API_BASE_URL;
+  const navigate = useNavigate();
 
   useEffect(() => {
     localStorage.setItem("_bar", JSON.stringify(isSidebarExpanded));
@@ -68,6 +77,31 @@ const DashLoadout = ({ children }) => {
     setProfileOptions((prev) => !prev);
   };
 
+  useEffect(() => {
+    const fetchSiteData = async () => {
+      try {
+        const data = await siteService.getData(accessToken);
+        setLogo(data.siteData.logo);
+        setTitle(data.siteData.title);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchSiteData();
+  }, [accessToken]);
+
+  const [isSiteOptions, setSiteOptions] = useState("");
+  const handleSiteOptions = () => {
+    setSiteOptions((prev) => !prev);
+  };
+
+  const handleMarketPlace = () => {
+    navigate("/");
+  };
+  const handleShopManager = () => {
+    navigate("/dashboard");
+  };
   if (role === "admin" || role === "vendor" || role === "staff") {
     return (
       <div className="flex h-screen">
@@ -104,10 +138,55 @@ const DashLoadout = ({ children }) => {
               <div
                 className={`${
                   isSidebarExpanded ? "w-64" : "w-20"
-                } transition-all duration-300 ease-in-out`}
+                } relative transition-all duration-300 ease-in-out`}
               >
-                {isSidebarExpanded ? "Shop Name" : "Shop"}
+                {isSidebarExpanded ? (
+                  <span className="flex items-center relative">
+                    <img
+                      src={`${BASE_URL}${logo}`}
+                      alt="Logo"
+                      className="h-full max-h-16 w-auto object-contain cursor-pointer select-none"
+                      onClick={handleSiteOptions}
+                    />
+                    <span
+                      className="ml-2 text-2xl font-bold cursor-pointer select-none"
+                      onClick={handleSiteOptions}
+                    >
+                      {title}
+                    </span>
+                  </span>
+                ) : (
+                  <img
+                    src={`${BASE_URL}${logo}`}
+                    alt="Logo"
+                    className="h-full max-h-16 w-auto object-contain cursor-pointer select-none"
+                    onClick={handleSiteOptions}
+                  />
+                )}
+                {isSiteOptions && (
+                  <ul className="absolute top-full left-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg z-10 text-base font-medium">
+                    <li
+                      className="px-4 py-3 hover:bg-gray-100 cursor-pointer flex items-center gap-3"
+                      onClick={handleMarketPlace}
+                    >
+                      <FaShop className="text-gray-800 text-lg md:text-xl w-6 md:w-8" />
+                      <span className="truncate">{title} Marketplace</span>
+                    </li>
+                    <li
+                      className="px-4 py-3 hover:bg-gray-100 cursor-pointer flex items-center gap-3"
+                      onClick={handleShopManager}
+                    >
+                      <img
+                        src={`${BASE_URL}${logo}`}
+                        alt="Logo"
+                        className="h-6 w-6 md:h-8 md:w-8 object-contain"
+                      />
+                      <span className="truncate">{title} Shop Manager</span>
+                    </li>
+                  </ul>
+                )}
               </div>
+
               <div className="flex-1 flex justify-between items-center">
                 <div
                   className={`flex items-center transition-all duration-300 ease-in-out ${

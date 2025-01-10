@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import config from "../../services/config";
-import axios from "axios";
 import { FaSearch, FaRegUser, FaRegHeart } from "react-icons/fa";
 import { IoCartOutline } from "react-icons/io5";
 import { HiOutlineXMark } from "react-icons/hi2";
@@ -11,6 +10,7 @@ import ForgetPassword from "../../pages/Auth/ForgetPassword";
 import { useAuth } from "../../context/AuthContext";
 import ProfileMenu from "./ProfileMenu";
 import { useLocation } from "react-router-dom";
+import siteService from "../../services/site/siteService";
 
 const Headers = () => {
   const [logo, setLogo] = useState("");
@@ -23,18 +23,7 @@ const Headers = () => {
 
   const BASE_URL = config.API_BASE_URL;
 
-  useEffect(() => {
-    const fetchLogo = async () => {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/v1/site-manager`);
-        setLogo(res.data.data[0].logo);
-      } catch (error) {
-        console.error("Error fetching logo:", error);
-      }
-    };
-
-    fetchLogo();
-  }, [BASE_URL]);
+  const { accessToken, isLoggedIn } = useAuth();
 
   const handleSearch = () => {
     console.log("Search term:", search);
@@ -61,8 +50,6 @@ const Headers = () => {
   const closeReisterModal = () => setIsRegisterModalOpen(false);
   const closeForgetPasswordModal = () => setForgetPasswordModalOpen(false);
 
-  const { isLoggedIn } = useAuth();
-
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const location = useLocation();
@@ -74,6 +61,19 @@ const Headers = () => {
       setIsLoginModalOpen(true);
     }
   }, [location.search]);
+
+  useEffect(() => {
+    const fetchSiteData = async () => {
+      try {
+        const data = await siteService.getData(accessToken);
+        setLogo(data.siteData.logo);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchSiteData();
+  }, [accessToken]);
 
   return (
     <>
