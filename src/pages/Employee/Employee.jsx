@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { FaSearch, FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import Pagination from "../../helper/Pagination";
 import { FaEdit, FaTrash } from "react-icons/fa";
@@ -9,6 +9,8 @@ import { useAuth } from "../../context/AuthContext";
 import { FaUserShield, FaBullhorn, FaUserSecret } from "react-icons/fa";
 import { FaUserTie } from "react-icons/fa6";
 import DateUtils from "../../utils/dateUtils";
+import AddEmployeeModal from "./AddEmployeeModal";
+import { toast } from "react-toastify";
 
 const Employee = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -17,32 +19,39 @@ const Employee = () => {
     key: "name",
     direction: "asc",
   });
-  const [employeeData, setEmployeeData] = useState("");
+  const [employeeData, setEmployeeData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { accessToken } = useAuth();
   const token = Cookies.get("_r");
   const decodeToken = jwtDecode(token);
   const role = decodeToken.role;
+  const hasShownToast = useRef(false);
 
-  useEffect(() => {
-    const getUserData = async () => {
-      try {
-        if (role === "admin") {
-          const res = await employeeService.employees(accessToken);
-          setEmployeeData(res);
-        } else if (role === "hr") {
-          const hrdata = await employeeService.staffs(accessToken);
-          setEmployeeData(hrdata);
-        }
-      } catch (error) {
-        console.error(error);
+  const fetchData = useCallback(async () => {
+    try {
+      if (role === "admin") {
+        const res = await employeeService.employees(accessToken);
+        setEmployeeData(res);
+      } else if (role === "hr") {
+        const hrdata = await employeeService.staffs(accessToken);
+        setEmployeeData(hrdata);
       }
-    };
-    getUserData();
+    } catch (error) {
+      console.error(error);
+    }
   }, [accessToken, role]);
 
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
-  const sortedEmployees = [...employeeData].sort((a, b) => {
+
+  const filteredEmployees = employeeData.filter((employee) =>
+    employee.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const sortedEmployees = [...filteredEmployees].sort((a, b) => {
     if (a[sortConfig.key] < b[sortConfig.key]) {
       return sortConfig.direction === "asc" ? -1 : 1;
     }
@@ -61,7 +70,7 @@ const Employee = () => {
     setCurrentPage(1);
   };
 
-  const paginate = (direction) => {
+  const onPageChange = (direction) => {
     if (direction === "next" && indexOfLastItem < sortedEmployees.length) {
       setCurrentPage(currentPage + 1);
     } else if (direction === "prev" && indexOfFirstItem > 0) {
@@ -83,6 +92,28 @@ const Employee = () => {
     }
   };
 
+  const [addEmployeModal, setAddEmployeeModal] = useState(false);
+  const [userAddMsg, setUserAddMsg] = useState("");
+  const [userAddErrMsg, setUserAddErrMsg] = useState("");
+  const handleEmployeeAdd = () => {
+    setAddEmployeeModal(true);
+  };
+  useEffect(() => {
+    if (userAddMsg) {
+      toast.success(userAddMsg);
+      hasShownToast.current = false;
+      setUserAddMsg("");
+    }
+  }, [userAddMsg]);
+
+  useEffect(() => {
+    if (userAddErrMsg) {
+      toast.success(userAddErrMsg);
+      hasShownToast.current = false;
+      setUserAddMsg("");
+    }
+  }, [userAddErrMsg]);
+
   return (
     <div className="block w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
       <div className="flex flex-col lg:flex-row w-full items-center justify-between gap-4 lg:gap-8">
@@ -93,10 +124,14 @@ const Employee = () => {
             id="name"
             className="w-full pl-10 pr-4 py-2 border border-gray-400 rounded-md mb-4 outline-none"
             placeholder="Search Employee"
-            required
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <button className="bg-gray-800 hover:bg-gray-900 p-2 text-white font-semibold text-sm mb-4">
+        <button
+          className="bg-gray-800 hover:bg-gray-900 p-3 text-white font-semibold text-sm mb-4"
+          onClick={handleEmployeeAdd}
+        >
           Add an Employee
         </button>
       </div>
@@ -142,79 +177,98 @@ const Employee = () => {
             </tr>
           </thead>
           <tbody>
-            {currentItems.map((employee, index) => (
-              <tr key={employee.id} className="border-t border-gray-200">
-                <td className="px-6 py-4 text-gray-800">
-                  {indexOfFirstItem + index + 1}
-                </td>
-                <td className="px-6 py-4 text-gray-800">{employee.name}</td>
-                <td className="px-6 py-4 text-gray-800 flex items-center space-x-2">
-                  {employee.designation === "admin" && (
-                    <div className="flex items-center space-x-2">
-                      <span className="text-red-500">
-                        <FaUserShield />
-                      </span>
-                      <span className="bg-red-100 text-red-700 text-sm font-medium px-2 py-1 rounded-full">
-                        Admin
-                      </span>
-                    </div>
-                  )}
-                  {employee.designation === "marketing manager" && (
-                    <div className="flex items-center space-x-2">
-                      <span className="text-blue-500">
-                        <FaBullhorn />
-                      </span>
-                      <span className="bg-blue-100 text-blue-700 text-sm font-medium px-2 py-1 rounded-full">
-                        Marketing Manager
-                      </span>
-                    </div>
-                  )}
-                  {employee.designation === "hr" && (
-                    <div className="flex items-center space-x-2">
-                      <span className="text-green-500">
-                        <FaUserSecret />
-                      </span>
-                      <span className="bg-green-100 text-green-700 text-sm font-medium px-2 py-1 rounded-full">
-                        HR
-                      </span>
-                    </div>
-                  )}
-                  {employee.designation === "staff" && (
-                    <div className="flex items-center space-x-2">
-                      <span className="text-yellow-500">
-                        <FaUserTie />
-                      </span>
-                      <span className="bg-yellow-100 text-yellow-700 text-sm font-medium px-2 py-1 rounded-full">
-                        Staff
-                      </span>
-                    </div>
-                  )}
-                </td>
-                <td className="px-6 py-4 text-gray-800">{employee.email}</td>
-                <td className="px-6 py-4 text-gray-800">
-                  {DateUtils.formatDate(employee.joinedDate)}
-                </td>
-                <td className="px-6 py-4 text-gray-800">
-                  <button className="text-blue-500 hover:text-blue-700">
-                    <FaEdit />
-                  </button>
-                  <button className="ml-2 text-red-500 hover:text-red-700">
-                    <FaTrash />
-                  </button>
+            {currentItems.length > 0 ? (
+              currentItems.map((employee, index) => (
+                <tr key={employee.id} className="border-t border-gray-200">
+                  <td className="px-6 py-4 text-gray-800">
+                    {indexOfFirstItem + index + 1}
+                  </td>
+                  <td className="px-6 py-4 text-gray-800">{employee.name}</td>
+                  <td className="px-6 py-4 text-gray-800 flex items-center space-x-2">
+                    {employee.designation === "admin" && (
+                      <div className="flex items-center space-x-2">
+                        <span className="text-red-500">
+                          <FaUserShield />
+                        </span>
+                        <span className="bg-red-100 text-red-700 text-sm font-medium px-2 py-1 rounded-full">
+                          Admin
+                        </span>
+                      </div>
+                    )}
+                    {employee.designation === "marketing manager" && (
+                      <div className="flex items-center space-x-2">
+                        <span className="text-blue-500">
+                          <FaBullhorn />
+                        </span>
+                        <span className="bg-blue-100 text-blue-700 text-sm font-medium px-2 py-1 rounded-full">
+                          Marketing Manager
+                        </span>
+                      </div>
+                    )}
+                    {employee.designation === "hr" && (
+                      <div className="flex items-center space-x-2">
+                        <span className="text-green-500">
+                          <FaUserSecret />
+                        </span>
+                        <span className="bg-green-100 text-green-700 text-sm font-medium px-2 py-1 rounded-full">
+                          HR
+                        </span>
+                      </div>
+                    )}
+                    {employee.designation === "staff" && (
+                      <div className="flex items-center space-x-2">
+                        <span className="text-yellow-500">
+                          <FaUserTie />
+                        </span>
+                        <span className="bg-yellow-100 text-yellow-700 text-sm font-medium px-2 py-1 rounded-full">
+                          Staff
+                        </span>
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-gray-800">{employee.email}</td>
+                  <td className="px-6 py-4 text-gray-800">
+                    {DateUtils.formatDate(employee.joinedDate)}
+                  </td>
+                  <td className="px-6 py-4 text-gray-800">
+                    <button className="text-blue-500 hover:text-blue-700">
+                      <FaEdit />
+                    </button>
+                    <button className="ml-2 text-red-500 hover:text-red-700">
+                      <FaTrash />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                  No results found
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
-      <Pagination
-        currentPage={currentPage}
-        totalItems={sortedEmployees.length}
-        itemsPerPage={itemsPerPage}
-        onPageChange={paginate}
-        onItemsPerPageChange={handleItemsPerPageChange}
-      />
+      <div className="flex items-center justify-end mt-4">
+        <Pagination
+          totalItems={filteredEmployees.length}
+          itemsPerPage={itemsPerPage}
+          currentPage={currentPage}
+          onPageChange={onPageChange}
+          onItemsPerPageChange={handleItemsPerPageChange}
+        />
+      </div>
+
+      {addEmployeModal && (
+        <AddEmployeeModal
+          setAddEmployeeModal={setAddEmployeeModal}
+          fetchData={fetchData}
+          setUserAddMsg={setUserAddMsg}
+          setUserAddErrMsg={setUserAddErrMsg}
+        />
+      )}
     </div>
   );
 };

@@ -92,6 +92,26 @@ class AuthService {
       );
     }
   }
+
+  async addEmployee(accessToken, formData) {
+    try {
+      const response = await this.api.post(
+        "/api/v1/create-employee",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response ? error.response.data.message : "Error adding user"
+      );
+    }
+  }
 }
 
 const authService = new AuthService();
