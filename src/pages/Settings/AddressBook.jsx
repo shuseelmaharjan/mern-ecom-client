@@ -72,6 +72,7 @@ const AddressBook = () => {
     setActiveTable(true);
     setAddAddressForm(false);
     setEditAddressForm(false);
+    fetchShippingDetails();
   };
 
   if (loading) return <div className="text-center mt-4">Loading...</div>;
@@ -141,7 +142,7 @@ const AddressBook = () => {
 
       {addAddressForm && <AddAddress openAddressTable={openAddressTable} fetchShippingDetails={fetchShippingDetails} setAddSuccessMsg={setAddSuccessMsg} setAddErrorMsg={setAddErrorMsg}/>}
       {editAddressForm && (
-        <EditAddress address={selectedAddress} openAddressTable={openAddressTable} />
+        <EditAddress address={selectedAddress} openAddressTable={openAddressTable} fetchShippingDetails={fetchShippingDetails} setAddSuccessMsg={setAddSuccessMsg} setAddErrorMsg={setAddErrorMsg}/>
       )}
     </>
   );

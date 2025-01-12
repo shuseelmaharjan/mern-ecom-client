@@ -47,6 +47,45 @@ class ShippingService {
       );
     }
   }
+
+  async getIndividualShippingDetails(accessToken, id) {
+    try {
+      const response = await this.api.get(`/api/v1/shipping-address/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Failed to get address",
+        error.response?.data || error.message
+      );
+    }
+  }
+
+  async updateAddress(accessToken, id, formData) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/shippingaddress/update/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Failed to get address",
+        error.response?.data || error.message
+      );
+    }
+  }
 }
 const shippingService = new ShippingService();
 export default shippingService;
