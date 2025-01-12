@@ -112,6 +112,25 @@ class AuthService {
       );
     }
   }
+  async updateUserData(accessToken, formData, userId) {
+    try {
+      const response = await this.api.patch(
+        `/api/v1/update-user/${userId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response ? error.response.data.message : "Error adding user"
+      );
+    }
+  }
 }
 
 const authService = new AuthService();

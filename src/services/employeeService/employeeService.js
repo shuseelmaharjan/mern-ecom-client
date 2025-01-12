@@ -43,6 +43,24 @@ class EmployeeService {
       throw error;
     }
   }
+
+  async removeEmployee(accessToken, userId) {
+    try {
+      const response = await this.api.patch(`/api/v1/remove-user/${userId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error removing user",
+        error.response.data?.data || error.message
+      );
+      throw error;
+    }
+  }
 }
 
 const employeeService = new EmployeeService();

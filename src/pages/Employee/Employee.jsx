@@ -11,6 +11,7 @@ import { FaUserTie } from "react-icons/fa6";
 import DateUtils from "../../utils/dateUtils";
 import AddEmployeeModal from "./AddEmployeeModal";
 import { toast } from "react-toastify";
+import RemoveUserConfirmation from "./RemoveUserConfirmation";
 
 const Employee = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,6 +28,8 @@ const Employee = () => {
   const decodeToken = jwtDecode(token);
   const role = decodeToken.role;
   const hasShownToast = useRef(false);
+
+  
 
   const fetchData = useCallback(async () => {
     try {
@@ -114,6 +117,31 @@ const Employee = () => {
     }
   }, [userAddErrMsg]);
 
+  const [removeUserModal, setRemoveUserModal] = useState(false);
+  const [removeSuccessMsg, setRemoveSuccessMsg] = useState('');
+  const [removeErrorMsg, setRemoveErrorMsg] = useState('');
+  const [userId, setUserId] = useState('');
+  const handleRemoveUser = (id) => {
+    setRemoveUserModal(true);
+    setUserId(id);
+  };
+
+  useEffect(() => {
+    if (removeSuccessMsg) {
+      toast.success(removeSuccessMsg);
+      hasShownToast.current = false;
+      setRemoveSuccessMsg("");
+    }
+  }, [removeSuccessMsg]);
+
+  useEffect(() => {
+    if (removeErrorMsg) {
+      toast.success(removeErrorMsg);
+      hasShownToast.current = false;
+      setRemoveErrorMsg("");
+    }
+  }, [removeErrorMsg]);
+
   return (
     <div className="block w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
       <div className="flex flex-col lg:flex-row w-full items-center justify-between gap-4 lg:gap-8">
@@ -122,7 +150,7 @@ const Employee = () => {
           <input
             type="text"
             id="name"
-            className="w-full pl-10 pr-4 py-2 border border-gray-400 rounded-md mb-4 outline-none"
+            className="w-full pl-10 pr-4 py-2 border border-gray-400 mb-4 outline-none"
             placeholder="Search Employee"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -234,7 +262,7 @@ const Employee = () => {
                     <button className="text-blue-500 hover:text-blue-700">
                       <FaEdit />
                     </button>
-                    <button className="ml-2 text-red-500 hover:text-red-700">
+                    <button className="ml-2 text-red-500 hover:text-red-700" onClick={() => handleRemoveUser(employee.id)}>
                       <FaTrash />
                     </button>
                   </td>
@@ -267,6 +295,17 @@ const Employee = () => {
           fetchData={fetchData}
           setUserAddMsg={setUserAddMsg}
           setUserAddErrMsg={setUserAddErrMsg}
+          role={role}
+        />
+      )}
+
+      {removeUserModal && (
+        <RemoveUserConfirmation
+        setRemoveUserModal={setRemoveUserModal}
+        fetchData={fetchData}
+        setRemoveSuccessMsg = {setRemoveSuccessMsg}
+        setRemoveErrorMsg = {setRemoveErrorMsg}
+        userId={userId}
         />
       )}
     </div>

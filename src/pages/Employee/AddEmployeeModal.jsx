@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import authService from "../../services/authService/authService";
 import { useAuth } from "../../context/AuthContext";
 
-const AddEmployeeModal = ({ setAddEmployeeModal, fetchData, setUserAddMsg, setUserAddErrMsg }) => {
+const AddEmployeeModal = ({ setAddEmployeeModal, fetchData, setUserAddMsg, setUserAddErrMsg, role }) => {
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [name, setName] = useState("");
@@ -95,7 +95,7 @@ const AddEmployeeModal = ({ setAddEmployeeModal, fetchData, setUserAddMsg, setUs
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50 text-gray-700">
       <div className="bg-white p-8 rounded-md w-10/12 max-w-full">
-        <h2 className="text-xl font-semibold mb-6">Add New Employee</h2>
+        <h2 className="text-xl font-semibold mb-6">Create New Employee</h2>
         <form onSubmit={handleSubmit}>
           <div className="block mb-2 font-semibold">
             Personal Information
@@ -190,10 +190,21 @@ const AddEmployeeModal = ({ setAddEmployeeModal, fetchData, setUserAddMsg, setUs
               <option value="" disabled>
                 Select Designation
               </option>
-              <option value="admin">Admin</option>
-              <option value="hr">HR</option>
-              <option value="mm">Marketing Manager</option>
-              <option value="staff">Staff</option>
+              {role === 'admin' && (
+                <>
+                  <option value="admin">Admin</option>
+                  <option value="hr">HR</option>
+                  <option value="mm">Marketing Manager</option>
+                  <option value="staff">Staff</option>
+                </>
+              )}
+              {role === 'hr' && (
+                <>
+                  <option value="mm">Marketing Manager</option>
+                  <option value="staff">Staff</option>
+                </>
+              )}
+              
             </select>
           </div>
             <div className="block">
