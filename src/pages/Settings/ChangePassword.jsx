@@ -57,7 +57,7 @@ const ChangePassword = () => {
 
   return (
     <div className="block w-3/12 h-auto">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 p-4">
         <div className="flex flex-col">
           <label htmlFor="oldPassword" className="mb-2 font-medium">
             Current Password
