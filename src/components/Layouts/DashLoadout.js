@@ -16,6 +16,7 @@ import config from "../../services/config";
 import siteService from "../../services/site/siteService";
 import { FaShop } from "react-icons/fa6";
 import { useNavigate } from "react-router";
+import Logout from "../../pages/Auth/Logout";
 
 const DashLoadout = ({ children }) => {
   const { role, accessToken } = useAuth();
@@ -26,6 +27,7 @@ const DashLoadout = ({ children }) => {
   const [notificationBox, setNotificationBox] = useState(false);
   const [logo, setLogo] = useState("");
   const [title, setTitle] = useState("");
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const BASE_URL = config.API_BASE_URL;
   const navigate = useNavigate();
@@ -266,7 +268,10 @@ const DashLoadout = ({ children }) => {
                           <span>Settings</span>
                         </li>
                         <li className="border-t border-gray-200">
-                          <span className="flex items-center gap-2 px-4 py-3 hover:bg-red-100 text-red-600 font-semibold cursor-pointer">
+                          <span
+                            className="flex items-center gap-2 px-4 py-3 hover:bg-red-100 text-red-600 font-semibold cursor-pointer"
+                            onClick={() => setShowLogoutModal(true)}
+                          >
                             <IoLogOut />
                             Logout
                           </span>
@@ -279,6 +284,10 @@ const DashLoadout = ({ children }) => {
             </div>
           </header>
 
+          <Logout
+            showLogoutModal={showLogoutModal}
+            setShowLogoutModal={setShowLogoutModal}
+          />
           {/* Content Area */}
           <div className="flex-1 mt-20 p-6 bg-white overflow-auto">
             {children}

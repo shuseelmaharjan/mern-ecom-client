@@ -34,6 +34,8 @@ import CheckOut from "./components/Cart/Checkout";
 import Employee from "./pages/Employee/Employee";
 import Site from "./pages/Site/Site";
 import { ToastContainer, Flip } from "react-toastify";
+import Coupons from "./pages/Coupons/Coupons";
+import Categories from "./pages/Categories/Categories";
 
 function App() {
   const location = useLocation();
@@ -204,12 +206,13 @@ function App() {
       dashLoadout: true,
     },
     {
-      path: "/settings",
+      path: "/settings/:tab?",
       element: <Settings />,
       showHeader: false,
       private: true,
       dashLoadout: true,
     },
+
     {
       path: "/listing/create-product",
       element: <AddProduct />,
@@ -227,6 +230,20 @@ function App() {
     {
       path: "/site",
       element: <Site />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/categories",
+      element: <Categories />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/coupons",
+      element: <Coupons />,
       showHeader: false,
       private: true,
       dashLoadout: true,

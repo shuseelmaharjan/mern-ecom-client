@@ -39,7 +39,7 @@ const ProfileMenu = () => {
       to: "/dashboard",
       icon: <FaUser />,
       label: role === "vendor" ? "My Shop" : "Dashboard",
-      roles: ["admin", "hr", "vendor"],
+      roles: ["admin", "hr", "vendor", "staff"],
     },
     { to: "/profile", icon: <FaUser />, label: "My Profile" },
     { to: "/myorders", icon: <FaBox />, label: "Orders" },

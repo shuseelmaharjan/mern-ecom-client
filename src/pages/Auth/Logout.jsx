@@ -28,7 +28,7 @@ const Logout = ({ showLogoutModal, setShowLogoutModal }) => {
   }
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-999">
+    <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-99999">
       <div className="bg-white p-6 rounded-md shadow-lg w-96">
         <h2 className="text-xl font-semibold mb-4">Are you sure you want to log out?</h2>
         <div className="flex justify-end space-x-4">

@@ -9,6 +9,13 @@ class AuthService {
     });
   }
 
+  getHeaders(accessToken, contentType = "application/json") {
+    return {
+      "Content-Type": contentType,
+      Authorization: `Bearer ${accessToken}`,
+    };
+  }
+
   // Signup logic
   async signup(data) {
     try {
@@ -59,12 +66,9 @@ class AuthService {
   //user info
   async userInfo(accessToken) {
     try {
-      const response = await this.api.get("/api/v1/user-info", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const headers = this.getHeaders(accessToken);
+
+      const response = await this.api.get("/api/v1/user-info", { headers });
       return response.data;
     } catch (error) {
       throw new Error(
@@ -72,6 +76,77 @@ class AuthService {
           ? error.response.data.message
           : "Error fetching user info"
       );
+    }
+  }
+
+  async settingProfileInfo(accessToken, userId) {
+    try {
+      const headers = this.getHeaders(accessToken);
+      const response = await this.api.get(`/api/v1/setting-profile/${userId}`, {
+        headers,
+      });
+
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Error fetching user profile information";
+      console.error("Error in settingProfileInfo:", errorMessage);
+      throw new Error(errorMessage);
+    }
+  }
+
+  async updateProfileImage(accessToken, userId, formData) {
+    try {
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "multipart/form-data",
+      };
+
+      const response = await this.api.post(
+        `/api/v1/upload-profile-image/${userId}`,
+        formData,
+        { headers }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error uploading profile image:", error);
+      throw new Error(error.response?.data?.message || "Error uploading image");
+    }
+  }
+  async updateUserName(accessToken, userId, name) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/update-name/${userId}`,
+        name,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Error updating name");
+    }
+  }
+  async updateEmail(accessToken, userId, email) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/update-email/${userId}`,
+        email,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Error updating name");
     }
   }
 
@@ -128,6 +203,41 @@ class AuthService {
     } catch (error) {
       throw new Error(
         error.response ? error.response.data.message : "Error adding user"
+      );
+    }
+  }
+
+  async getUserInfo(accessToken, userId) {
+    try {
+      const response = await this.api.get(`/api/v1/users/${userId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response ? error.response.data.message : "Failed to get user info"
+      );
+    }
+  }
+
+  async changePassword(oldPassword, newPassword, accessToken) {
+    try {
+      const response = await this.api.put(
+        "/api/v1/change-password",
+        { oldPassword, newPassword },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to change password."
       );
     }
   }

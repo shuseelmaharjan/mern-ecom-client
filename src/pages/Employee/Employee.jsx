@@ -12,6 +12,7 @@ import DateUtils from "../../utils/dateUtils";
 import AddEmployeeModal from "./AddEmployeeModal";
 import { toast } from "react-toastify";
 import RemoveUserConfirmation from "./RemoveUserConfirmation";
+import UpdateEmployeeModal from "./UpdateEmployeeModal";
 
 const Employee = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -142,6 +143,32 @@ const Employee = () => {
     }
   }, [removeErrorMsg]);
 
+  const [updateEmployeeModal, setUpdateEmployeeModal] = useState(false);
+  const [employeId, setEmployeeId] = useState('');
+  const [updateSuccessMsg, setUpdateSuccessMsg] = useState('');
+  const [updateErrorMsg, setUpdateErrorMsg] = useState('');
+  
+  const handleUpdateModal=(id) => {
+    setUpdateEmployeeModal(true);
+    setEmployeeId(id);
+  }
+
+  useEffect(() => {
+    if (updateSuccessMsg) {
+      toast.success(updateSuccessMsg);
+      hasShownToast.current = false;
+      setUpdateSuccessMsg("");
+    }
+  }, [updateSuccessMsg]);
+
+  useEffect(() => {
+    if (updateErrorMsg) {
+      toast.success(updateErrorMsg);
+      hasShownToast.current = false;
+      setUpdateErrorMsg("");
+    }
+  }, [updateErrorMsg]);
+
   return (
     <div className="block w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
       <div className="flex flex-col lg:flex-row w-full items-center justify-between gap-4 lg:gap-8">
@@ -223,7 +250,7 @@ const Employee = () => {
                         </span>
                       </div>
                     )}
-                    {employee.designation === "marketing manager" && (
+                    {employee.designation === "mm" && (
                       <div className="flex items-center space-x-2">
                         <span className="text-blue-500">
                           <FaBullhorn />
@@ -259,7 +286,7 @@ const Employee = () => {
                     {DateUtils.formatDate(employee.joinedDate)}
                   </td>
                   <td className="px-6 py-4 text-gray-800">
-                    <button className="text-blue-500 hover:text-blue-700">
+                    <button className="text-blue-500 hover:text-blue-700" onClick={() => handleUpdateModal(employee.id)}>
                       <FaEdit />
                     </button>
                     <button className="ml-2 text-red-500 hover:text-red-700" onClick={() => handleRemoveUser(employee.id)}>
@@ -307,8 +334,20 @@ const Employee = () => {
         setRemoveErrorMsg = {setRemoveErrorMsg}
         userId={userId}
         />
+
+      )}
+      {updateEmployeeModal && (
+        <UpdateEmployeeModal
+        setUpdateEmployeeModal={setUpdateEmployeeModal}
+        fetchData={fetchData}
+        setUpdateSuccessMsg={setUpdateSuccessMsg}
+        setUpdateErrorMsg={setUpdateErrorMsg}
+        role={role}
+        employeId={employeId}
+        />
       )}
     </div>
+    
   );
 };
 

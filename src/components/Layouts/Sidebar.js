@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { VendorNavbar } from "./VendorNavbar";
 import { AdminNavbar } from "./AdminNavbar";
 import { HrNavbar } from "./HrNavbar";
+import { StaffNavbar } from "./StaffNavbar";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 
@@ -34,6 +35,12 @@ const Sidebar = ({ isSidebarExpanded }) => {
       )}
       {role === "hr" && (
         <HrNavbar isSidebarExpanded={isSidebarExpanded} isActive={isActive} />
+      )}
+      {role === "staff" && (
+        <StaffNavbar
+          isSidebarExpanded={isSidebarExpanded}
+          isActive={isActive}
+        />
       )}
       {role === "admin" && (
         <AdminNavbar
