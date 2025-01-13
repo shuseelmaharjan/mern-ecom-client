@@ -1,6 +1,8 @@
 import React from "react";
 import authService from "../../services/employeeService/employeeService";
 import { useAuth } from "../../context/AuthContext";
+import { CiCircleAlert } from "react-icons/ci";
+
 const RemoveUserConfirmation = ({
   setRemoveUserModal,
   fetchData,
@@ -32,9 +34,12 @@ const RemoveUserConfirmation = ({
         <p className="text-gray-600 text-center mb-8">
           Are you sure you want to remove this user? This action cannot be undone.
         </p>
+        <div className="flex justify-center mt-6">
+        <CiCircleAlert className="w-32 h-32 flex items-center justify-center bg-red-100 text-red-600 rounded-full shadow"/>
+        </div>
 
         {/* Buttons */}
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-4 mt-10">
           <button
             type="button"
             onClick={yesConfirm}
@@ -51,25 +56,7 @@ const RemoveUserConfirmation = ({
           </button>
         </div>
 
-        {/* Decorative Icons */}
-        <div className="flex justify-center mt-6">
-          <span className="w-10 h-10 flex items-center justify-center bg-red-100 text-red-600 rounded-full shadow">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.94-1.064 3.247-2.577l1.516-7.105c.387-1.814-.723-3.318-2.538-3.553L4.662 5.776c-1.814-.236-3.318.723-3.553 2.538l-1.516 7.105C-.048 16.936.962 18.64 2.401 18.997z"
-              />
-            </svg>
-          </span>
-        </div>
+       
       </div>
     </div>
   );

@@ -4,13 +4,20 @@ import shippingService from "../../services/shippingService/shippingService";
 import AddAddress from "./AddAddress";
 import EditAddress from "./EditAddress";
 import { toast } from "react-toastify";
+import DefaultBillingAddress from "./DefaultBillingAddress";
+import DefaultShippingAddress from "./DefaultShippingAddress";
 
 const AddressBook = () => {
   const { accessToken } = useAuth();
   const [activeTable, setActiveTable] = useState(true);
   const [addAddressForm, setAddAddressForm] = useState(false);
   const [editAddressForm, setEditAddressForm] = useState(false);
+  const [defaultShipping, setDefaultShipping] = useState(false);
+  const [defaultBilling, setDefaultBilling] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const [allListViewOptions, setAllListViewOptions] = useState(true);
+  const [showBillingOption, setShowBillingOption] = useState(false);
+  const [showShippingOption, setShowShippingOption] = useState(false)
 
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +26,7 @@ const AddressBook = () => {
   const [addErrMsg, setAddErrorMsg] = useState('');
 
   const hasShownToast = useRef(false);
-  
+
   const fetchShippingDetails = useCallback(async () => {
     try {
       setLoading(true);
@@ -49,7 +56,7 @@ const AddressBook = () => {
 
   useEffect(() => {
     if (addErrMsg) {
-      toast.success(addErrMsg);
+      toast.error(addErrMsg);
       hasShownToast.current = false;
       setAddErrorMsg("");
     }
@@ -59,6 +66,9 @@ const AddressBook = () => {
     setAddAddressForm(true);
     setActiveTable(false);
     setEditAddressForm(false);
+    setAllListViewOptions(false)
+    setShowBillingOption(false);
+    setShowShippingOption(false)
   };
 
   const handleEdit = (address) => {
@@ -66,24 +76,77 @@ const AddressBook = () => {
     setEditAddressForm(true);
     setActiveTable(false);
     setAddAddressForm(false);
+    setAllListViewOptions(false)
+    setShowBillingOption(false);
+    setShowShippingOption(false)
   };
 
   const openAddressTable = () => {
     setActiveTable(true);
     setAddAddressForm(false);
     setEditAddressForm(false);
+    setDefaultShipping(false);
+    setDefaultBilling(false);
     fetchShippingDetails();
+    setAllListViewOptions(true);
+    setShowBillingOption(false);
+    setShowShippingOption(false)
+  };
+
+  const openDefaultBillingAddress = () => {
+    setActiveTable(false);
+    setDefaultBilling(true);
+    setDefaultShipping(false);
+    setAllListViewOptions(false);
+    setShowBillingOption(true);
+    setShowShippingOption(false)
+  };
+
+  const openDefaultShippingAddress = () => {
+    setActiveTable(false);
+    setDefaultShipping(true);
+    setDefaultBilling(false);
+    setAllListViewOptions(false);
+    setShowBillingOption(false);
+    setShowShippingOption(true)
   };
 
   if (loading) return <div className="text-center mt-4">Loading...</div>;
   if (error) return <div className="text-red-500 text-center mt-4">{error}</div>;
 
- 
 
-    
 
-  return (
+
+  return(
     <>
+    {allListViewOptions && (
+      <div className="flex justify-end gap-4 text-green-600 font-bold items-center">
+        <span className="cursor-pointer" onClick={openDefaultBillingAddress}>Default Billing Address</span>
+        <span className="border-l border-green-600 h-6"></span> 
+        <span className="cursor-pointer" onClick={openDefaultShippingAddress}>Default Shipping Address</span>
+      </div>
+    )
+    }
+    {showBillingOption && (
+      <div className="flex justify-end gap-4 text-green-600 font-bold items-center">
+      <span className="cursor-pointer" onClick={openDefaultBillingAddress}>Default Billing Address</span>
+    </div>
+    )}
+    {showShippingOption && (
+      <div className="flex justify-end gap-4 text-green-600 font-bold items-center">
+      <span className="cursor-pointer" onClick={openDefaultShippingAddress}>Default Shipping Address</span>
+    </div>
+    )}
+   
+
+
+      {defaultShipping && (
+    <DefaultShippingAddress setDefaultShipping={setDefaultShipping} addresses={addresses} fetchShippingDetails={fetchShippingDetails} openAddressTable={openAddressTable}/>
+      )}
+
+      {defaultBilling && (
+        <DefaultBillingAddress setDefaultBilling = {setDefaultBilling}  addresses={addresses} fetchShippingDetails={fetchShippingDetails} openAddressTable={openAddressTable}/>
+      )}
       {activeTable && (
         <div className="block w-full h-auto px-4 py-6">
           <table className="table-auto w-full">
@@ -113,9 +176,19 @@ const AddressBook = () => {
                       ${address.city}, ${address.state}, ${address.postalCode}, ${address.country}`}
                     </td>
                     <td className="border-t border-gray-300 px-4 py-2 text-left">{address.phone || "N/A"}</td>
-                    <td className="border-t border-gray-300 px-4 py-2 text-left text-center">
-                      {address.isDefault ? "Default Shipping Address" : ""}
+                    <td className="block border-t border-gray-300 px-4 text-left text-center text-sm">
+                      {address.isDefault && (
+                        <span className="block text-gray-800 rounded-full px-2 py-1">
+                          Default Shipping Address
+                        </span>
+                      )}
+                      {address.defaultBilling && (
+                        <span className="block text-gray-800 rounded-full px-2 py-1">
+                          Default Billing Address
+                        </span>
+                      )}
                     </td>
+
                     <td className="border-t border-gray-300 px-4 py-2 text-left text-center">
                       <button
                         className="px-4 py-2 text-gray-800 font-semibold"

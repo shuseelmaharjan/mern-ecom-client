@@ -86,6 +86,50 @@ class ShippingService {
       );
     }
   }
+
+  async updateDefaultBillingAddress(accessToken, addressId) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/billing-address/${addressId}/default`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Failed to update data",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  }
+
+  async updateDefaultShippingAddress(accessToken, addressId) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/shipping-address/${addressId}/default`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      console.log(accessToken);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Failed to update data",
+        error.response?.dta || error.message
+      );
+    }
+  }
 }
 const shippingService = new ShippingService();
 export default shippingService;

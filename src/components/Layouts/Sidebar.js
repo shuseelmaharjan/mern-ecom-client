@@ -6,6 +6,7 @@ import { HrNavbar } from "./HrNavbar";
 import { StaffNavbar } from "./StaffNavbar";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import { MMNavbar } from "./MMNavbar";
 
 const Sidebar = ({ isSidebarExpanded }) => {
   const location = useLocation();
@@ -47,6 +48,9 @@ const Sidebar = ({ isSidebarExpanded }) => {
           isSidebarExpanded={isSidebarExpanded}
           isActive={isActive}
         />
+      )}
+      {role === "mm" && (
+        <MMNavbar isSidebarExpanded={isSidebarExpanded} isActive={isActive} />
       )}
     </div>
   );

@@ -123,6 +123,7 @@ const MyProfile = () => {
     }
   };
 
+  const defaultAddress = userInfo.shippingAddresses?.find((address) => address.isDefault);
   
   return (
     <div className="block w-full h-auto px-4 py-6">
@@ -251,18 +252,24 @@ const MyProfile = () => {
         )}
       </div>
 
-      <div className="block p-4 border border-gray-300 rounded-md mt-4">
-        <h1 className="text-xl font-bold mb-2">Default Shipping Address</h1>
-        <p className="font-semibold text-lg">{userInfo.defaultAddress.fullName}</p>
-        <p>{userInfo.defaultAddress.addressLine1}</p>
-        {userInfo.defaultAddress.addressLine2 && <p>{userInfo.defaultAddress.addressLine2}</p>}
-        <p>
-          {userInfo.defaultAddress.city}, {userInfo.defaultAddress.state}
-        </p>
-        <p>Postal Code: {userInfo.defaultAddress.postalCode}</p>
-        <p>Country: {userInfo.defaultAddress.country}</p>
-        <p>Contact: {userInfo.defaultAddress.phone || 'N/A'}</p>
-      </div>
+      <div>
+      {defaultAddress ? (
+        <div className="block p-4 border border-gray-300 rounded-md mt-4">
+          <h1 className="text-xl font-bold mb-2">Default Shipping Address</h1>
+          <p className="font-semibold text-lg">{defaultAddress.fullName}</p>
+          <p>{defaultAddress.addressLine1}</p>
+          {defaultAddress.addressLine2 && <p>{defaultAddress.addressLine2}</p>}
+          <p>
+            {defaultAddress.city}, {defaultAddress.state}
+          </p>
+          <p>Postal Code: {defaultAddress.postalCode}</p>
+          <p>Country: {defaultAddress.country}</p>
+          <p>Contact: {defaultAddress.phone || 'N/A'}</p>
+        </div>
+      ) : (
+        <p className="text-gray-500">No addresses have been saved as the default shipping address.</p>
+      )}
+    </div>
 
     </div>
   );

@@ -33,13 +33,14 @@ const ProfileMenu = () => {
       setRole(decodedToken.role);
     }
   }, []);
+  console.log(role);
 
   const menuItems = [
     {
       to: "/dashboard",
       icon: <FaUser />,
       label: role === "vendor" ? "My Shop" : "Dashboard",
-      roles: ["admin", "hr", "vendor", "staff"],
+      roles: ["admin", "hr", "vendor", "staff", "mm"],
     },
     { to: "/profile", icon: <FaUser />, label: "My Profile" },
     { to: "/myorders", icon: <FaBox />, label: "Orders" },

@@ -55,13 +55,14 @@ const EditAddress = ({
       setPostalCode(data.postalCode || "");
       setSelectedCountry(data.country || "");
       setPhone(data.phone || ""); 
-      setSelectedOption(data.address || "");
+      setSelectedOption(data.isHome ? "home" : data.isOffice ? "office" : "");
       const country = countries.find((c) => c.name === data.country);
       if (country) setFlag(country.flag);
     } catch (error) {
       console.error("Error fetching address details:", error);
     }
   }, [accessToken, address._id, countries]);
+  
   
   useEffect(() => {
     fetchCountries();

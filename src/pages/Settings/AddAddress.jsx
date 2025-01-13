@@ -226,11 +226,10 @@ const AddAddress = ({ openAddressTable, fetchShippingDetails, setAddSuccessMsg, 
               Select a label for effective delivery:
             </label>
             <div className="flex gap-4">
-              {/* Home Option */}
               <div
-                onClick={() => handleOptionClick("Home")}
+                onClick={() => handleOptionClick("home")}
                 className={`flex items-center justify-center px-3 py-2 border rounded-lg cursor-pointer transition-all duration-300 ${
-                  selectedOption === "Home"
+                  selectedOption === "home"
                     ? "bg-green-600 shadow-lg text-white border-green-800"
                     : "bg-gray-100 text-gray-800 border-gray-300"
                 }`}
@@ -239,11 +238,10 @@ const AddAddress = ({ openAddressTable, fetchShippingDetails, setAddSuccessMsg, 
                 <span className="ml-2 text-sm font-medium">Home</span>
               </div>
 
-              {/* Office Option */}
               <div
-                onClick={() => handleOptionClick("Office")}
+                onClick={() => handleOptionClick("office")}
                 className={`flex items-center justify-center px-3 py-2 border rounded-lg cursor-pointer transition-all duration-300 ${
-                  selectedOption === "Office"
+                  selectedOption === "office"
                     ? "bg-green-600 shadow-lg text-white border-green-800"
                     : "bg-gray-100 text-gray-800 border-gray-300"
                 }`}

@@ -7,7 +7,6 @@ import { LiaBullhornSolid } from "react-icons/lia";
 import { AiOutlineBank } from "react-icons/ai";
 import { BsClipboard2Data } from "react-icons/bs";
 import { RiCoupon5Fill } from "react-icons/ri";
-import { RxDashboard } from "react-icons/rx";
 
 export const StaffNavbar = ({ isSidebarExpanded, isActive }) => {
   return (
@@ -21,7 +20,6 @@ export const StaffNavbar = ({ isSidebarExpanded, isActive }) => {
       <ul className="flex flex-col gap-y-2 p-4">
         {[
           { path: "/dashboard", label: "Dashboard", Icon: IoHomeOutline },
-          { path: "/categories", label: "Categories", Icon: RxDashboard },
           { path: "/listing", label: "Listing", Icon: LuShapes },
           { path: "/messages", label: "Messages", Icon: LuMessageSquareText },
           {

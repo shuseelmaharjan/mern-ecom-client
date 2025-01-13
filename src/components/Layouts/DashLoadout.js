@@ -108,7 +108,8 @@ const DashLoadout = ({ children }) => {
     role === "admin" ||
     role === "vendor" ||
     role === "staff" ||
-    role === "hr"
+    role === "hr" ||
+    role === "mm"
   ) {
     return (
       <div className="flex h-screen">

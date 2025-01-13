@@ -5,11 +5,11 @@ import { IoHomeOutline, IoBarChartOutline } from "react-icons/io5";
 import { LuShapes, LuMessageSquareText, LuUsersRound } from "react-icons/lu";
 import { LiaBullhornSolid } from "react-icons/lia";
 import { AiOutlineBank } from "react-icons/ai";
-import { FaUsers } from "react-icons/fa6";
 import { BsClipboard2Data } from "react-icons/bs";
 import { FaSitemap } from "react-icons/fa";
+import { RxDashboard } from "react-icons/rx";
 
-export const AdminNavbar = ({ isSidebarExpanded, isActive }) => {
+export const MMNavbar = ({ isSidebarExpanded, isActive }) => {
   return (
     <nav
       className="flex-1 overflow-y-auto bg-white shadow-md rounded-lg mt-10"
@@ -22,7 +22,7 @@ export const AdminNavbar = ({ isSidebarExpanded, isActive }) => {
         {/* Reusable Nav Item Component */}
         {[
           { path: "/dashboard", label: "Dashboard", Icon: IoHomeOutline },
-          { path: "/employee", label: "Employee", Icon: FaUsers },
+          { path: "/categories", label: "Categories", Icon: RxDashboard },
           { path: "/statistics", label: "Stats", Icon: IoBarChartOutline },
           { path: "/listing", label: "Listing", Icon: LuShapes },
           { path: "/messages", label: "Messages", Icon: LuMessageSquareText },
