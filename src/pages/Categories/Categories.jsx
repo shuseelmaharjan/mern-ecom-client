@@ -6,6 +6,9 @@ import config from "../../services/config";
 import AddSubCategoryModal from "./AddSubCategoryModal";
 import AddGrandCategory from "./AddGrandCategory";
 import DateUtils from "../../utils/dateUtils";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
+import { capitalizeFirstLetter } from "../../utils/textUtils";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -117,39 +120,47 @@ const Categories = () => {
               <li
               key={category._id}
               onClick={() => handleCategorySelect(category)}
-              className={`p-2 flex items-center space-x-4 rounded shadow-sm cursor-pointer ${
+              className={`p-2 flex items-center justify-between space-x-4 rounded shadow-sm cursor-pointer ${
                 selectedCategory && selectedCategory._id === category._id
                   ? "bg-gray-300"
                   : "bg-white hover:bg-gray-200"
               }`}
             >
-              <img
-                src={`${BASE_URL}/${category.image}`}
-                alt={category.name}
-                className="w-12 h-12 object-cover rounded"
-              />
-              <span>{category.name}</span>
-            
-              <div className="flex flex-col text-xs">
-                <span className="text-gray-600">Author</span>
-              <span><span className="font-semibold text-gray-600 mr-2">{category.activity?.performedBy?.name || "Unknown"}</span>({category.activity?.performedBy?.role || "Unknown"})</span>
-
-              <span className="text-gray-600">
-                {category.activity ? (
-                  category.activity.action === "INSERT" ? (
-                    `Created: ${DateUtils.formatDate(category.activity.timestamp)}`
-                  ) : category.activity.action === "UPDATE" ? (
-                    `Updated: ${DateUtils.formatDate(category.activity.timestamp)}`
-                  ) : (
-                    ""
-                  )
-                ) : (
-                  "No activity"
-                )}
-              </span>
+              <div className="flex items-center space-x-4">
+                <img
+                  src={`${BASE_URL}/${category.image}`}
+                  alt={capitalizeFirstLetter(category.name)}
+                  className="w-12 h-12 object-cover rounded"
+                />
+                <span>{capitalizeFirstLetter(category.name)}</span>
+                <div className="flex flex-col text-xs">
+                  <span className="text-gray-600">Author</span>
+                  <span>
+                    <span className="font-semibold text-gray-600 mr-2">
+                      {category.activity?.performedBy?.name || "Unknown"}
+                    </span>
+                    ({category.activity?.performedBy?.role || "Unknown"})
+                  </span>
+                  <span className="text-gray-600">
+                    {category.activity ? (
+                      category.activity.action === "INSERT" ? (
+                        `Created: ${DateUtils.formatDate(category.activity.timestamp)}`
+                      ) : category.activity.action === "UPDATE" ? (
+                        `Updated: ${DateUtils.formatDate(category.activity.timestamp)}`
+                      ) : (
+                        ""
+                      )
+                    ) : (
+                      "No activity"
+                    )}
+                  </span>
+                </div>
               </div>
-              
-                          
+            
+              <div className="flex flex-col items-center space-y-2 text-gray-600">
+                <FaEdit className="cursor-pointer hover:text-blue-700"/>
+                <FaRegTrashAlt className="cursor-pointer hover:text-red-500"  />
+              </div>
             </li>
             
             ))}
@@ -161,7 +172,7 @@ const Categories = () => {
       <div className="flex-1 border-gray-100 border-2 rounded-lg p-4 shadow-sm">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold mb-4">
-            {`Child of ${selectedCategory ? selectedCategory.name : ""}`}
+            {`Child of ${capitalizeFirstLetter(selectedCategory) ? capitalizeFirstLetter(selectedCategory.name) : ""}`}
           </h2>
           <button
             className="bg-gray-800 text-white px-4 py-2 hover:bg-gray-700"
@@ -169,7 +180,7 @@ const Categories = () => {
               handleAddSubcategory(selectedCategory?._id, selectedCategory.name)
             }
           >
-            Add Child for {selectedCategory ? selectedCategory.name : ""}
+            Add Child for {capitalizeFirstLetter(selectedCategory) ? capitalizeFirstLetter(selectedCategory.name) : ""}
           </button>
         </div>
 
@@ -185,18 +196,19 @@ const Categories = () => {
               <li
                 key={child._id}
                 onClick={() => handleChildSelect(child)}
-                className={`p-2 flex items-center space-x-4 rounded shadow-sm cursor-pointer ${
+                className={`p-2 flex items-center justify-between space-x-4 rounded shadow-sm cursor-pointer ${
                   selectedChild && selectedChild._id === child._id
                     ? "bg-gray-300"
                     : "bg-white hover:bg-gray-200"
                 }`}
               >
-                <img
+              <div className="flex items-center space-x-4">
+              <img
                   src={`${BASE_URL}/${child.image}`}
                   alt={child.name}
                   className="w-12 h-12 object-cover rounded"
                 />
-                <span>{child.name}</span>
+                <span>{capitalizeFirstLetter(child.name)}</span>
                 <div className="flex flex-col text-xs">
                   <span className="text-gray-600">Author</span>
                   <span>
@@ -220,6 +232,12 @@ const Categories = () => {
                     )}
                   </span>
                 </div>
+                </div>
+                
+                <div className="flex flex-col items-center space-y-2 text-gray-600">
+                <FaEdit className="cursor-pointer hover:text-blue-700"/>
+                <FaRegTrashAlt className="cursor-pointer hover:text-red-500"  />
+              </div>
               </li>
             ))}
 
@@ -227,11 +245,10 @@ const Categories = () => {
         )}
       </div>
 
-      {/* Grandcategories Column */}
       <div className="flex-1 border-gray-100 border-2 rounded-lg p-4 shadow-sm">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold mb-4">
-            {`Child of ${selectedChild ? selectedChild.name : ""}`}
+            {`Child of ${capitalizeFirstLetter(selectedChild) ? capitalizeFirstLetter(selectedChild.name) : ""}`}
           </h2>
           <button
             className="bg-gray-800 text-white px-4 py-2 hover:bg-gray-700"
@@ -244,7 +261,7 @@ const Categories = () => {
               )
             }
           >
-            Add Child for {selectedChild ? selectedChild.name : ""}
+            Add Child for {capitalizeFirstLetter(selectedChild) ? capitalizeFirstLetter(selectedChild.name) : ""}
           </button>
         </div>
 
@@ -260,19 +277,21 @@ const Categories = () => {
               <li
                 key={grandChild._id}
                 onClick={() => handleGrandChildSelect(grandChild)}
-                className={`p-2 flex items-center space-x-4 rounded shadow-sm cursor-pointer ${
+                className={`p-2 flex items-center justify-between space-x-4 rounded shadow-sm cursor-pointer ${
                   selectedGrandChild &&
                   selectedGrandChild._id === grandChild._id
                     ? "bg-gray-300"
                     : "bg-white hover:bg-gray-200"
                 }`}
               >
+              <div className="flex items-center space-x-4">
+
                 <img
                   src={`${BASE_URL}/${grandChild.image}`}
                   alt={grandChild.name}
                   className="w-12 h-12 object-cover rounded"
                 />
-                <span>{grandChild.name}</span>
+                <span>{capitalizeFirstLetter(grandChild.name)}</span>
                 <div className="flex flex-col text-xs">
                   <span className="text-gray-600">Author</span>
                   <span>
@@ -296,6 +315,11 @@ const Categories = () => {
                     )}
                   </span>
                 </div>
+                </div>
+                <div className="flex flex-col items-center space-y-2 text-gray-600">
+                <FaEdit className="cursor-pointer hover:text-blue-700"/>
+                <FaRegTrashAlt className="cursor-pointer hover:text-red-500"  />
+              </div>
               </li>
             ))}
           </ul>
