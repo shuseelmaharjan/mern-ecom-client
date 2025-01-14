@@ -12,6 +12,7 @@ import { capitalizeFirstLetter } from "../../utils/textUtils";
 import RemoveCatModel from "./RemoveCatModel";
 import { toast } from "react-toastify";
 import RemoveSubCatModel from "./RemoveSubCatModel";
+import RemoveGrandCatModel from "./RemoveGrandCatModel";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -145,6 +146,39 @@ const Categories = () => {
       setRemoveSubCatError("");
     }
   }, [removeSubCatMsg, removeSubCatError]);
+
+
+  const [grandChildCatName, setGrandChildCatName] = useState('');
+  const [grandChildCatId, setGrandChildCatId] = useState('');
+  const [grandChildParentId, setGrandChildParentId] = useState('');
+  const [grandChildParentName, setGrandChildParentName] = useState('');
+  const [grandChildName, setGrandChildName] = useState('');
+  const [grandChildId, setGrandChildId] = useState('');
+  const [removeGrandCatModel, setRemoveGrandCatModel] = useState(false);
+  const [grandRemoveSuccessMsg, setGrandRemoveSuccessMsg] = useState('');
+  const [grandRemoveErrorMsg, setGrandRemoveErrorMsg] = useState('');
+  
+  const handleRemoveGrandCategory = (catId, catName, parentId, parentName, grandChildId, grandChildName) => {
+    setGrandChildCatName(catName);
+    setGrandChildCatId(catId);
+    setGrandChildParentId(parentId);
+    setGrandChildParentName(parentName);
+    setGrandChildName(grandChildName);
+    setGrandChildId(grandChildId);
+    setRemoveGrandCatModel(true);
+
+  }
+
+  useEffect(() => {
+    if (grandRemoveSuccessMsg) {
+      toast.success(grandRemoveSuccessMsg);
+      setGrandRemoveSuccessMsg("");
+    }
+    if (grandRemoveErrorMsg) {
+      toast.error(grandRemoveErrorMsg);
+      setGrandRemoveErrorMsg("");
+    }
+  }, [grandRemoveSuccessMsg, grandRemoveErrorMsg]);
 
   return (
     <div className="flex flex-col lg:flex-row w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
@@ -392,7 +426,7 @@ const Categories = () => {
                 </div>
                 <div className="flex flex-col items-center space-y-2 text-gray-600">
                   <FaEdit className="cursor-pointer hover:text-blue-700" />
-                  <FaRegTrashAlt className="cursor-pointer hover:text-red-500" />
+                  <FaRegTrashAlt className="cursor-pointer hover:text-red-500"  onClick={() => handleRemoveGrandCategory(selectedCategory._id, selectedCategory.name, selectedChild._id, selectedChild.name, grandChild._id, grandChild.name)}/>
                 </div>
               </li>
             ))}
@@ -449,6 +483,22 @@ const Categories = () => {
         setRemoveSubCatMsg = {setRemoveSubCatMsg}
         setRemoveSubCatError = {setRemoveSubCatError}
         parentId={parentId}
+        />
+      )}
+
+      {removeGrandCatModel && (
+        <RemoveGrandCatModel
+        grandChildCatId={grandChildCatId}
+        grandChildCatName = {grandChildCatName}
+        grandChildParentId = {grandChildParentId}
+        grandChildParentName = {grandChildParentName}
+        grandChildId={grandChildId}
+        grandChildName = {grandChildName}
+        setRemoveGrandCatModel={setRemoveGrandCatModel}
+        getData={getData}
+        accessToken={accessToken}
+        setGrandRemoveSuccessMsg={setGrandRemoveSuccessMsg}
+        setGrandRemoveErrorMsg={setGrandRemoveErrorMsg}
         />
       )}
     </div>

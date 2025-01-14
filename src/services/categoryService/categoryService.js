@@ -116,6 +116,30 @@ class CategoryService {
       throw error;
     }
   }
+
+  async removeGrandCategory(
+    accessToken,
+    grandChildCatId,
+    grandChildParentId,
+    grandChildId
+  ) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/remove-grandcategory/${grandChildCatId}/${grandChildParentId}/${grandChildId}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
 }
 
 const categoryService = new CategoryService();
