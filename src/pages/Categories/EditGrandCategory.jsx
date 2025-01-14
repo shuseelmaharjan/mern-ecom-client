@@ -3,7 +3,7 @@ import { FaTrash } from "react-icons/fa";
 import categoryService from "../../services/categoryService/categoryService";
 import config from "../../services/config";
 
-const EditCategoryModal = ({
+const EditSubCategoryModal = ({
   editCatId,
   editCatName,
   editCatImage,
@@ -12,6 +12,8 @@ const EditCategoryModal = ({
   setEditCatMsgError,
   setEditCatModal,
   getData,
+  parentId,
+  parent1Id,
 }) => {
   const [name, setName] = useState(editCatName || "");
   const [imageFile, setImageFile] = useState(null);
@@ -28,10 +30,9 @@ const EditCategoryModal = ({
         setErrorMessage("Only .jpg, .jpeg, or .png files are allowed.");
         return;
       }
-
       setErrorMessage("");
       setImageFile(file);
-      setExistingImage(""); 
+      setExistingImage(""); // Remove the existing image if a new one is selected
     }
   };
 
@@ -39,7 +40,7 @@ const EditCategoryModal = ({
     setExistingImage("");
     setImageFile(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = null; 
+      fileInputRef.current.value = null; // Reset file input
     }
   };
 
@@ -47,7 +48,7 @@ const EditCategoryModal = ({
     e.preventDefault();
 
     if (!name.trim()) {
-      setErrorMessage("Category name is required.");
+      setErrorMessage("Subcategory name is required.");
       return;
     }
 
@@ -58,14 +59,15 @@ const EditCategoryModal = ({
         formData.append("image", imageFile);
       }
 
-      await categoryService.updateCategory(accessToken, editCatId, formData);
+      // Call the service to update the subcategory
+      await categoryService.updateGrandCategory(accessToken, parent1Id, parentId, editCatId, formData);
 
-      setEditCatMsgSuccess("Category updated successfully.");
+      setEditCatMsgSuccess("Subcategory updated successfully.");
       setEditCatModal(false);
       getData();
     } catch (error) {
-      console.error("Error updating category:", error.message);
-      setEditCatMsgError(error.response?.data?.message || "Error updating category.");
+      console.error("Error updating subcategory:", error.message);
+      setEditCatMsgError(error.response?.data?.message || "Error updating subcategory.");
     }
   };
 
@@ -83,7 +85,7 @@ const EditCategoryModal = ({
           {/* Name Field */}
           <div className="mb-4">
             <label htmlFor="name" className="block text-gray-700 font-semibold mb-2">
-              Category Name
+              Subcategory Name
             </label>
             <input
               type="text"
@@ -91,7 +93,7 @@ const EditCategoryModal = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full border border-gray-500 p-2 mb-4 outline-none"
-              placeholder="Enter category name"
+              placeholder="Enter subcategory name"
               required
             />
           </div>
@@ -99,13 +101,13 @@ const EditCategoryModal = ({
           {/* Image Field */}
           <div className="mb-4">
             <label htmlFor="image" className="block text-gray-700 font-semibold mb-2">
-              Category Image
+              Subcategory Image
             </label>
             {existingImage && !imageFile ? (
               <div className="h-48 w-full relative">
                 <img
                   src={`${BASE_URL}/${existingImage}`}
-                  alt="Existing Category"
+                  alt="Existing Subcategory"
                   className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
                 />
                 <FaTrash
@@ -117,7 +119,7 @@ const EditCategoryModal = ({
               <div className="h-48 w-full relative">
                 <img
                   src={URL.createObjectURL(imageFile)}
-                  alt="Selected Category"
+                  alt="Selected Subcategory"
                   className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
                 />
                 <FaTrash
@@ -166,4 +168,4 @@ const EditCategoryModal = ({
   );
 };
 
-export default EditCategoryModal;
+export default EditSubCategoryModal;

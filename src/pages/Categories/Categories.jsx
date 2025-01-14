@@ -14,6 +14,8 @@ import { toast } from "react-toastify";
 import RemoveSubCatModel from "./RemoveSubCatModel";
 import RemoveGrandCatModel from "./RemoveGrandCatModel";
 import EditCategoryModal from "./EditCategoryModal";
+import EditSubCategoryModal from "./EditSubCategoryModal";
+import EditGrandCategory from "./EditGrandCategory";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -122,12 +124,12 @@ const Categories = () => {
   }, [removeCatMsg, errorCatMsg]);
 
   const [subCatId, setSubCatId] = useState("");
-  const [subCatName, setSubCatName] = useState('');
-  const [subCatParentName, setSubCatParentName] = useState('');
+  const [subCatName, setSubCatName] = useState("");
+  const [subCatParentName, setSubCatParentName] = useState("");
   const [removeSubCategoryModal, setRemoveSubCategoryModal] = useState(false);
-  const [removeSubCatMsg, setRemoveSubCatMsg] = useState('');
-  const [removeSubCatError, setRemoveSubCatError] = useState('');
-  const [parentId, setParentId] = useState('');
+  const [removeSubCatMsg, setRemoveSubCatMsg] = useState("");
+  const [removeSubCatError, setRemoveSubCatError] = useState("");
+  const [parentId, setParentId] = useState("");
 
   const handleRemoveSubCategory = (subCatId, subCatName, parentName, parId) => {
     setSubCatId(subCatId);
@@ -135,7 +137,7 @@ const Categories = () => {
     setSubCatParentName(parentName);
     setRemoveSubCategoryModal(true);
     setParentId(parId);
-  }
+  };
 
   useEffect(() => {
     if (removeSubCatMsg) {
@@ -148,18 +150,24 @@ const Categories = () => {
     }
   }, [removeSubCatMsg, removeSubCatError]);
 
-
-  const [grandChildCatName, setGrandChildCatName] = useState('');
-  const [grandChildCatId, setGrandChildCatId] = useState('');
-  const [grandChildParentId, setGrandChildParentId] = useState('');
-  const [grandChildParentName, setGrandChildParentName] = useState('');
-  const [grandChildName, setGrandChildName] = useState('');
-  const [grandChildId, setGrandChildId] = useState('');
+  const [grandChildCatName, setGrandChildCatName] = useState("");
+  const [grandChildCatId, setGrandChildCatId] = useState("");
+  const [grandChildParentId, setGrandChildParentId] = useState("");
+  const [grandChildParentName, setGrandChildParentName] = useState("");
+  const [grandChildName, setGrandChildName] = useState("");
+  const [grandChildId, setGrandChildId] = useState("");
   const [removeGrandCatModel, setRemoveGrandCatModel] = useState(false);
-  const [grandRemoveSuccessMsg, setGrandRemoveSuccessMsg] = useState('');
-  const [grandRemoveErrorMsg, setGrandRemoveErrorMsg] = useState('');
-  
-  const handleRemoveGrandCategory = (catId, catName, parentId, parentName, grandChildId, grandChildName) => {
+  const [grandRemoveSuccessMsg, setGrandRemoveSuccessMsg] = useState("");
+  const [grandRemoveErrorMsg, setGrandRemoveErrorMsg] = useState("");
+
+  const handleRemoveGrandCategory = (
+    catId,
+    catName,
+    parentId,
+    parentName,
+    grandChildId,
+    grandChildName
+  ) => {
     setGrandChildCatName(catName);
     setGrandChildCatId(catId);
     setGrandChildParentId(parentId);
@@ -167,8 +175,7 @@ const Categories = () => {
     setGrandChildName(grandChildName);
     setGrandChildId(grandChildId);
     setRemoveGrandCatModel(true);
-
-  }
+  };
 
   useEffect(() => {
     if (grandRemoveSuccessMsg) {
@@ -181,19 +188,18 @@ const Categories = () => {
     }
   }, [grandRemoveSuccessMsg, grandRemoveErrorMsg]);
 
-
-  const [editCatId, setEditCatId] = useState('');
-  const [editCatName, setEditCatname] = useState('');
-  const [editCatImage, setEditCatimage] = useState('');
+  const [editCatId, setEditCatId] = useState("");
+  const [editCatName, setEditCatname] = useState("");
+  const [editCatImage, setEditCatimage] = useState("");
   const [editCatModal, setEditCatModal] = useState(false);
-  const [editCatMsgSuccess, setEditCatMsgSuccess] = useState('');
-  const [editCatMsgError, setEditCatMsgError] = useState('');
-  const handleEditCategory =(catId, catName, catImage) => {
+  const [editCatMsgSuccess, setEditCatMsgSuccess] = useState("");
+  const [editCatMsgError, setEditCatMsgError] = useState("");
+  const handleEditCategory = (catId, catName, catImage) => {
     setEditCatId(catId);
     setEditCatname(catName);
     setEditCatimage(catImage);
-    setEditCatModal(true)
-  }
+    setEditCatModal(true);
+  };
 
   useEffect(() => {
     if (editCatMsgSuccess) {
@@ -206,6 +212,64 @@ const Categories = () => {
     }
   }, [editCatMsgSuccess, editCatMsgError]);
 
+  const [escName, setEscName] = useState(""); //edit subcategory name
+  const [escImage, setEscImage] = useState("");
+  const [escId, setEscId] = useState(""); // edit subcategory id
+  const [epId, setepId] = useState(""); //parent id
+  const [editSubcatModal, EditSubCatModal] = useState(false);
+  const [editSubcategorySuccess, setEditSubcategorySuccess] = useState("");
+  const [editSubcategoryError, setEditSubcategoryError] = useState("");
+
+  const handleEditSubCategory = (subId, subName, image, parentId) => {
+    setEscName(subName);
+    setEscId(subId);
+    setepId(parentId);
+    setEscImage(image);
+    EditSubCatModal(true);
+  };
+
+  useEffect(() => {
+    if (editSubcategorySuccess) {
+      toast.success(editSubcategorySuccess);
+      setEditSubcategorySuccess("");
+    }
+    if (editSubcategoryError) {
+      toast.error(editSubcategoryError);
+      setEditSubcategoryError("");
+    }
+  }, [editSubcategorySuccess, editSubcategoryError]);
+
+
+  const [gcId, setgcId] = useState('');
+  const [gsubcatId, setGsubcatId] = useState('');
+  const [gId, setGId] = useState('');
+  const [gNam, setgName] = useState('');
+  const [gImg, setGImage] = useState('');
+  const [modalGOpen, setModalGopen] = useState(false);
+  const [gSuccess, setGsuccess] = useState('');
+  const [gError, setGError] = useState('');
+
+
+
+  const handleUpdateGrandChild = (catId, subcatId, id, nam, image) => {
+    setgcId(catId);
+    setGsubcatId(subcatId);
+    setGId(id);
+    setgName(nam);
+    setGImage(image);
+    setModalGopen(true);
+  }
+
+  useEffect(() => {
+    if (gSuccess) {
+      toast.success(gSuccess);
+      setGsuccess("");
+    }
+    if (gError) {
+      toast.error(gError);
+      setGError("");
+    }
+  }, [gSuccess, gError]);
   return (
     <div className="flex flex-col lg:flex-row w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
       {/* Categories Column */}
@@ -271,7 +335,16 @@ const Categories = () => {
                 </div>
 
                 <div className="flex flex-col items-center space-y-2 text-gray-600">
-                  <FaEdit className="cursor-pointer hover:text-blue-700" onClick={() => handleEditCategory(category._id, category.name, category.image)}/>
+                  <FaEdit
+                    className="cursor-pointer hover:text-blue-700"
+                    onClick={() =>
+                      handleEditCategory(
+                        category._id,
+                        category.name,
+                        category.image
+                      )
+                    }
+                  />
                   <FaRegTrashAlt
                     className="cursor-pointer hover:text-red-500"
                     onClick={() =>
@@ -310,9 +383,7 @@ const Categories = () => {
 
         {loading || !selectedCategory?.subCategories?.length ? (
           <div className="text-gray-500">
-            {!selectedCategory?.subCategories?.length
-              ? "No child found."
-              : ""}
+            {!selectedCategory?.subCategories?.length ? "No child found." : ""}
           </div>
         ) : (
           <ul className="space-y-2">
@@ -359,11 +430,26 @@ const Categories = () => {
                 </div>
 
                 <div className="flex flex-col items-center space-y-2 text-gray-600">
-                  <FaEdit className="cursor-pointer hover:text-blue-700" />
+                  <FaEdit
+                    className="cursor-pointer hover:text-blue-700"
+                    onClick={() =>
+                      handleEditSubCategory(
+                        child._id,
+                        child.name,
+                        child.image,
+                        selectedCategory._id
+                      )
+                    }
+                  />
                   <FaRegTrashAlt
                     className="cursor-pointer hover:text-red-500"
                     onClick={() =>
-                      handleRemoveSubCategory(child._id, child.name, selectedCategory.name, selectedCategory._id)
+                      handleRemoveSubCategory(
+                        child._id,
+                        child.name,
+                        selectedCategory.name,
+                        selectedCategory._id
+                      )
                     }
                   />
                 </div>
@@ -402,9 +488,7 @@ const Categories = () => {
 
         {loading || !selectedChild?.grandCategories?.length ? (
           <div className="text-gray-500">
-            {!selectedChild?.grandCategories?.length
-              ? `No child found.`
-              : ""}
+            {!selectedChild?.grandCategories?.length ? `No child found.` : ""}
           </div>
         ) : (
           <ul className="space-y-2">
@@ -451,8 +535,31 @@ const Categories = () => {
                   </div>
                 </div>
                 <div className="flex flex-col items-center space-y-2 text-gray-600">
-                  <FaEdit className="cursor-pointer hover:text-blue-700" />
-                  <FaRegTrashAlt className="cursor-pointer hover:text-red-500"  onClick={() => handleRemoveGrandCategory(selectedCategory._id, selectedCategory.name, selectedChild._id, selectedChild.name, grandChild._id, grandChild.name)}/>
+                  <FaEdit
+                    className="cursor-pointer hover:text-blue-700"
+                    onClick={() => {
+                      handleUpdateGrandChild(
+                        selectedCategory._id,
+                        selectedChild._id,
+                        grandChild._id,
+                        grandChild.name,
+                        grandChild.image
+                      );
+                    }}
+                  />
+                  <FaRegTrashAlt
+                    className="cursor-pointer hover:text-red-500"
+                    onClick={() =>
+                      handleRemoveGrandCategory(
+                        selectedCategory._id,
+                        selectedCategory.name,
+                        selectedChild._id,
+                        selectedChild.name,
+                        grandChild._id,
+                        grandChild.name
+                      )
+                    }
+                  />
                 </div>
               </li>
             ))}
@@ -500,46 +607,75 @@ const Categories = () => {
       )}
       {removeSubCategoryModal && (
         <RemoveSubCatModel
-        subCatId = {subCatId}
-        subCatName = {subCatName}
-        subCatParentName = {subCatParentName}
-        getData={getData}
-        accessToken={accessToken}
-        setRemoveSubCategoryModal={setRemoveSubCategoryModal}
-        setRemoveSubCatMsg = {setRemoveSubCatMsg}
-        setRemoveSubCatError = {setRemoveSubCatError}
-        parentId={parentId}
+          subCatId={subCatId}
+          subCatName={subCatName}
+          subCatParentName={subCatParentName}
+          getData={getData}
+          accessToken={accessToken}
+          setRemoveSubCategoryModal={setRemoveSubCategoryModal}
+          setRemoveSubCatMsg={setRemoveSubCatMsg}
+          setRemoveSubCatError={setRemoveSubCatError}
+          parentId={parentId}
         />
       )}
 
       {removeGrandCatModel && (
         <RemoveGrandCatModel
-        grandChildCatId={grandChildCatId}
-        grandChildCatName = {grandChildCatName}
-        grandChildParentId = {grandChildParentId}
-        grandChildParentName = {grandChildParentName}
-        grandChildId={grandChildId}
-        grandChildName = {grandChildName}
-        setRemoveGrandCatModel={setRemoveGrandCatModel}
-        getData={getData}
-        accessToken={accessToken}
-        setGrandRemoveSuccessMsg={setGrandRemoveSuccessMsg}
-        setGrandRemoveErrorMsg={setGrandRemoveErrorMsg}
+          grandChildCatId={grandChildCatId}
+          grandChildCatName={grandChildCatName}
+          grandChildParentId={grandChildParentId}
+          grandChildParentName={grandChildParentName}
+          grandChildId={grandChildId}
+          grandChildName={grandChildName}
+          setRemoveGrandCatModel={setRemoveGrandCatModel}
+          getData={getData}
+          accessToken={accessToken}
+          setGrandRemoveSuccessMsg={setGrandRemoveSuccessMsg}
+          setGrandRemoveErrorMsg={setGrandRemoveErrorMsg}
         />
       )}
 
       {editCatModal && (
         <EditCategoryModal
-        editCatId = {editCatId}
-        editCatName = {editCatName}
-        editCatImage = {editCatImage}
-        accessToken = {accessToken}
-        setEditCatMsgSuccess={setEditCatMsgSuccess}
-        setEditCatMsgError={setEditCatMsgError}
-        setEditCatModal={setEditCatModal}
-        getData={getData}
+          editCatId={editCatId}
+          editCatName={editCatName}
+          editCatImage={editCatImage}
+          accessToken={accessToken}
+          setEditCatMsgSuccess={setEditCatMsgSuccess}
+          setEditCatMsgError={setEditCatMsgError}
+          setEditCatModal={setEditCatModal}
+          getData={getData}
         />
       )}
+      {editSubcatModal && (
+        <EditSubCategoryModal
+          editCatId={escId}
+          editCatName={escName}
+          editCatImage={escImage}
+          accessToken={accessToken}
+          setEditCatMsgSuccess={setEditSubcategorySuccess}
+          setEditCatMsgError={setEditSubcategoryError}
+          setEditCatModal={EditSubCatModal}
+          getData={getData}
+          parentId={epId}
+        />
+      )}
+      {modalGOpen &&(
+        <EditGrandCategory 
+          editCatId={gId}
+          editCatName={gNam}
+          editCatImage={gImg}
+          accessToken={accessToken}
+          setEditCatMsgSuccess={setGsuccess}
+          setEditCatMsgError={setGError}
+          setEditCatModal={setModalGopen}
+          getData={getData}
+          parentId={gsubcatId}
+          parent1Id = {gcId}
+        />
+      )
+        
+      }
     </div>
   );
 };

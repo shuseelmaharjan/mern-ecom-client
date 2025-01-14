@@ -159,6 +159,44 @@ class CategoryService {
       throw error;
     }
   }
+
+  async updateSubCategory(accessToken, parentId, subCatId, formData) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/update/subcategory/${parentId}/${subCatId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error updating subcategory:", error);
+      throw error;
+    }
+  }
+
+  async updateGrandCategory(accessToken, catId, subCatId, id, formData) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/update-grandcategory/${catId}/${subCatId}/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error creating category:", error);
+      throw error;
+    }
+  }
 }
 
 const categoryService = new CategoryService();
