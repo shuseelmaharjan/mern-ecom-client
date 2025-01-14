@@ -140,6 +140,25 @@ class CategoryService {
       throw error;
     }
   }
+
+  async updateCategory(accessToken, catId, formData) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/update/category/${catId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error creating category:", error);
+      throw error;
+    }
+  }
 }
 
 const categoryService = new CategoryService();

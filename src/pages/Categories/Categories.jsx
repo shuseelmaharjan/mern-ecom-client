@@ -13,6 +13,7 @@ import RemoveCatModel from "./RemoveCatModel";
 import { toast } from "react-toastify";
 import RemoveSubCatModel from "./RemoveSubCatModel";
 import RemoveGrandCatModel from "./RemoveGrandCatModel";
+import EditCategoryModal from "./EditCategoryModal";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -180,6 +181,31 @@ const Categories = () => {
     }
   }, [grandRemoveSuccessMsg, grandRemoveErrorMsg]);
 
+
+  const [editCatId, setEditCatId] = useState('');
+  const [editCatName, setEditCatname] = useState('');
+  const [editCatImage, setEditCatimage] = useState('');
+  const [editCatModal, setEditCatModal] = useState(false);
+  const [editCatMsgSuccess, setEditCatMsgSuccess] = useState('');
+  const [editCatMsgError, setEditCatMsgError] = useState('');
+  const handleEditCategory =(catId, catName, catImage) => {
+    setEditCatId(catId);
+    setEditCatname(catName);
+    setEditCatimage(catImage);
+    setEditCatModal(true)
+  }
+
+  useEffect(() => {
+    if (editCatMsgSuccess) {
+      toast.success(editCatMsgSuccess);
+      setEditCatMsgSuccess("");
+    }
+    if (editCatMsgError) {
+      toast.error(editCatMsgError);
+      setEditCatMsgError("");
+    }
+  }, [editCatMsgSuccess, editCatMsgError]);
+
   return (
     <div className="flex flex-col lg:flex-row w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
       {/* Categories Column */}
@@ -245,7 +271,7 @@ const Categories = () => {
                 </div>
 
                 <div className="flex flex-col items-center space-y-2 text-gray-600">
-                  <FaEdit className="cursor-pointer hover:text-blue-700" />
+                  <FaEdit className="cursor-pointer hover:text-blue-700" onClick={() => handleEditCategory(category._id, category.name, category.image)}/>
                   <FaRegTrashAlt
                     className="cursor-pointer hover:text-red-500"
                     onClick={() =>
@@ -285,7 +311,7 @@ const Categories = () => {
         {loading || !selectedCategory?.subCategories?.length ? (
           <div className="text-gray-500">
             {!selectedCategory?.subCategories?.length
-              ? "No subcategories found."
+              ? "No child found."
               : ""}
           </div>
         ) : (
@@ -377,7 +403,7 @@ const Categories = () => {
         {loading || !selectedChild?.grandCategories?.length ? (
           <div className="text-gray-500">
             {!selectedChild?.grandCategories?.length
-              ? "No grandcategories found."
+              ? `No child found.`
               : ""}
           </div>
         ) : (
@@ -499,6 +525,19 @@ const Categories = () => {
         accessToken={accessToken}
         setGrandRemoveSuccessMsg={setGrandRemoveSuccessMsg}
         setGrandRemoveErrorMsg={setGrandRemoveErrorMsg}
+        />
+      )}
+
+      {editCatModal && (
+        <EditCategoryModal
+        editCatId = {editCatId}
+        editCatName = {editCatName}
+        editCatImage = {editCatImage}
+        accessToken = {accessToken}
+        setEditCatMsgSuccess={setEditCatMsgSuccess}
+        setEditCatMsgError={setEditCatMsgError}
+        setEditCatModal={setEditCatModal}
+        getData={getData}
         />
       )}
     </div>
