@@ -5,6 +5,7 @@ import categoryService from "../../services/categoryService/categoryService";
 import config from "../../services/config";
 import AddSubCategoryModal from "./AddSubCategoryModal";
 import AddGrandCategory from "./AddGrandCategory";
+import DateUtils from "../../utils/dateUtils";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -129,19 +130,26 @@ const Categories = () => {
               />
               <span>{category.name}</span>
             
-              <span>
+              <div className="flex flex-col text-xs">
+                <span className="text-gray-600">Author</span>
+              <span><span className="font-semibold text-gray-600 mr-2">{category.activity?.performedBy?.name || "Unknown"}</span>({category.activity?.performedBy?.role || "Unknown"})</span>
+
+              <span className="text-gray-600">
                 {category.activity ? (
-                  category.activity.action === "INSERT"
-                    ? `Created at: ${new Date(category.activity.timestamp).toLocaleString()}`
-                    : category.activity.action === "UPDATE"
-                    ? `Updated at: ${new Date(category.activity.timestamp).toLocaleString()}`
-                    : ""
+                  category.activity.action === "INSERT" ? (
+                    `Created: ${DateUtils.formatDate(category.activity.timestamp)}`
+                  ) : category.activity.action === "UPDATE" ? (
+                    `Updated: ${DateUtils.formatDate(category.activity.timestamp)}`
+                  ) : (
+                    ""
+                  )
                 ) : (
                   "No activity"
                 )}
               </span>
-            
-              <span>Role: {category.activity?.performedBy?.role || "Unknown"}</span>
+              </div>
+              
+                          
             </li>
             
             ))}
@@ -189,8 +197,32 @@ const Categories = () => {
                   className="w-12 h-12 object-cover rounded"
                 />
                 <span>{child.name}</span>
+                <div className="flex flex-col text-xs">
+                  <span className="text-gray-600">Author</span>
+                  <span>
+                    <span className="font-semibold text-gray-600 mr-2">
+                      {child.activity?.performedBy?.name || "Unknown"}
+                    </span>
+                    ({child.activity?.performedBy?.role || "Unknown"})
+                  </span>
+
+                  <span className="text-gray-600">
+                    {child.activity ? (
+                      child.activity.action === "INSERT" ? (
+                        `Created: ${DateUtils.formatDate(child.activity.timestamp)}`
+                      ) : child.activity.action === "UPDATE" ? (
+                        `Updated: ${DateUtils.formatDate(child.activity.timestamp)}`
+                      ) : (
+                        ""
+                      )
+                    ) : (
+                      "No activity"
+                    )}
+                  </span>
+                </div>
               </li>
             ))}
+
           </ul>
         )}
       </div>
@@ -241,6 +273,29 @@ const Categories = () => {
                   className="w-12 h-12 object-cover rounded"
                 />
                 <span>{grandChild.name}</span>
+                <div className="flex flex-col text-xs">
+                  <span className="text-gray-600">Author</span>
+                  <span>
+                    <span className="font-semibold text-gray-600 mr-2">
+                      {grandChild.activity?.performedBy?.name || "Unknown"}
+                    </span>
+                    ({grandChild.activity?.performedBy?.role || "Unknown"})
+                  </span>
+
+                  <span className="text-gray-600">
+                    {grandChild.activity ? (
+                      grandChild.activity.action === "INSERT" ? (
+                        `Created: ${DateUtils.formatDate(grandChild.activity.timestamp)}`
+                      ) : grandChild.activity.action === "UPDATE" ? (
+                        `Updated: ${DateUtils.formatDate(grandChild.activity.timestamp)}`
+                      ) : (
+                        ""
+                      )
+                    ) : (
+                      "No activity"
+                    )}
+                  </span>
+                </div>
               </li>
             ))}
           </ul>
