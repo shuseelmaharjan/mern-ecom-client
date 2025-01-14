@@ -78,6 +78,44 @@ class CategoryService {
       throw error;
     }
   }
+
+  async removeCategory(accessToken, catId) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/remove-category/${catId}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async removeCSubategory(accessToken, catId, parentId) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/remove-subcategory/${parentId}/${catId}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
 }
 
 const categoryService = new CategoryService();

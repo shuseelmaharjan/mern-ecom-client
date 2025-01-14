@@ -9,6 +9,9 @@ import DateUtils from "../../utils/dateUtils";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
 import { capitalizeFirstLetter } from "../../utils/textUtils";
+import RemoveCatModel from "./RemoveCatModel";
+import { toast } from "react-toastify";
+import RemoveSubCatModel from "./RemoveSubCatModel";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -93,6 +96,56 @@ const Categories = () => {
     setAddGrandCategoryModal(true);
   };
 
+  const [removeCatId, setRemoveCatId] = useState("");
+  const [removeCatName, setRemoveCatName] = useState("");
+  const [removeCatModel, setRemoveCatModel] = useState(false);
+  const [removeCatMsg, setRemoveCatMsg] = useState("");
+  const [errorCatMsg, setErrorCatMsg] = useState("");
+
+  const handleRemoveCategory = (catId, catName) => {
+    setRemoveCatId(catId);
+    setRemoveCatName(catName);
+    setRemoveCatModel(true);
+  };
+
+  useEffect(() => {
+    if (removeCatMsg) {
+      toast.success(removeCatMsg);
+      setRemoveCatMsg("");
+    }
+    if (errorCatMsg) {
+      toast.error(errorCatMsg);
+      setErrorCatMsg("");
+    }
+  }, [removeCatMsg, errorCatMsg]);
+
+  const [subCatId, setSubCatId] = useState("");
+  const [subCatName, setSubCatName] = useState('');
+  const [subCatParentName, setSubCatParentName] = useState('');
+  const [removeSubCategoryModal, setRemoveSubCategoryModal] = useState(false);
+  const [removeSubCatMsg, setRemoveSubCatMsg] = useState('');
+  const [removeSubCatError, setRemoveSubCatError] = useState('');
+  const [parentId, setParentId] = useState('');
+
+  const handleRemoveSubCategory = (subCatId, subCatName, parentName, parId) => {
+    setSubCatId(subCatId);
+    setSubCatName(subCatName);
+    setSubCatParentName(parentName);
+    setRemoveSubCategoryModal(true);
+    setParentId(parId);
+  }
+
+  useEffect(() => {
+    if (removeSubCatMsg) {
+      toast.success(removeSubCatMsg);
+      setRemoveSubCatMsg("");
+    }
+    if (removeSubCatError) {
+      toast.error(removeSubCatError);
+      setRemoveSubCatError("");
+    }
+  }, [removeSubCatMsg, removeSubCatError]);
+
   return (
     <div className="flex flex-col lg:flex-row w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
       {/* Categories Column */}
@@ -118,51 +171,55 @@ const Categories = () => {
           <ul className="space-y-2">
             {categories.map((category) => (
               <li
-              key={category._id}
-              onClick={() => handleCategorySelect(category)}
-              className={`p-2 flex items-center justify-between space-x-4 rounded shadow-sm cursor-pointer ${
-                selectedCategory && selectedCategory._id === category._id
-                  ? "bg-gray-300"
-                  : "bg-white hover:bg-gray-200"
-              }`}
-            >
-              <div className="flex items-center space-x-4">
-                <img
-                  src={`${BASE_URL}/${category.image}`}
-                  alt={capitalizeFirstLetter(category.name)}
-                  className="w-12 h-12 object-cover rounded"
-                />
-                <span>{capitalizeFirstLetter(category.name)}</span>
-                <div className="flex flex-col text-xs">
-                  <span className="text-gray-600">Author</span>
-                  <span>
-                    <span className="font-semibold text-gray-600 mr-2">
-                      {category.activity?.performedBy?.name || "Unknown"}
+                key={category._id}
+                onClick={() => handleCategorySelect(category)}
+                className={`p-2 flex items-center justify-between space-x-4 rounded shadow-sm cursor-pointer ${
+                  selectedCategory && selectedCategory._id === category._id
+                    ? "bg-gray-300"
+                    : "bg-white hover:bg-gray-200"
+                }`}
+              >
+                <div className="flex items-center space-x-4">
+                  <img
+                    src={`${BASE_URL}/${category.image}`}
+                    alt={capitalizeFirstLetter(category.name)}
+                    className="w-12 h-12 object-cover rounded"
+                  />
+                  <span>{capitalizeFirstLetter(category.name)}</span>
+                  <div className="flex flex-col text-xs">
+                    <span className="text-gray-600">Author</span>
+                    <span>
+                      <span className="font-semibold text-gray-600 mr-2">
+                        {category.activity?.performedBy?.name || "Unknown"}
+                      </span>
+                      ({category.activity?.performedBy?.role || "Unknown"})
                     </span>
-                    ({category.activity?.performedBy?.role || "Unknown"})
-                  </span>
-                  <span className="text-gray-600">
-                    {category.activity ? (
-                      category.activity.action === "INSERT" ? (
-                        `Created: ${DateUtils.formatDate(category.activity.timestamp)}`
-                      ) : category.activity.action === "UPDATE" ? (
-                        `Updated: ${DateUtils.formatDate(category.activity.timestamp)}`
-                      ) : (
-                        ""
-                      )
-                    ) : (
-                      "No activity"
-                    )}
-                  </span>
+                    <span className="text-gray-600">
+                      {category.activity
+                        ? category.activity.action === "INSERT"
+                          ? `Created: ${DateUtils.formatDate(
+                              category.activity.timestamp
+                            )}`
+                          : category.activity.action === "UPDATE"
+                          ? `Updated: ${DateUtils.formatDate(
+                              category.activity.timestamp
+                            )}`
+                          : ""
+                        : "No activity"}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            
-              <div className="flex flex-col items-center space-y-2 text-gray-600">
-                <FaEdit className="cursor-pointer hover:text-blue-700"/>
-                <FaRegTrashAlt className="cursor-pointer hover:text-red-500"  />
-              </div>
-            </li>
-            
+
+                <div className="flex flex-col items-center space-y-2 text-gray-600">
+                  <FaEdit className="cursor-pointer hover:text-blue-700" />
+                  <FaRegTrashAlt
+                    className="cursor-pointer hover:text-red-500"
+                    onClick={() =>
+                      handleRemoveCategory(category._id, category.name)
+                    }
+                  />
+                </div>
+              </li>
             ))}
           </ul>
         )}
@@ -172,7 +229,11 @@ const Categories = () => {
       <div className="flex-1 border-gray-100 border-2 rounded-lg p-4 shadow-sm">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold mb-4">
-            {`Child of ${capitalizeFirstLetter(selectedCategory) ? capitalizeFirstLetter(selectedCategory.name) : ""}`}
+            {`Child of ${
+              capitalizeFirstLetter(selectedCategory)
+                ? capitalizeFirstLetter(selectedCategory.name)
+                : ""
+            }`}
           </h2>
           <button
             className="bg-gray-800 text-white px-4 py-2 hover:bg-gray-700"
@@ -180,7 +241,10 @@ const Categories = () => {
               handleAddSubcategory(selectedCategory?._id, selectedCategory.name)
             }
           >
-            Add Child for {capitalizeFirstLetter(selectedCategory) ? capitalizeFirstLetter(selectedCategory.name) : ""}
+            Add Child for{" "}
+            {capitalizeFirstLetter(selectedCategory)
+              ? capitalizeFirstLetter(selectedCategory.name)
+              : ""}
           </button>
         </div>
 
@@ -202,45 +266,49 @@ const Categories = () => {
                     : "bg-white hover:bg-gray-200"
                 }`}
               >
-              <div className="flex items-center space-x-4">
-              <img
-                  src={`${BASE_URL}/${child.image}`}
-                  alt={child.name}
-                  className="w-12 h-12 object-cover rounded"
-                />
-                <span>{capitalizeFirstLetter(child.name)}</span>
-                <div className="flex flex-col text-xs">
-                  <span className="text-gray-600">Author</span>
-                  <span>
-                    <span className="font-semibold text-gray-600 mr-2">
-                      {child.activity?.performedBy?.name || "Unknown"}
+                <div className="flex items-center space-x-4">
+                  <img
+                    src={`${BASE_URL}/${child.image}`}
+                    alt={child.name}
+                    className="w-12 h-12 object-cover rounded"
+                  />
+                  <span>{capitalizeFirstLetter(child.name)}</span>
+                  <div className="flex flex-col text-xs">
+                    <span className="text-gray-600">Author</span>
+                    <span>
+                      <span className="font-semibold text-gray-600 mr-2">
+                        {child.activity?.performedBy?.name || "Unknown"}
+                      </span>
+                      ({child.activity?.performedBy?.role || "Unknown"})
                     </span>
-                    ({child.activity?.performedBy?.role || "Unknown"})
-                  </span>
 
-                  <span className="text-gray-600">
-                    {child.activity ? (
-                      child.activity.action === "INSERT" ? (
-                        `Created: ${DateUtils.formatDate(child.activity.timestamp)}`
-                      ) : child.activity.action === "UPDATE" ? (
-                        `Updated: ${DateUtils.formatDate(child.activity.timestamp)}`
-                      ) : (
-                        ""
-                      )
-                    ) : (
-                      "No activity"
-                    )}
-                  </span>
+                    <span className="text-gray-600">
+                      {child.activity
+                        ? child.activity.action === "INSERT"
+                          ? `Created: ${DateUtils.formatDate(
+                              child.activity.timestamp
+                            )}`
+                          : child.activity.action === "UPDATE"
+                          ? `Updated: ${DateUtils.formatDate(
+                              child.activity.timestamp
+                            )}`
+                          : ""
+                        : "No activity"}
+                    </span>
+                  </div>
                 </div>
-                </div>
-                
+
                 <div className="flex flex-col items-center space-y-2 text-gray-600">
-                <FaEdit className="cursor-pointer hover:text-blue-700"/>
-                <FaRegTrashAlt className="cursor-pointer hover:text-red-500"  />
-              </div>
+                  <FaEdit className="cursor-pointer hover:text-blue-700" />
+                  <FaRegTrashAlt
+                    className="cursor-pointer hover:text-red-500"
+                    onClick={() =>
+                      handleRemoveSubCategory(child._id, child.name, selectedCategory.name, selectedCategory._id)
+                    }
+                  />
+                </div>
               </li>
             ))}
-
           </ul>
         )}
       </div>
@@ -248,7 +316,11 @@ const Categories = () => {
       <div className="flex-1 border-gray-100 border-2 rounded-lg p-4 shadow-sm">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold mb-4">
-            {`Child of ${capitalizeFirstLetter(selectedChild) ? capitalizeFirstLetter(selectedChild.name) : ""}`}
+            {`Child of ${
+              capitalizeFirstLetter(selectedChild)
+                ? capitalizeFirstLetter(selectedChild.name)
+                : ""
+            }`}
           </h2>
           <button
             className="bg-gray-800 text-white px-4 py-2 hover:bg-gray-700"
@@ -261,7 +333,10 @@ const Categories = () => {
               )
             }
           >
-            Add Child for {capitalizeFirstLetter(selectedChild) ? capitalizeFirstLetter(selectedChild.name) : ""}
+            Add Child for{" "}
+            {capitalizeFirstLetter(selectedChild)
+              ? capitalizeFirstLetter(selectedChild.name)
+              : ""}
           </button>
         </div>
 
@@ -284,42 +359,41 @@ const Categories = () => {
                     : "bg-white hover:bg-gray-200"
                 }`}
               >
-              <div className="flex items-center space-x-4">
-
-                <img
-                  src={`${BASE_URL}/${grandChild.image}`}
-                  alt={grandChild.name}
-                  className="w-12 h-12 object-cover rounded"
-                />
-                <span>{capitalizeFirstLetter(grandChild.name)}</span>
-                <div className="flex flex-col text-xs">
-                  <span className="text-gray-600">Author</span>
-                  <span>
-                    <span className="font-semibold text-gray-600 mr-2">
-                      {grandChild.activity?.performedBy?.name || "Unknown"}
+                <div className="flex items-center space-x-4">
+                  <img
+                    src={`${BASE_URL}/${grandChild.image}`}
+                    alt={grandChild.name}
+                    className="w-12 h-12 object-cover rounded"
+                  />
+                  <span>{capitalizeFirstLetter(grandChild.name)}</span>
+                  <div className="flex flex-col text-xs">
+                    <span className="text-gray-600">Author</span>
+                    <span>
+                      <span className="font-semibold text-gray-600 mr-2">
+                        {grandChild.activity?.performedBy?.name || "Unknown"}
+                      </span>
+                      ({grandChild.activity?.performedBy?.role || "Unknown"})
                     </span>
-                    ({grandChild.activity?.performedBy?.role || "Unknown"})
-                  </span>
 
-                  <span className="text-gray-600">
-                    {grandChild.activity ? (
-                      grandChild.activity.action === "INSERT" ? (
-                        `Created: ${DateUtils.formatDate(grandChild.activity.timestamp)}`
-                      ) : grandChild.activity.action === "UPDATE" ? (
-                        `Updated: ${DateUtils.formatDate(grandChild.activity.timestamp)}`
-                      ) : (
-                        ""
-                      )
-                    ) : (
-                      "No activity"
-                    )}
-                  </span>
-                </div>
+                    <span className="text-gray-600">
+                      {grandChild.activity
+                        ? grandChild.activity.action === "INSERT"
+                          ? `Created: ${DateUtils.formatDate(
+                              grandChild.activity.timestamp
+                            )}`
+                          : grandChild.activity.action === "UPDATE"
+                          ? `Updated: ${DateUtils.formatDate(
+                              grandChild.activity.timestamp
+                            )}`
+                          : ""
+                        : "No activity"}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex flex-col items-center space-y-2 text-gray-600">
-                <FaEdit className="cursor-pointer hover:text-blue-700"/>
-                <FaRegTrashAlt className="cursor-pointer hover:text-red-500"  />
-              </div>
+                  <FaEdit className="cursor-pointer hover:text-blue-700" />
+                  <FaRegTrashAlt className="cursor-pointer hover:text-red-500" />
+                </div>
               </li>
             ))}
           </ul>
@@ -340,7 +414,6 @@ const Categories = () => {
           accessToken={accessToken}
           selectedCategoryName={selectedCategoryName}
           getData={getData}
-
         />
       )}
       {grandCategoryModal && (
@@ -352,7 +425,30 @@ const Categories = () => {
           getData={getData}
           accessToken={accessToken}
           setAddGrandCategoryModal={setAddGrandCategoryModal}
-
+        />
+      )}
+      {removeCatModel && (
+        <RemoveCatModel
+          removeCatId={removeCatId}
+          removeCatName={removeCatName}
+          getData={getData}
+          accessToken={accessToken}
+          setRemoveCatModel={setRemoveCatModel}
+          setRemoveCatMsg={setRemoveCatMsg}
+          setErrorCatMsg={setErrorCatMsg}
+        />
+      )}
+      {removeSubCategoryModal && (
+        <RemoveSubCatModel
+        subCatId = {subCatId}
+        subCatName = {subCatName}
+        subCatParentName = {subCatParentName}
+        getData={getData}
+        accessToken={accessToken}
+        setRemoveSubCategoryModal={setRemoveSubCategoryModal}
+        setRemoveSubCatMsg = {setRemoveSubCatMsg}
+        setRemoveSubCatError = {setRemoveSubCatError}
+        parentId={parentId}
         />
       )}
     </div>
