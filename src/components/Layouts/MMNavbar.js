@@ -32,8 +32,6 @@ export const MMNavbar = ({ isSidebarExpanded, isActive }) => {
             Icon: BsClipboard2Data,
           },
           { path: "/marketing", label: "Marketing", Icon: LiaBullhornSolid },
-          { path: "/finances", label: "Finances", Icon: AiOutlineBank },
-          { path: "/site", label: "Site", Icon: FaSitemap },
         ].map(({ path, label, Icon }, index) => (
           <Link to={path} key={index}>
             <li

@@ -11,6 +11,7 @@ import DateUtils from "../../utils/dateUtils";
 import { GoDotFill } from "react-icons/go";
 import Loader from './Loader';
 import EditCampaignData from "./EditCampaignData";
+import { toast } from "react-toastify";
 
 const Marketing = () => {
   const location = useLocation();
@@ -77,9 +78,12 @@ const Marketing = () => {
     setOpenImage(imageUrl);
   };
 
-  const [showOptions, setShowOptions] = useState(false);
-  const handleButtonClick = () => {
-    setShowOptions(!showOptions);
+  const [showOptions, setShowOptions] = useState({});
+  const handleButtonClick = (id) => {
+    setShowOptions((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
   };
 
   const [editCampaignModal, setEditCampaignModal] = useState(false);
@@ -94,11 +98,27 @@ const Marketing = () => {
     setShowOptions(false);
   };
 
-  const handleRemove = () => {
-    console.log('Remove clicked');
+  const [confirmationRemove, setConfirmationRemove] = useState(false);
+  const [confirmationId, setConfirmationId] = useState(false);
+
+  const handleRemove = (id) => {
+    console.log(id);
+    setConfirmationRemove(true);
+    setConfirmationId(id);
     setShowOptions(false);
   };
 
+  const handleConfirmRemove = async () => {
+    try {
+      await marketingService.removeCampaign(accessToken, confirmationId); 
+      setConfirmationRemove(false);
+      fetchData(); 
+      toast.success("Item Removed Successfully.")
+    } catch (error) {
+      console.error("Error removing campaign:", error);
+      toast.error(error.response.data.message)
+    }
+  }
 
   return (
     <div className="block w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
@@ -216,34 +236,37 @@ const Marketing = () => {
                   <div className="relative">
                   <button
                     className="py-1 px-3 border-gray-400 border-2 text-gray-800 rounded hover:bg-gray-200"
-                    onClick={handleButtonClick}
+                    onClick={() => handleButtonClick(campaign._id)}
                   >
                     <HiDotsHorizontal />
                   </button>
-            
-                  {showOptions && (
+                
+                  {showOptions[campaign._id] && (
                     <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg border border-gray-300">
                       <ul className="py-1">
+                        {activeTab === "upcoming" && (
+                          <li>
+                            <button
+                              onClick={() => handleRemove(campaign._id)}
+                              className="w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-100"
+                            >
+                              Remove
+                            </button>
+                          </li>
+                        )}
                         <li>
                           <button
-                            onClick={() => {handleEdit(campaign)}}
+                            onClick={() => handleEdit(campaign)}
                             className="w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-100"
                           >
                             Edit
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            onClick={handleRemove}
-                            className="w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-100"
-                          >
-                            Remove
                           </button>
                         </li>
                       </ul>
                     </div>
                   )}
                 </div>
+                
                 )}
               </div>
 
@@ -314,6 +337,34 @@ const Marketing = () => {
           </div>
         </div>
       )}
+
+    {confirmationRemove && (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+          <h2 className="text-lg font-semibold text-gray-800">
+            Confirm Removal
+          </h2>
+          <p className="text-gray-600 mt-2">
+            Are you sure you want to remove this campaign? This action cannot be undone.
+          </p>
+          <div className="mt-4 flex justify-end gap-4">
+            <button
+              className="px-4 py-2 bg-gray-200 text-gray-800 hover:bg-gray-300 transition"
+              onClick={() => setConfirmationRemove(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 transition"
+              onClick={handleConfirmRemove}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
 
     </div>
   );

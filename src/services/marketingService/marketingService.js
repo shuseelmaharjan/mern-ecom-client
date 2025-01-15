@@ -104,6 +104,22 @@ class MarketingService {
       throw error;
     }
   }
+  async removeCampaign(accessToken, confirmationId) {
+    try {
+      const response = await this.api.delete(
+        `/api/v1/delete-campaign/${confirmationId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting campaign:", error);
+      throw error;
+    }
+  }
 }
 
 const marketingService = new MarketingService();
