@@ -46,6 +46,44 @@ class MarketingService {
       throw error;
     }
   }
+
+  async getUpcomingCampaign(accessToken) {
+    try {
+      const response = await this.api.get(
+        "/api/v1/campaigns/upcoming",
+        {},
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching campaign data:", error);
+      throw error;
+    }
+  }
+
+  async getExpiredCampaign(accessToken) {
+    try {
+      const response = await this.api.get(
+        "/api/v1/campaigns/expired",
+        {},
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching campaign data:", error);
+      throw error;
+    }
+  }
 }
 
 const marketingService = new MarketingService();
