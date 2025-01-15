@@ -4,43 +4,49 @@ import "react-quill/dist/quill.snow.css";
 import { FaTrash } from "react-icons/fa";
 import marketingService from "../../services/marketingService/marketingService";
 import { useAuth } from "../../context/AuthContext";
+import config from "../../services/config";
 
-const AddMarketing = ({ setOpenCreateModal }) => {
+const EditCampaignData = ({ editCampaignData, fetchData, setEditCampaignModal }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    saleType: "SALE", 
-    startTime: "",
-    expiryTime: "",
-    discountPercentage: "",
-    priority: "BANNER", 
-    showOnHeader: false,
+    title: editCampaignData.title || "",
+    description: editCampaignData.description || "",
+    saleType: editCampaignData.saleType || "SALE",
+    startTime: editCampaignData.startTime
+      ? new Date(editCampaignData.startTime).toISOString().slice(0, 16)
+      : "",
+    expiryTime: editCampaignData.expiryTime
+      ? new Date(editCampaignData.expiryTime).toISOString().slice(0, 16)
+      : "",
+    discountPercentage: editCampaignData.discountPercentage || "",
+    priority: editCampaignData.priority || "BANNER",
+    showOnHeader: editCampaignData.showOnHeader || false,
   });
-  
+  const BASE_URL = config.API_BASE_URL;
 
   const { accessToken } = useAuth();
   const [logoFile, setLogoFile] = useState(null);
+  const [currentImage, setCurrentImage] = useState(editCampaignData.image || "");
   const fileInputRef = useRef(null);
 
   const handleInputChange = (e) => {
     const { id, value, type, checked } = e.target;
-    const updatedFormData = {
+    setFormData({
       ...formData,
       [id]: type === "checkbox" ? checked : value,
-    };
-    setFormData(updatedFormData);
+    });
   };
-  
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setLogoFile(file);
+      setCurrentImage(null);
     }
   };
 
   const handleRemoveImage = () => {
+    setCurrentImage(null);
     setLogoFile(null);
   };
 
@@ -52,27 +58,37 @@ const AddMarketing = ({ setOpenCreateModal }) => {
     e.preventDefault();
     setLoading(true);
   
-    const formattedData = {
-      ...formData,
-      image: logoFile,
-    };
+    const payload = new FormData();
+    payload.append("title", formData.title);
+    payload.append("description", formData.description);
+    payload.append("saleType", formData.saleType);
+    payload.append("startTime", formData.startTime);
+    payload.append("expiryTime", formData.expiryTime);
+    payload.append("discountPercentage", formData.discountPercentage);
+    payload.append("priority", formData.priority);
+    payload.append("showOnHeader", formData.showOnHeader);
   
+    if (logoFile) {
+      payload.append("image", logoFile);
+    }
   
     try {
-      await marketingService.createCampaign(accessToken, formattedData);
+      await marketingService.updateCampaign(accessToken, payload, editCampaignData._id);
       setLoading(false);
-      setOpenCreateModal(false);
+      fetchData();
+      setEditCampaignModal(false);
     } catch (error) {
-      console.error("Error creating campaign:", error);
+      console.error("Error updating campaign:", error);
       setLoading(false);
     }
   };
+  
   
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg shadow-lg w-full sm:w-8/12 md:w-8/12 lg:w-6/12 p-6">
-        <h3 className="text-lg font-semibold mb-4">Add Campaign</h3>
+        <h3 className="text-lg font-semibold mb-4">Edit Campaign</h3>
         <form
           className="p-4 bg-white shadow rounded-lg"
           onSubmit={handleSubmit}
@@ -199,7 +215,19 @@ const AddMarketing = ({ setOpenCreateModal }) => {
           {/* Banner Image */}
           <div className="mb-4">
             <label className="block mb-2 font-medium">Banner</label>
-            {!logoFile ? (
+            {currentImage ? (
+              <div className="h-48 w-full relative">
+                <img
+                  src={`${BASE_URL}/${currentImage}`}
+                  alt="Current Preview"
+                  className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                />
+                <FaTrash
+                  className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                  onClick={handleRemoveImage}
+                />
+              </div>
+            ) : !logoFile ? (
               <div
                 className="h-48 w-full border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100"
                 onClick={() => fileInputRef.current.click()}
@@ -210,7 +238,7 @@ const AddMarketing = ({ setOpenCreateModal }) => {
               <div className="h-48 w-full relative">
                 <img
                   src={URL.createObjectURL(logoFile)}
-                  alt="Preview"
+                  alt="New Preview"
                   className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
                 />
                 <FaTrash
@@ -228,6 +256,7 @@ const AddMarketing = ({ setOpenCreateModal }) => {
             />
           </div>
 
+
           <div className="flex justify-end gap-4 mt-4">
             <button
               type="submit"
@@ -236,11 +265,11 @@ const AddMarketing = ({ setOpenCreateModal }) => {
               }`}
               disabled={loading}
             >
-              {loading ? "Saving..." : "Save"}
+              {loading ? "Updating..." : "Update"}
             </button>
             <button
               type="button"
-              onClick={() => setOpenCreateModal(false)}
+              onClick={() => setEditCampaignModal(false)}
               className={`px-4 py-2 bg-red-500 text-white font-semibold ${
                 loading ? "cursor-not-allowed bg-red-400" : "hover:bg-red-600"
               }`}
@@ -255,4 +284,4 @@ const AddMarketing = ({ setOpenCreateModal }) => {
   );
 };
 
-export default AddMarketing;
+export default EditCampaignData;

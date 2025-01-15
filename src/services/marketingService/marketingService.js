@@ -28,6 +28,26 @@ class MarketingService {
     }
   }
 
+  async updateCampaign(accessToken, formData, id) {
+    console.log(formData);
+    try {
+      const response = await this.api.put(
+        `/api/v1/update-campaign/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error creating campaign:", error);
+      throw error;
+    }
+  }
+
   async getActiveCampaign(accessToken) {
     try {
       const response = await this.api.get(

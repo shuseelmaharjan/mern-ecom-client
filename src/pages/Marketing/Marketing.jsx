@@ -10,6 +10,7 @@ import { HiDotsHorizontal } from "react-icons/hi";
 import DateUtils from "../../utils/dateUtils";
 import { GoDotFill } from "react-icons/go";
 import Loader from './Loader';
+import EditCampaignData from "./EditCampaignData";
 
 const Marketing = () => {
   const location = useLocation();
@@ -75,6 +76,30 @@ const Marketing = () => {
   const openImageHandler = (imageUrl) => {
     setOpenImage(imageUrl);
   };
+
+  const [showOptions, setShowOptions] = useState(false);
+  const handleButtonClick = () => {
+    setShowOptions(!showOptions);
+  };
+
+  const [editCampaignModal, setEditCampaignModal] = useState(false);
+  const [editCampaignData, setEditCampaignData] = useState('');
+
+
+  const handleEdit = (campaign) => {
+    setEditCampaignData(campaign);
+    setEditCampaignModal(true);
+    console.log(campaign);
+
+    setShowOptions(false);
+  };
+
+  const handleRemove = () => {
+    console.log('Remove clicked');
+    setShowOptions(false);
+  };
+
+
   return (
     <div className="block w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
       <div className="flex mb-10 justify-between">
@@ -188,9 +213,37 @@ const Marketing = () => {
                   )}
                 </span>
                 {activeTab !== "expired" && (
-                  <button className="py-1 px-3 border-gray-400 border-2 text-gray-800 rounded hover:bg-gray-200">
+                  <div className="relative">
+                  <button
+                    className="py-1 px-3 border-gray-400 border-2 text-gray-800 rounded hover:bg-gray-200"
+                    onClick={handleButtonClick}
+                  >
                     <HiDotsHorizontal />
                   </button>
+            
+                  {showOptions && (
+                    <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg border border-gray-300">
+                      <ul className="py-1">
+                        <li>
+                          <button
+                            onClick={() => {handleEdit(campaign)}}
+                            className="w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-100"
+                          >
+                            Edit
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            onClick={handleRemove}
+                            className="w-full px-4 py-2 text-left text-gray-800 hover:bg-gray-100"
+                          >
+                            Remove
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
                 )}
               </div>
 
@@ -234,6 +287,9 @@ const Marketing = () => {
         <AddMarketing setOpenCreateModal={setOpenCreateModal} />
       )}
 
+      {editCampaignModal && (
+        <EditCampaignData editCampaignData={editCampaignData} fetchData={fetchData} setEditCampaignModal={setEditCampaignModal}/>
+      )}
       {openImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
