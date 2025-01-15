@@ -32,7 +32,7 @@ const EditSubCategoryModal = ({
       }
       setErrorMessage("");
       setImageFile(file);
-      setExistingImage(""); // Remove the existing image if a new one is selected
+      setExistingImage(""); 
     }
   };
 
@@ -40,7 +40,7 @@ const EditSubCategoryModal = ({
     setExistingImage("");
     setImageFile(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = null; // Reset file input
+      fileInputRef.current.value = null; 
     }
   };
 
