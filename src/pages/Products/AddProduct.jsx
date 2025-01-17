@@ -9,6 +9,7 @@ import { capitalizeWords } from "../../utils/textUtils";
 import productService from "../../services/productService/productService";
 import { useAuth } from "../../context/AuthContext";
 import { ToastContainer, toast, Flip } from 'react-toastify';
+import categoryService from "../../services/categoryService/categoryService";
 
 const AddProduct = () => {
   const { accessToken } = useAuth();
@@ -404,7 +405,7 @@ const AddProduct = () => {
   };
 
   const deleteDimension = () => {
-    setDimension(null); // Clear the dimension state
+    setDimension(null); 
   };
 
   const [brand, setBrand] = useState("");
@@ -470,11 +471,104 @@ const AddProduct = () => {
     { code: "#000000", color: "black" },
   ];
 
+  const [keyword, setKeyword] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [displayText, setDisplayText] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState(""); 
+
+  // Fetch suggestions from API
+  const fetchSuggestions = async (keyword) => {
+    try {
+      const response = await categoryService.suggestCategory(keyword);
+      setSuggestions(response.data.suggestions || []);
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setKeyword(value);
+    if (value.trim() !== "") {
+      fetchSuggestions(value);
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleSuggestionClick = (text, id) => {
+    setDisplayText(text); 
+    setSelectedCategoryId(id);
+    setKeyword(""); 
+    setSuggestions([]);
+  };
+
+  // Clear selected category
+  const handleClearSelection = () => {
+    setDisplayText("");
+    setSelectedCategoryId("");
+  };
+
+  // Render suggestions hierarchy
+  const renderSuggestions = () => {
+    return suggestions.map((suggestion) => {
+      const parent = suggestion.parentCategory;
+      const subCategories = suggestion.subCategories;
+
+      return (
+        <li key={parent.id} className="p-2">
+          {subCategories && subCategories.length > 0 ? (
+            subCategories.map((subCategory) => (
+              <ul key={subCategory.id} className="ml-4">
+                {subCategory.grandCategories && subCategory.grandCategories.length > 0 ? (
+                  subCategory.grandCategories.map((grandCategory) => (
+                    <li
+                      key={grandCategory.id}
+                      className="cursor-pointer p-2 hover:bg-gray-200"
+                      onClick={() =>
+                        handleSuggestionClick(
+                          `${parent.name} > ${subCategory.name} > ${grandCategory.name}`,
+                          grandCategory.id
+                        )
+                      }
+                    >
+                      {`${parent.name} > ${subCategory.name} > ${grandCategory.name}`}
+                    </li>
+                  ))
+                ) : (
+                  <li
+                    key={subCategory.id}
+                    className="cursor-pointer p-2 hover:bg-gray-200"
+                    onClick={() =>
+                      handleSuggestionClick(
+                        `${parent.name} > ${subCategory.name}`,
+                        subCategory.id
+                      )
+                    }
+                  >
+                    {`${parent.name} > ${subCategory.name}`}
+                  </li>
+                )}
+              </ul>
+            ))
+          ) : (
+            <li
+              key={parent.id}
+              className="cursor-pointer p-2 hover:bg-gray-200"
+              onClick={() => handleSuggestionClick(parent.name, parent.id)}
+            >
+              {parent.name}
+            </li>
+          )}
+        </li>
+      );
+    });
+  };
+
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log(colors);
-
 
     const formData = new FormData();
     formData.append("title", title);
@@ -518,6 +612,7 @@ const AddProduct = () => {
 
     formData.append("productColor", productColor);
     formData.append("productColors", JSON.stringify(productColors));
+    formData.append("category", selectedCategoryId);
 
 
     
@@ -533,7 +628,7 @@ const AddProduct = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <nav className="sticky top-[5rem] left-0 w-full bg-white shadow z-10">
+      <nav className="sticky top-[-1.5rem] left-0 w-full bg-white shadow z-10">
         <ul className="flex space-x-4 p-4">
           {[
             "Product Details",
@@ -1779,12 +1874,46 @@ const AddProduct = () => {
             <label htmlFor="category" className="block text-lg font-semibold">
               Category
             </label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              className="block w-[30%] p-3 mt-2 border border-gray-300 rounded-md"
-            />
+            <div className="relative w-[50%] mx-auto">
+      <input
+        type="text"
+        id="category"
+        name="category"
+        value={displayText || keyword}
+        onChange={handleInputChange}
+        onKeyDown={(e) => {
+          if (e.key === "Backspace" && keyword === "") {
+            handleClearSelection();
+          }
+        }}
+        className="block w-full p-3 mt-2 border border-gray-300 rounded-md"
+        autoComplete="off"
+        placeholder="Search categories..."
+      />
+
+      {suggestions.length > 0 && (
+        <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+          {renderSuggestions()}
+        </ul>
+      )}
+
+      {displayText && (
+        <div className="mt-4 p-4 bg-gray-100 border rounded-md">
+          <p className="text-sm text-gray-600">
+            Selected Category:{" "}
+            <strong>
+              {displayText} (ID: {selectedCategoryId})
+            </strong>
+          </p>
+          <button
+            onClick={handleClearSelection}
+            className="mt-2 text-sm text-red-600 underline"
+          >
+            Remove Selection
+          </button>
+        </div>
+      )}
+    </div>
           </div>
         </section>
 

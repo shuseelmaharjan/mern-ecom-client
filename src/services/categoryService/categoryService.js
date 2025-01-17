@@ -197,6 +197,17 @@ class CategoryService {
       throw error;
     }
   }
+  async suggestCategory(keyword) {
+    try {
+      const response = await this.api.get(
+        `/api/cat-suggestions?keyword=${keyword}`
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
 }
 
 const categoryService = new CategoryService();
