@@ -150,6 +150,13 @@ function App() {
       dashLoadout: true,
     },
     {
+      path: "/listing/:tab",
+      element: <Products />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
       path: "/listing",
       element: <Products />,
       showHeader: false,

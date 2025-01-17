@@ -1874,7 +1874,7 @@ const AddProduct = () => {
             <label htmlFor="category" className="block text-lg font-semibold">
               Category
             </label>
-            <div className="relative w-[50%] mx-auto">
+            <div className="relative w-[50%]">
       <input
         type="text"
         id="category"

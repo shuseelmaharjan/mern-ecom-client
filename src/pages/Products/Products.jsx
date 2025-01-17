@@ -1,141 +1,178 @@
-import React, { useState, useEffect } from "react";
-import { FaPlus, FaBars } from "react-icons/fa6";
-import { FaThLarge } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import Cookies from "js-cookie";
-import productService from "../../services/productService/productService";
-import { useAuth } from "../../context/AuthContext";
-import config from "../../services/config";
+import React, { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { IoGridSharp } from "react-icons/io5";
+import { FaList } from "react-icons/fa6";
+import productService from '../../services/productService/productService';
+import { useAuth } from '../../context/AuthContext';
+import config from '../../services/config';
 
 const Products = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { tab } = useParams();
+
   const { accessToken } = useAuth();
+  const defaultTab = 'active';
+  const defaultView = 'grid';
+
+  const [activeTab, setActiveTab] = useState(defaultTab);
+  const [viewType, setViewType] = useState(defaultView);
   const [products, setProducts] = useState([]);
-  const [viewType, setViewType] = useState(
-    Cookies.get("viewType") || "grid" 
-  );
-  const [sortOption, setSortOption] = useState("latest");
-
-
-
+  const [sortBy, setSortBy] = useState('');
 
   const BASE_URL = config.API_BASE_URL;
 
-
+  const fetchData = useCallback(async () => {
+    try {
+      let response;
+      if (activeTab === 'active') {
+        response = await productService.getVendorsProduct(accessToken);
+      } else if (activeTab === 'expired') {
+        response = await productService.getInactiveVendorsProducts(accessToken);
+      }
+      if (response?.products?.products) {
+        setProducts(response.products.products);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, [activeTab, accessToken]);
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const data = await productService.getVendorsProduct(accessToken);
-        setProducts(data.products);
-        console.log(data.products);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getData();
-  }, [accessToken]);
+    const params = new URLSearchParams(location.search);
+    const currentTab = tab || defaultTab;
+    const currentView = params.get('view') || defaultView;
 
-  const handleViewTypeChange = (type) => {
-    setViewType(type);
-    Cookies.set("viewType", type, { expires: 30 });
+    setActiveTab(currentTab);
+    setViewType(currentView);
+    fetchData();
+  }, [location, tab, fetchData]);
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    navigate(`/listing/${tab}?view=${viewType}`);
   };
 
-  const sortedProducts = [...products].sort((a, b) => {
-    switch (sortOption) {
-      case "latest":
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      case "asc":
-        return a.title.localeCompare(b.title);
-      case "desc":
-        return b.title.localeCompare(a.title);
-      case "lowToHigh":
-        return a.price - b.price;
-      case "highToLow":
-        return b.price - a.price;
+  const handleViewChange = (view) => {
+    setViewType(view);
+    navigate(`/listing/${activeTab}?view=${view}`);
+  };
+
+  const handleCreateProduct = () => {
+    navigate('/listing/create-product');
+  };
+
+  const handleSortChange = (e) => {
+    const value = e.target.value;
+    setSortBy(value);
+
+    const sortedProducts = [...products];
+
+    switch (value) {
+      case 'latest':
+        sortedProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
+      case 'oldest':
+        sortedProducts.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        break;
+      case 'priceHighLow':
+        sortedProducts.sort((a, b) => b.price - a.price);
+        break;
+      case 'priceLowHigh':
+        sortedProducts.sort((a, b) => a.price - b.price);
+        break;
+      case 'quantityHighLow':
+        sortedProducts.sort((a, b) => b.quantity - a.quantity);
+        break;
+      case 'quantityLowHigh':
+        sortedProducts.sort((a, b) => a.quantity - b.quantity);
+        break;
       default:
-        return 0;
+        break;
     }
-  });
+
+    setProducts(sortedProducts);
+  };
 
   return (
-    <div className="flex flex-col md:flex-row p-4 bg-white text-gray-800">
-      {/* Main Content */}
-      <div className="w-full md:w-3/4 p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Product List</h2>
-          <div className="flex space-x-2">
-            <button
-              className={`p-2 border ${
-                viewType === "grid" ? "bg-gray-200" : "bg-white"
-              }`}
-              onClick={() => handleViewTypeChange("grid")}
-            >
-              <FaThLarge />
-            </button>
-            <button
-              className={`p-2 border ${
-                viewType === "box" ? "bg-gray-200" : "bg-white"
-              }`}
-              onClick={() => handleViewTypeChange("box")}
-            >
-              <FaBars />
-            </button>
+    <div className="block w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
+      <div className="flex mb-10 justify-between">
+        <div className="flex space-x-4">
+          <button
+            onClick={() => handleTabClick("active")}
+            className={`py-2 px-4 ${activeTab === "active" ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-700"}`}
+          >
+            Active Listing
+          </button>
+          <button
+            onClick={() => handleTabClick("expired")}
+            className={`py-2 px-4 ${activeTab === "expired" ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-700"}`}
+          >
+            Expired Listing
+          </button>
+        </div>
+        <button
+          className="py-2 px-4 bg-gray-800 font-semibold text-white hover:bg-gray-700"
+          onClick={handleCreateProduct}
+        >
+          Add Product
+        </button>
+      </div>
+
+      <div className="flex space-x-4">
+        <div className="w-10/12">
+          <div className={viewType === "grid" ? "grid grid-cols-3 gap-4" : "flex flex-col gap-4"}>
+            {products.map((product) => (
+              <div key={product._id} className={viewType === "grid" ? "border shadow-md" : "flex items-center border p-4 shadow-md"}>
+                <img
+                  src={`${BASE_URL}/${product.media.images.find((img) => img.default)?.url}`}
+                  alt={product.title}
+                  className={viewType === "grid" ? "w-full h-72 object-cover" : "w-24 h-24"}
+                />
+                <div>
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold">{product.title}</h3>
+                    <p>{product.quantity} in stock</p>
+                    <p className="text-gray-600">${product.price}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-        <div className={`grid ${viewType === 'grid' ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1'} gap-4`}>
-  {sortedProducts.map((product) => {
-    const defaultImage = product.media.images.find((img) => img.default)?.url;
-    return (
-      <div
-        key={product._id}
-        className="border border-gray-200 rounded-lg p-4 flex flex-col items-center bg-white shadow-sm"
-      >
-        <img
-          src={defaultImage ? `${BASE_URL}/${defaultImage}` : 'https://via.placeholder.com/150'}
-          alt={product.title}
-          className="h-32 w-full object-cover mb-4 rounded"
-        />
-        <h3 className="text-lg font-semibold text-gray-800">{product.title}</h3>
-        <p className="text-gray-600 mt-2">Price: ${product.price}</p>
-        <p className="text-gray-600">Quantity: {product.quantity}</p>
-      </div>
-    );
-  })}
-</div>
+        <div className="w-2/12">
+          <div className="flex justify-end space-x-2 mb-6">
+            <button
+              onClick={() => handleViewChange("grid")}
+              className={`py-2 px-4 ${viewType === "grid" ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-700"}`}
+            >
+              <IoGridSharp />
+            </button>
+            <button
+              onClick={() => handleViewChange("list")}
+              className={`py-2 px-4 ${viewType === "list" ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-700"}`}
+            >
+              <FaList />
+            </button>
+          </div>
 
-
-      </div>
-
-      {/* Right Sidebar */}
-      <div className="w-full md:w-1/4 p-4 bg-gray-50 border-l border-gray-300">
-        <Link
-          to="/listing/create-product"
-          className="w-full flex justify-between items-center mb-4 py-2 px-4 bg-black text-white font-bold"
-        >
-          <span className="items-center flex mx-auto">
-            <FaPlus /> <span>Add Product</span>
-          </span>
-        </Link>
-        <div className="mb-4">
-          <label htmlFor="sort" className="block text-gray-600 mb-2">
-            Sort By
-          </label>
-          <select
-            id="sort"
-            className="w-full py-2 px-4 bg-gray-100 border border-gray-300 text-gray-800 rounded"
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-          >
-            <option value="latest">Latest First</option>
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-            <option value="lowToHigh">Price: Low to High</option>
-            <option value="highToLow">Price: High to Low</option>
-          </select>
-        </div>
-        <div>
-          <h3 className="text-gray-600 mb-2">Total Products</h3>
-          <p className="text-gray-800">{products.length}</p>
+          <div className="mb-6 w-full">
+            <label htmlFor="sort" className="font-semibold text-base">Sort</label>
+            <select
+              id="sort"
+              value={sortBy}
+              onChange={handleSortChange}
+              className="py-2 px-4 bg-gray-200 text-gray-700 w-full mt-4"
+            >
+              <option value="">Sort by</option>
+              <option value="latest">Latest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="priceHighLow">Price High to Low</option>
+              <option value="priceLowHigh">Price Low to High</option>
+              <option value="quantityHighLow">Quantity High to Low</option>
+              <option value="quantityLowHigh">Quantity Low to High</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
