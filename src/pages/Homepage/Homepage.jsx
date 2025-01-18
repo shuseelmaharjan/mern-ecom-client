@@ -2,7 +2,7 @@ import React from "react";
 import CategoryList from "./CategoryList";
 import FlashSale from "./FlashSale";
 import Banners from "./Banners";
-// import JustForYou from "./JustForYou";
+import JustForYou from "./JustForYou";
 
 const Homepage = () => {
 
@@ -15,7 +15,7 @@ const Homepage = () => {
 
       <CategoryList />
       <FlashSale/>
-      {/* <JustForYou/> */}
+      <JustForYou/>
     </>
   );
 };
