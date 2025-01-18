@@ -11,12 +11,13 @@ import { useAuth } from "../../context/AuthContext";
 import ProfileMenu from "./ProfileMenu";
 import { useLocation } from "react-router-dom";
 import siteService from "../../services/site/siteService";
+import HeadingAds from "./HeadingAds";
+import ShowCategory from "./ShowCategory";
 
 const Headers = () => {
   const [logo, setLogo] = useState("");
   const [search, setSearch] = useState("");
   const [showCategories, setShowCategories] = useState(false);
-  const [hideBanner, setHideBanner] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegisterModelOpen, setIsRegisterModalOpen] = useState(false);
   const [forgetPasswordModalOpen, setForgetPasswordModalOpen] = useState(false);
@@ -32,17 +33,6 @@ const Headers = () => {
   const toggleCategories = () => {
     setShowCategories((prev) => !prev);
   };
-
-  const handleScroll = () => {
-    setHideBanner(window.scrollY > 50);
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   const openLoginModal = () => setIsLoginModalOpen(true);
   const closeLoginModal = () => setIsLoginModalOpen(false);
@@ -78,15 +68,7 @@ const Headers = () => {
   return (
     <>
       <header className="w-full border-b border-gray-200 bg-white shadow-md sticky top-0 z-50">
-        {/* Topbar */}
-        {!hideBanner && (
-          <Link>
-            <div className="flex items-center justify-center h-auto bg-orange-300 text-black py-2 text-lg transition-transform duration-300">
-              <span>Special offers and discounts available now!</span>
-            </div>
-          </Link>
-        )}
-
+        <HeadingAds />
         <div className="container mx-auto px-4 bg-white h-full">
           <div className="flex sm:flex-row items-center justify-between h-full">
             {/* Logo */}
@@ -113,17 +95,7 @@ const Headers = () => {
                 >
                   Categories
                 </button>
-                {showCategories && (
-                  <div className="absolute top-full mt-2 w-64 bg-white border border-gray-200 shadow-lg z-10">
-                    <ul className="flex flex-col divide-y divide-gray-200">
-                      <li className="p-3 hover:bg-gray-100">Electronics</li>
-                      <li className="p-3 hover:bg-gray-100">Fashion</li>
-                      <li className="p-3 hover:bg-gray-100">Home & Garden</li>
-                      <li className="p-3 hover:bg-gray-100">Sports</li>
-                      <li className="p-3 hover:bg-gray-100">Toys</li>
-                    </ul>
-                  </div>
-                )}
+                {showCategories && <ShowCategory />}
               </div>
 
               <div className="relative w-full max-w-md">
@@ -182,7 +154,6 @@ const Headers = () => {
           </div>
         </div>
       </header>
-
       {/* Login Modal */}
       {isLoginModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -218,7 +189,6 @@ const Headers = () => {
           </div>
         </div>
       )}
-
       {forgetPasswordModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg">

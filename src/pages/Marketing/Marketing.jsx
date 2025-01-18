@@ -301,6 +301,16 @@ const Marketing = () => {
                     <h2 className="font-medium">Visits</h2>
                   </div>
                 </div>
+
+                <div className="w-px h-12 bg-gray-600"></div>
+
+                <div className="flex items-center space-x-2">
+                  <h1 className="text-3xl font-semibold text-gray-800">{campaign.totalEngagements}</h1>
+                  <div className="text-gray-700">
+                    <h2 className="font-medium">Total</h2>
+                    <h2 className="font-medium">Engagements</h2>
+                  </div>
+                </div>
               </div>
             </div>
           </li>
