@@ -36,6 +36,7 @@ import Site from "./pages/Site/Site";
 import { ToastContainer, Flip } from "react-toastify";
 import Coupons from "./pages/Coupons/Coupons";
 import Categories from "./pages/Categories/Categories";
+import Campaign from "./pages/Campaign/Campaign";
 
 function App() {
   const location = useLocation();
@@ -150,7 +151,7 @@ function App() {
       dashLoadout: true,
     },
     {
-      path: "/listing/:tab",
+      path: "/listing?",
       element: <Products />,
       showHeader: false,
       private: true,
@@ -201,6 +202,20 @@ function App() {
     {
       path: "/marketing/:tab",
       element: <Marketing />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/campaign?",
+      element: <Campaign />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/campaign",
+      element: <Campaign />,
       showHeader: false,
       private: true,
       dashLoadout: true,

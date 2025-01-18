@@ -4,10 +4,9 @@ import { PiGearSix } from "react-icons/pi";
 import { IoHomeOutline, IoBarChartOutline } from "react-icons/io5";
 import { LuShapes, LuMessageSquareText, LuUsersRound } from "react-icons/lu";
 import { LiaBullhornSolid } from "react-icons/lia";
-import { AiOutlineBank } from "react-icons/ai";
 import { BsClipboard2Data } from "react-icons/bs";
-import { FaSitemap } from "react-icons/fa";
 import { RxDashboard } from "react-icons/rx";
+import { SiGooglecampaignmanager360 } from "react-icons/si";
 
 export const MMNavbar = ({ isSidebarExpanded, isActive }) => {
   return (
@@ -32,6 +31,11 @@ export const MMNavbar = ({ isSidebarExpanded, isActive }) => {
             Icon: BsClipboard2Data,
           },
           { path: "/marketing", label: "Marketing", Icon: LiaBullhornSolid },
+          {
+            path: "/campaign",
+            label: "Campaign",
+            Icon: SiGooglecampaignmanager360,
+          },
         ].map(({ path, label, Icon }, index) => (
           <Link to={path} key={index}>
             <li

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { IoGridSharp } from "react-icons/io5";
 import { FaList } from "react-icons/fa6";
 import productService from '../../services/productService/productService';
@@ -9,18 +9,27 @@ import config from '../../services/config';
 const Products = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { tab } = useParams();
+  const defaultParams = {
+    listing: 'active',
+    view: 'grid',
+    stats: 'disable',
+  };
 
-  const { accessToken } = useAuth();
-  const defaultTab = 'active';
-  const defaultView = 'grid';
-
-  const [activeTab, setActiveTab] = useState(defaultTab);
-  const [viewType, setViewType] = useState(defaultView);
+  const [activeTab, setActiveTab] = useState(defaultParams.listing);
+  const [viewType, setViewType] = useState(defaultParams.view);
+  const [isEnabled, setIsEnabled] = useState(defaultParams.stats === 'enable');
   const [products, setProducts] = useState([]);
   const [sortBy, setSortBy] = useState('');
 
+  const { accessToken } = useAuth();
   const BASE_URL = config.API_BASE_URL;
+
+  const updateParams = (updatedParams) => {
+    const params = new URLSearchParams(location.search);
+    const finalParams = { ...Object.fromEntries(params.entries()), ...updatedParams };
+    navigate(`${location.pathname}?${new URLSearchParams(finalParams).toString()}`);
+  };
+  
 
   const fetchData = useCallback(async () => {
     try {
@@ -40,26 +49,32 @@ const Products = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const currentTab = tab || defaultTab;
-    const currentView = params.get('view') || defaultView;
-
+    const currentTab = params.get('listing') || defaultParams.listing;
+    const currentView = params.get('view') || defaultParams.view;
+    const currentStats = params.get('stats') || defaultParams.stats;
+  
     setActiveTab(currentTab);
     setViewType(currentView);
+    setIsEnabled(currentStats === 'enable');
+  
     fetchData();
-  }, [location, tab, fetchData]);
+  }, [location, fetchData, defaultParams.listing, defaultParams.stats, defaultParams.view]);
+  
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-    navigate(`/listing/${tab}?view=${viewType}`);
+    updateParams({ listing: tab });
   };
 
   const handleViewChange = (view) => {
     setViewType(view);
-    navigate(`/listing/${activeTab}?view=${view}`);
+    updateParams({ view });
   };
 
-  const handleCreateProduct = () => {
-    navigate('/listing/create-product');
+  const handleToggle = () => {
+    const newStatus = !isEnabled ? 'enable' : 'disable';
+    setIsEnabled(!isEnabled);
+    updateParams({ stats: newStatus });
   };
 
   const handleSortChange = (e) => {
@@ -93,6 +108,10 @@ const Products = () => {
 
     setProducts(sortedProducts);
   };
+
+  const handleCreateProduct = ()=> {
+    console.log('test');
+  }
 
   return (
     <div className="block w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
@@ -142,6 +161,23 @@ const Products = () => {
         </div>
         <div className="w-2/12">
           <div className="flex justify-end space-x-2 mb-6">
+          <div className="flex items-center space-x-4">
+      <button
+        onClick={handleToggle}
+        className={`w-16 h-8 rounded-full flex items-center p-1 ${
+          isEnabled ? "bg-green-500" : "bg-gray-300"
+        }`}
+      >
+        <div
+          className={`h-6 w-6 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
+            isEnabled ? "translate-x-8" : ""
+          }`}
+        ></div>
+      </button>
+      <span className="text-sm font-medium">
+        {isEnabled ? "Enabled" : "Disabled"}
+      </span>
+    </div>
             <button
               onClick={() => handleViewChange("grid")}
               className={`py-2 px-4 ${viewType === "grid" ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-700"}`}

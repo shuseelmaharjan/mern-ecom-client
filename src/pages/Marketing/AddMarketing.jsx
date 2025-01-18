@@ -107,7 +107,7 @@ const AddMarketing = ({ setOpenCreateModal }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
             <div>
               <label htmlFor="saleType" className="block mb-2 font-medium">
-                Sale Type
+                Event Type
               </label>
               <select
                 id="saleType"
