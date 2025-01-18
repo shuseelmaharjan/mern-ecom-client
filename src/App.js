@@ -37,6 +37,8 @@ import { ToastContainer, Flip } from "react-toastify";
 import Coupons from "./pages/Coupons/Coupons";
 import Categories from "./pages/Categories/Categories";
 import Campaign from "./pages/Campaign/Campaign";
+import CategoryPage from "./pages/Products/CategoryPage";
+import ProductDetails from "./pages/Products/ProductDetails";
 
 function App() {
   const location = useLocation();
@@ -69,6 +71,21 @@ function App() {
       element: <CheckOut />,
       showHeader: true,
       private: false,
+    },
+
+    {
+      path: "/category",
+      element: <CategoryPage />,
+      showHeader: true,
+      private: false,
+      dashLoadout: false,
+    },
+    {
+      path: "/product",
+      element: <ProductDetails />,
+      showHeader: true,
+      private: false,
+      dashLoadout: false,
     },
 
     // Private routes with Header (no DashLoadout)
@@ -282,6 +299,7 @@ function App() {
   const currentRoute = routeConfig.find(
     (route) => route.path === location.pathname
   );
+
   const shouldShowHeader =
     currentRoute?.showHeader && !currentRoute?.dashLoadout;
 

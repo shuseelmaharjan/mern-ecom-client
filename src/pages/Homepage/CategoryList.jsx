@@ -38,14 +38,21 @@ const CategoryList = () => {
     <div className="container mx-auto p-4 mt-12">
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4">
         {categories.map((category) => (
-          <Link key={category.id} to={`/category/${category.id}`} className="flex flex-col items-center">
-            <img
-              src={`${BASE_URL}/${category.image}`} 
-              alt={category.name}
-              className="w-28 h-28 rounded-full object-cover mb-4"
-            />
-            <h3 className="text-lg font-semibold text-center">{capitalizeFirstLetter(category.name)}</h3>
-          </Link>
+          <Link 
+  key={category.id} 
+  to={`/category?category=${encodeURIComponent(category.name)}&src=${category._id}`} 
+  className="flex flex-col items-center"
+>
+  <img
+    src={`${BASE_URL}/${category.image}`} 
+    alt={category.name}
+    className="w-28 h-28 rounded-full object-cover mb-4"
+  />
+  <h3 className="text-lg font-semibold text-center">
+    {capitalizeFirstLetter(category.name)}
+  </h3>
+</Link>
+
         ))}
       </div>
     </div>

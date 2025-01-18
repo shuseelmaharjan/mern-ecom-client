@@ -29,9 +29,15 @@ const FlashSale = () => {
     if (carouselRef.current) {
       const scrollAmount = carouselRef.current.offsetWidth;
       if (direction === "next") {
-        carouselRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+        carouselRef.current.scrollBy({
+          left: scrollAmount,
+          behavior: "smooth",
+        });
       } else if (direction === "prev") {
-        carouselRef.current.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+        carouselRef.current.scrollBy({
+          left: -scrollAmount,
+          behavior: "smooth",
+        });
       }
     }
   };
@@ -83,7 +89,9 @@ const FlashSale = () => {
               return (
                 <Link
                   key={item._id}
-                  to={`/product/${item._id}`}
+                  to={`/product?${encodeURIComponent(
+                    item.title.replace(/ /g, "-")
+                  )}.html&src_identifier=${item._id}&img_src_module=${defaultImage._id}`}
                   className="group bg-white relative shadow hover:shadow-lg transition-shadow duration-300 flex-shrink-0 w-full sm:w-1/2 md:w-1/4 lg:w-1/5"
                 >
                   <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
@@ -134,7 +142,9 @@ const FlashSale = () => {
           </div>
         </>
       ) : (
-        <div className="text-center text-xl font-semibold">No items on Flash Sale</div>
+        <div className="text-center text-xl font-semibold">
+          No items on Flash Sale
+        </div>
       )}
     </div>
   );
