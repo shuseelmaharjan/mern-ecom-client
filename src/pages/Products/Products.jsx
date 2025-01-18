@@ -110,7 +110,7 @@ const Products = () => {
   };
 
   const handleCreateProduct = ()=> {
-    console.log('test');
+    navigate('/listing/create-product')
   }
 
   return (

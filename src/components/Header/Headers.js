@@ -12,7 +12,8 @@ import ProfileMenu from "./ProfileMenu";
 import { useLocation } from "react-router-dom";
 import siteService from "../../services/site/siteService";
 import HeadingAds from "./HeadingAds";
-import ShowCategory from "./ShowCategory";
+import { capitalizeFirstLetter } from "../../utils/textUtils";
+import HomepageService from "../../services/homepageService/homepageService";
 
 const Headers = () => {
   const [logo, setLogo] = useState("");
@@ -65,6 +66,21 @@ const Headers = () => {
     fetchSiteData();
   }, [accessToken]);
 
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await HomepageService.getCategories();
+        setCategories(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   return (
     <>
       <header className="w-full border-b border-gray-200 bg-white shadow-md sticky top-0 z-50">
@@ -95,7 +111,22 @@ const Headers = () => {
                 >
                   Categories
                 </button>
-                {showCategories && <ShowCategory />}
+                {showCategories && (
+                  <div className="absolute top-full w-64 bg-white border border-gray-200 shadow-lg z-10">
+                    <ul className="space-y-2">
+                      {categories.map((category) => (
+                        <li key={category._id} className="hover:bg-gray-100">
+                          <Link
+                            to={`/category/${category._id}`}
+                            className="block px-4 py-2 text-base font-medium text-gray-800 hover:text-gray-900"
+                          >
+                            {capitalizeFirstLetter(category.name)}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
 
               <div className="relative w-full max-w-md">

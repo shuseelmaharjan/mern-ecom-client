@@ -48,13 +48,13 @@ const HeadingAds = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-hidden">
       {campaigns.length > 1 ? (
         <Slider {...settings}>
           {campaigns.map((campaign) => (
             <div
               key={campaign._id}
-              className="h-10 py-2 flex items-center justify-center cursor-pointer bg-amber-300"
+              className="h-auto py-2 flex items-center justify-center cursor-pointer bg-amber-300"
               onClick={() => handleClick(campaign.link)}
             >
               <div
@@ -68,7 +68,7 @@ const HeadingAds = () => {
         campaigns.map((campaign) => (
           <div
             key={campaign._id}
-            className="h-10 py-2 flex items-center justify-center cursor-pointer bg-amber-300"
+            className="h-auto py-2 flex items-center justify-center cursor-pointer bg-amber-300"
             onClick={() => handleClick(campaign.link)}
           >
             <div

@@ -47,6 +47,15 @@ class AuthService {
       console.error(error);
     }
   }
+
+  async flashSaleItems() {
+    try {
+      const response = await this.api.get("/api/v1/flashsale-products");
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 const authService = new AuthService();

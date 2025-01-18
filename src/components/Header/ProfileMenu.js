@@ -33,8 +33,6 @@ const ProfileMenu = () => {
       setRole(decodedToken.role);
     }
   }, []);
-  console.log(role);
-
   const menuItems = [
     {
       to: "/dashboard",
