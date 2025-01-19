@@ -65,6 +65,17 @@ class AuthService {
       console.error(error);
     }
   }
+
+  async getBreadCrumbDetails(ProductId) {
+    try {
+      const response = await this.api.get(
+        `/api/v1/product-category-details/${ProductId}`
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 const authService = new AuthService();

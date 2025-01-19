@@ -1,73 +1,40 @@
-import { createContext, useState, useEffect, useContext } from "react"
+import React, { createContext, useContext, useState, useEffect } from "react";
+import Cookies from "js-cookie";
 
-export const CartContext = createContext();
+const CartContext = createContext();
 
-export const CartProvider = ({children}) => {
+export const useCart = () => useContext(CartContext);
 
-  const [cartItems, setCartItems] = useState(localStorage.getItem('cartItems') ? JSON.parse(localStorage.getItem('cartItems')) : []);
-
-  const addToCart = (item) => {
-    const isItemInCart = cartItems.find((cartItem) => cartItem.id === item.id);
-  
-    if (isItemInCart) {
-    setCartItems(
-        cartItems.map((cartItem) =>
-        cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        )
-    );
-    } else {
-    setCartItems([...cartItems, { ...item, quantity: 1 }]);
-    }
-  };
-
-  const removeFromCart = (itemId) => {
-    setCartItems(
-        cartItems.map((cartItem) =>
-          cartItem.id === itemId
-            ? { ...cartItem, quantity: cartItem.quantity - 1 }
-            : cartItem
-        ).filter((cartItem) => cartItem.quantity > 0)
-    );
-  };
-
-  const clearCart = () => {
-    setCartItems([]);
-  }
-
-  const getCartTotal = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  }
+export const CartProvider = ({ children }) => {
+  const [cart, setCart] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
-
-  useEffect(() => {
-    const cartItems = localStorage.getItem("cartItems");
-    if (cartItems) {
-    setCartItems(JSON.parse(cartItems));
-    }
+    const cartData = Cookies.get("cart") ? JSON.parse(Cookies.get("cart")) : [];
+    setCart(cartData);
   }, []);
 
-  return (
-    <>
-      <CartContext.Provider
-        value={{
-          cartItems,
-          addToCart,
-          removeFromCart,
-          clearCart,
-          getCartTotal,
-        }}
-      >
-        {children}
-      </CartContext.Provider>
-    </>
-  )
-}
+  const addToCart = (product) => {
+    const updatedCart = [...cart];
+    const existingProductIndex = updatedCart.findIndex(
+      (item) =>
+        item.productId === product.productId &&
+        item.color === product.color &&
+        item.size === product.size
+    );
 
-export const useCart = () => {
-  return useContext(CartContext);
-}
+    if (existingProductIndex !== -1) {
+      updatedCart[existingProductIndex].quantity += product.quantity;
+    } else {
+      updatedCart.push(product);
+    }
+
+    setCart(updatedCart);
+    Cookies.set("cart", JSON.stringify(updatedCart), { expires: 7 });
+  };
+
+  return (
+    <CartContext.Provider value={{ cart, addToCart }}>
+      {children}
+    </CartContext.Provider>
+  );
+};

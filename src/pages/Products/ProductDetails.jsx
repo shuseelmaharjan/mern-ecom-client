@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import Cookies from "js-cookie"; 
+import { Link, useLocation } from "react-router-dom";
+import Cookies from "js-cookie";
 import config from "../../services/config";
 import HomepageService from "../../services/homepageService/homepageService";
 import { toast } from "react-toastify";
+import { capitalizeFirstLetter } from "../../utils/textUtils";
+import FlashSale from "../Homepage/FlashSale";
+import { useCart } from "../../context/CartContext";
 
 const ProductDetails = () => {
   const location = useLocation();
@@ -14,20 +17,38 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [breadcrumb, setBreadcrumb] = useState([]);
+  const [campaign, setCampaign] = useState(null);
+  const [engagement, setEngagement] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
-  const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchIndivudualProductDetail = async () => {
       try {
-        const response = await HomepageService.individualProductProperty(Cat_id);
+        const response = await HomepageService.individualProductProperty(
+          Cat_id
+        );
         const data = response.data;
 
         if (data.success) {
-          setProduct(data.data);
-          const defaultImage = data.data.media.images.find((img) => img.default);
-          setSelectedImage(defaultImage?.url || data.data.media.images[0]?.url);
+          setProduct(data.data.product);
+          setCampaign(data.data.campaign);
+          setEngagement(data.data.engagement);
+          const defaultImage = data.data.product.media.images.find(
+            (img) => img.default
+          );
+          setSelectedImage(
+            defaultImage?.url || data.data.product.media.images[0]?.url
+          );
+
+          if (data.data.product.colors.isEnabled) {
+            setSelectedColor(data.data.product.colors.details[0].code);
+          }
         }
       } catch (error) {
         console.error(error);
@@ -35,8 +56,71 @@ const ProductDetails = () => {
         setLoading(false);
       }
     };
+
+    const fetchBreadCrumb = async () => {
+      try {
+        const res = await HomepageService.getBreadCrumbDetails(Cat_id);
+        const data = res.data;
+
+        const details = data.data.data.details;
+        const breadcrumbData = [
+          { name: "Home", link: "/" },
+          {
+            name: capitalizeFirstLetter(details.parentCategory.categoryName),
+            link: `/category/${details.parentCategory.categoryId}`,
+          },
+        ];
+
+        if (details.parentSubCategory) {
+          breadcrumbData.push({
+            name: capitalizeFirstLetter(
+              details.parentSubCategory.subCategoryName
+            ),
+            link: `/subcategory/${details.parentSubCategory.subCategoryId}`,
+          });
+        }
+
+        if (details.grandCategoryName) {
+          breadcrumbData.push({
+            name: capitalizeFirstLetter(details.grandCategoryName),
+            link: `/grandcategory/${details.grandCategoryId}`,
+          });
+        }
+
+        breadcrumbData.push({ name: data.data.productId, link: "" });
+        setBreadcrumb(breadcrumbData);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchBreadCrumb();
     fetchIndivudualProductDetail();
   }, [Cat_id]);
+
+  useEffect(() => {
+    if (campaign?.details?.expiryTime) {
+      const interval = setInterval(() => {
+        const expiryDate = new Date(campaign.details.expiryTime);
+        const now = new Date();
+        const timeDiff = expiryDate - now;
+
+        if (timeDiff <= 0) {
+          clearInterval(interval);
+          setTimeLeft(null);
+        } else {
+          const hours = Math.floor(
+            (timeDiff % (1000 * 3600 * 24)) / (1000 * 3600)
+          );
+          const minutes = Math.floor((timeDiff % (1000 * 3600)) / (1000 * 60));
+          const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+          setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
+        }
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [campaign]);
 
   if (loading) {
     return <div className="text-center p-4">Loading product details...</div>;
@@ -46,195 +130,268 @@ const ProductDetails = () => {
     setSelectedImage(url);
   };
 
-  const handleColorSelect = (color) => {
-    setSelectedColor(color);
+  const calculatePrice = () => {
+    let price = product.price;
+    if (campaign?.status && engagement?.status) {
+      const discount = (price * campaign.details.discountPercentage) / 100;
+      price -= discount;
+    }
+    return price;
   };
 
-  const handleSizeSelect = (size) => {
-    setSelectedSize(size);
+  const displayPrice = () => {
+    if (campaign?.status && engagement?.status) {
+      return calculatePrice().toFixed(2);
+    }
+    return product.price;
   };
 
-  const handleQuantityChange = (type) => {
-    if (type === "increment") {
-      if (selectedQuantity < product.productLimit) {
-        setSelectedQuantity((prev) => prev + 1);
-      }
-    } else if (type === "decrement") {
-      if (selectedQuantity > 1) {
-        setSelectedQuantity((prev) => prev - 1);
-      }
+  const handleColorChange = (colorCode) => {
+    if (selectedColor !== colorCode) {
+      setSelectedColor(colorCode);
     }
   };
+
 
   const handleAddToCart = () => {
-    if (!selectedColor) {
-      toast.error("Please select a color variant");
-      return;
-    }
-    if (!selectedSize) {
-      toast.error("Please select a size variant");
+    if (!selectedColor || !selectedSize) {
+      toast.error("Please select color and size.");
       return;
     }
   
-    const cartItem = {
-      productId: product._id,
-      title: product.title,
-      colorVariant: selectedColor,
-      sizeVariant: selectedSize,
-      quantity: selectedQuantity,
-      image: selectedImage || product.media.images[0]?.url,
-      productLimit: product.productLimit,
+    const productData = {
+      productId: Cat_id,
+      color: selectedColor,
+      size: selectedSize,
+      quantity: quantity,
     };
   
-    const currentCart = JSON.parse(Cookies.get("cart") || "[]");
+    const existingCart = Cookies.get("cart") ? JSON.parse(Cookies.get("cart")) : [];
   
-    const existingItem = currentCart.find(
+    const existingProductIndex = existingCart.findIndex(
       (item) =>
-        item.productId === cartItem.productId &&
-        item.colorVariant?.code === cartItem.colorVariant?.code &&
-        item.sizeVariant === cartItem.sizeVariant
+        item.productId === productData.productId &&
+        item.color === productData.color &&
+        item.size === productData.size
     );
   
-    if (existingItem) {
-      if (existingItem.quantity + cartItem.quantity > product.productLimit) {
-        toast.error(
-          `Cannot add more than ${product.productLimit} items for this variant.`
-        );
-        return;
-      }
-      existingItem.quantity += cartItem.quantity;
+    if (existingProductIndex !== -1) {
+      existingCart[existingProductIndex].quantity += productData.quantity;
     } else {
-      currentCart.push(cartItem);
+      existingCart.push(productData);
     }
   
-    Cookies.set("cart", JSON.stringify(currentCart), { expires: 7 });
-    toast.success(`${cartItem.title} added to the cart.`);
+    Cookies.set("cart", JSON.stringify(existingCart), { expires: 7 });
+  
+    if (typeof window !== "undefined" && window.localStorage) {
+      localStorage.setItem("cartUpdated", Date.now());
+    }
+  
+    console.log("Updated Cart:", existingCart);
+    addToCart(Cat_id);
+  
+    toast.success("Product added to cart!");
   };
   
 
   return (
-    <div className="container mx-auto p-4 mt-10">
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Product Images */}
-        <div className="w-full flex md:w-1/2 gap-20">
-          <div className="flex flex-col gap-2">
-            {product.media.images.map((img) => (
-              <img
-                key={img._id}
-                src={`${BASE_URL}/${img.url}`}
-                alt={product.title}
-                className={`w-20 h-20 rounded-lg cursor-pointer border ${
-                  selectedImage === img.url ? "border-gray-700 border-2" : "border-gray-300"
-                }`}
-                onClick={() => handleImageClick(img.url)}
-              />
+    <>
+      <div className="container mx-auto p-4">
+        {/* Breadcrumb */}
+        <nav className="mb-4">
+          <ol className="flex space-x-2 text-gray-600">
+            {breadcrumb.map((item, index) => (
+              <li key={index} className="flex items-center">
+                {item.link ? (
+                  <Link to={item.link} className="hover:text-blue-500">
+                    {item.name}
+                  </Link>
+                ) : (
+                  <span>{item.name}</span>
+                )}
+                {index < breadcrumb.length - 1 && (
+                  <span className="mx-2 text-gray-400">/ </span>
+                )}
+              </li>
             ))}
+            {product.title}
+          </ol>
+        </nav>
+
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="w-full flex md:w-1/2 gap-20">
+            <div className="flex flex-col gap-2">
+              {product.media.images.map((img) => (
+                <img
+                  key={img._id}
+                  src={`${BASE_URL}/${img.url}`}
+                  alt={product.title}
+                  className={`w-20 h-20 rounded-lg cursor-pointer border ${
+                    selectedImage === img.url
+                      ? "border-gray-700 border-2"
+                      : "border-gray-300"
+                  }`}
+                  onClick={() => handleImageClick(img.url)}
+                />
+              ))}
+            </div>
+            <div className="mb-4">
+              <img
+                src={`${BASE_URL}/${selectedImage}`}
+                alt={product.title}
+                className="w-auto h-[70vh] object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+            </div>
           </div>
-          <div className="mb-4">
-            <img
-              src={`${BASE_URL}/${selectedImage}`}
-              alt={product.title}
-              className="w-auto h-[70vh] object-cover transition-transform duration-300 group-hover:scale-110"
+
+          <div className="w-full md:w-1/2">
+            <h1 className="text-2xl font-bold">{product.title}</h1>
+            <p className="text-sm mb-2">
+              <strong>SKU:</strong> {product.sku}
+            </p>
+            {engagement.status ? (
+              <p className="text-lg mb-2 block items-center">
+                <span className="flex items-center mb-2">
+                  <strong>Price:</strong>
+                  <span className="font-semibold mx-2">${displayPrice()}</span>
+                  <span className="line-through text-gray-500 mx-2">
+                    $ {product.price}
+                  </span>
+                  <span className="text-sm bg-orange-400 font-semibold px-2 text-white rounded-full">
+                    {campaign.details.saleType}
+                  </span>
+                </span>
+                <span>
+                  <span className="bg-orange-200 text-orange-600 text-base p-2">
+                    <span className="mr-2">Estimated Profit</span>
+                    {engagement.status && displayPrice()
+                      ? ((displayPrice() / product.price - 1) * 100).toFixed(2)
+                      : 0}
+                    %
+                  </span>
+                  {campaign?.status && (
+                    <div className="mt-4">
+                      <strong>Offer expires in: </strong>
+                      <span className="text-red-600 font-bold">
+                        {timeLeft || ""}
+                      </span>
+                    </div>
+                  )}
+                </span>
+              </p>
+            ) : (
+              <p className="text-lg mb-2">
+                <strong>Price:</strong> {product.price}
+              </p>
+            )}
+
+            {/* Product Colors */}
+            {product.colors.isEnabled && (
+              <div className="mb-4">
+                <strong>Available Colors:</strong>
+                <span className="ml-2 font-semibold">
+                  {capitalizeFirstLetter(
+                    selectedColor &&
+                      product.colors.details.find(
+                        (c) => c.code === selectedColor
+                      )?.name
+                  )}
+                </span>{" "}
+                {/* Display color name */}
+                <div className="flex gap-2 mt-2">
+                  {product.colors.details.map((color) => (
+                    <span
+                      key={color._id}
+                      className={`w-6 h-6 rounded-full cursor-pointer border-2 border-gray-300 ${
+                        selectedColor === color.code
+                          ? "border-2 border-gray-700"
+                          : ""
+                      }`}
+                      style={{ backgroundColor: color.code }}
+                      onClick={() => handleColorChange(color.code)}
+                    ></span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Product Size */}
+            {product.size && (
+              <div className="mb-4">
+                <strong>Available Sizes:</strong>
+                <div className="flex gap-4 mt-2">
+                  {product.size.map((size, index) => (
+                    <span
+                      key={index}
+                      className={`px-4 py-2 border rounded-md cursor-pointer ${
+                        selectedSize === size ? "bg-gray-700 text-white" : ""
+                      }`}
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      {size}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="mb-4">
+              <strong>Quantity:</strong>
+              <div className="flex items-center justify-start gap-4 mt-2 border-gray-300">
+                <button
+                  className="px-6 py-2 bg-gray-800 text-white font-semibold hover:bg-gray-700 transition duration-300"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  value={quantity}
+                  min="1"
+                  max={product.productLimit}
+                  readOnly
+                  hidden
+                  className="w-16 text-center border rounded-md bg-gray-100 cursor-not-allowed"
+                />
+                <span>{quantity}</span>
+                <button
+                  className="px-6 py-2 bg-gray-800 text-white font-semibold hover:bg-gray-700 transition duration-300"
+                  onClick={() =>
+                    setQuantity(Math.min(product.productLimit, quantity + 1))
+                  }
+                >
+                  +
+                </button>
+              </div>
+              <p className="text-sm text-gray-500 text-left mt-2">
+                Max selectable quantity: {product.productLimit}
+              </p>
+            </div>
+
+            <div className="mt-6 flex gap-4">
+              <button
+                onClick={handleAddToCart}
+                className="px-6 py-2 bg-gray-800 text-white font-semibold hover:bg-gray-700 transition duration-300"
+              >
+                Add to Cart
+              </button>
+              <button className="px-6 py-2 bg-amber-300 text-gray-700 font-semibold hover:bg-amber-400 transition duration-300">
+                Add to Wishlist
+              </button>
+            </div>
+
+            {/* Product Description */}
+            <p className="text-lg mb-2 mt-6">
+              <strong>Description:</strong>
+            </p>
+            <div
+              className="text-sm text-gray-700"
+              dangerouslySetInnerHTML={{ __html: product.description }}
             />
           </div>
         </div>
-
-        {/* Product Details */}
-        <div className="w-full md:w-1/2">
-          <h1 className="text-2xl font-bold mb-6">{product.title}</h1>
-          <p className="text-lg mb-2">
-            <strong>SKU:</strong> {product.sku}
-          </p>
-          <p className="text-lg mb-2">
-            <strong>Price:</strong> ${product.price}
-          </p>
-          <p className="text-lg mb-2">
-            <strong>Description:</strong>
-          </p>
-          <div
-            className="mb-4 text-gray-700"
-            dangerouslySetInnerHTML={{ __html: product.description }}
-          />
-          <p className="text-lg mb-2">
-            <strong>Quantity Available:</strong> {product.quantity}
-          </p>
-
-          {/* Color Selection */}
-          {product.colors.isEnabled && (
-            <div className="mb-4">
-              <strong>Color:</strong>
-              {selectedColor && (
-                <p className="text-gray-700 mt-1">Selected Color: {selectedColor.name}</p>
-              )}
-              <div className="flex gap-4 mt-2">
-                {product.colors.details.map((color) => (
-                  <button
-                    key={color._id}
-                    className={`w-10 h-10 rounded-full border ${
-                      selectedColor?.code === color.code
-                        ? "border-blue-500"
-                        : "border-gray-300"
-                    }`}
-                    style={{ backgroundColor: color.code }}
-                    onClick={() => handleColorSelect(color)}
-                    title={color.name} 
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Size Selection */}
-          <div className="mb-4">
-            <strong>Size:</strong>
-            <div className="flex gap-4 mt-2">
-              {product.size.map((size) => (
-                <button
-                  key={size}
-                  className={`px-4 py-2 rounded-lg border ${
-                    selectedSize === size ? "border-blue-500" : "border-gray-300"
-                  }`}
-                  onClick={() => handleSizeSelect(size)}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Quantity Selection */}
-          <div className="mb-4">
-            <strong>Quantity:</strong>
-            <div className="flex items-center gap-4 mt-2">
-              <button
-              className="px-4 py-2 bg-gray-800 text-white hover:bg-gray-700 font-semibold"
-              onClick={() => handleQuantityChange("decrement")}
-              >
-                -
-              </button>
-              <span>{selectedQuantity}</span>
-              <button
-              className="px-4 py-2 bg-gray-800 text-white hover:bg-gray-700 font-semibold"
-              onClick={() => handleQuantityChange("increment")}
-              >
-                +
-              </button>
-            </div>
-            <p className="text-sm text-gray-500 mt-1">
-              Maximum quantity allowed: {product.productLimit}
-            </p>
-          </div>
-
-          {/* Add to Cart Button */}
-          <button
-              className="px-4 py-2 bg-gray-800 text-white hover:bg-gray-700 font-semibold"
-              onClick={handleAddToCart}
-          >
-            Add to Cart
-          </button>
-        </div>
       </div>
-    </div>
+      <FlashSale />
+    </>
   );
 };
 

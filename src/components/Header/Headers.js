@@ -14,6 +14,7 @@ import siteService from "../../services/site/siteService";
 import HeadingAds from "./HeadingAds";
 import { capitalizeFirstLetter } from "../../utils/textUtils";
 import HomepageService from "../../services/homepageService/homepageService";
+import { useCart } from "../../context/CartContext";
 
 const Headers = () => {
   const [logo, setLogo] = useState("");
@@ -22,6 +23,8 @@ const Headers = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegisterModelOpen, setIsRegisterModalOpen] = useState(false);
   const [forgetPasswordModalOpen, setForgetPasswordModalOpen] = useState(false);
+
+  const { cart } = useCart();
 
   const BASE_URL = config.API_BASE_URL;
 
@@ -147,7 +150,7 @@ const Headers = () => {
             </div>
 
             {/* User Actions */}
-            <div className="flex items-center space-x-4 h-16 relative">
+            <div className="flex items-center space-x-6 h-16 relative">
               {isLoggedIn && (
                 <div
                   className="relative h-full"
@@ -172,9 +175,16 @@ const Headers = () => {
                   <FaRegUser className="w-6 h-6" />
                 </button>
               )}
-              <Link to={"/cart"} className="text-gray-600 hover:text-gray-800">
-                <IoCartOutline className="w-6 h-6" />
-              </Link>
+              <div className="relative">
+                <Link to="/cart" className="text-gray-600 hover:text-gray-800">
+                  <IoCartOutline className="w-6 h-6" />
+                </Link>
+                {cart.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
+                    {cart.length}
+                  </span>
+                )}
+              </div>
               <Link
                 to={"/wishlist"}
                 className="text-gray-600 hover:text-gray-800"

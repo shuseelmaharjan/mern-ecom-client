@@ -40,7 +40,9 @@ const JustForYou = () => {
               return (
                 <Link
                   key={item._id}
-                  to={`/product/${item._id}`}
+                  to={`/product?${encodeURIComponent(
+                    item.title.replace(/ /g, "-")
+                  )}.html&src_identifier=${item._id}&img_src_module=${defaultImage._id}`}                  
                   className="group bg-white relative shadow hover:shadow-lg transition-shadow duration-300"
                 >
                   <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
