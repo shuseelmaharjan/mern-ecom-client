@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import HomepageService from "../../services/homepageService/homepageService";
 import {useAuth} from '../../context/AuthContext';
 import { FaMapMarkerAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
@@ -14,6 +15,7 @@ const Cart = () => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [address, setAddress] = useState('');
 
+  const navigate = useNavigate();
 
   const BASE_URL = config.API_BASE_URL;
   const { removeFromCart } = useCart();
@@ -150,6 +152,26 @@ const Cart = () => {
     }
     getAddress();
   }, [accessToken]);
+
+  const handleCheckout = () => {
+    const selectedItems = selectedProducts.map((productId) => {
+      const item = cart.find((cartItem) => cartItem.productId === productId);
+      return {
+        productId,
+        quantity: item.quantity,
+      };
+    });
+  
+    const serializedItems = selectedItems
+      .map((item, index) =>
+        `productId_${index}=${encodeURIComponent(item.productId)}&quantity_${index}=${encodeURIComponent(item.quantity)}`
+      )
+      .join("&");
+  
+    navigate(`/checkout?${serializedItems}`);
+  };
+  
+  
 
   return (
     <div className="container mx-auto p-4">
@@ -360,9 +382,11 @@ const Cart = () => {
             </div>
 
             <div className="mt-4">
-              <button className="px-6 w-full py-2 bg-gray-800 text-white font-semibold hover:bg-gray-700 transition duration-300">
-                Checkout Now
-              </button>
+            <button
+              onClick={handleCheckout}
+              className="px-6 w-full py-2 bg-gray-800 text-white font-semibold hover:bg-gray-700 transition duration-300"            >
+              Checkout
+            </button>
             </div>
           </div>
         </div>

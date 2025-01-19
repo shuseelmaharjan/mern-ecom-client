@@ -70,7 +70,7 @@ function App() {
       path: "/checkout",
       element: <CheckOut />,
       showHeader: true,
-      private: false,
+      private: true,
     },
 
     {
