@@ -135,7 +135,7 @@ function App() {
       path: "/cart",
       element: <Cart />,
       showHeader: true,
-      private: false,
+      private: true,
       dashLoadout: false,
     },
     {

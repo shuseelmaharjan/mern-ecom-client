@@ -77,6 +77,20 @@ class AuthService {
     }
   }
 
+  async getDefaultAddress(accessToken) {
+    try {
+      const response = await this.api.get("/api/v1/get-my-default-address", {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async getProductCartDetails(cartDetails) {
     const products = cartDetails.map((item) => ({
       productId: item.productId,
