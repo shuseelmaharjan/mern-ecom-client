@@ -86,27 +86,40 @@ const Cart = () => {
     let totalDiscountedAmount = 0;
     let totalOfferedCost = 0;
     let totalShippingCost = 0;
-
+  
+    const shippingCosts = {};
+  
     selectedProducts.forEach((productId) => {
       const item = cart.find((cartItem) => cartItem.productId === productId);
       const productDetail = productDetails.find(
         (product) => product.productId === productId
       );
-
+  
       if (item && productDetail) {
         const retailPrice = productDetail.totalAmount;
         const discountedPrice = productDetail.campaignStatus
           ? productDetail.offeredCost
           : productDetail.price;
-
+  
         totalRetailPrice += item.quantity * retailPrice;
         totalDiscountedAmount +=
           item.quantity * (retailPrice - discountedPrice);
         totalOfferedCost += item.quantity * discountedPrice;
-        totalShippingCost += productDetail.shippingCost || 0; 
+  
+        const shippingCost = productDetail.shipping?.cod || 0;
+        const isFreeShipping = productDetail.shipping?.freeShipping;
+  
+        if (!shippingCosts[productId]) {
+          if (isFreeShipping) {
+            shippingCosts[productId] = 0;
+          } else {
+            shippingCosts[productId] = shippingCost;
+          }
+          totalShippingCost += shippingCosts[productId];
+        }
       }
     });
-
+  
     return {
       totalRetailPrice,
       totalDiscountedAmount,
@@ -114,7 +127,8 @@ const Cart = () => {
       totalShippingCost,
     };
   };
-
+  
+  
   const {
     totalRetailPrice,
     totalDiscountedAmount,
@@ -339,7 +353,7 @@ const Cart = () => {
             <div className="flex justify-between">
               <span>Shipping Cost</span>
               <span>${totalShippingCost.toFixed(2)}</span>
-            </div>
+              </div>
             <div className="flex justify-between font-bold">
               <span>Total</span>
               <span>${(totalOfferedCost + totalShippingCost).toFixed(2)}</span>
