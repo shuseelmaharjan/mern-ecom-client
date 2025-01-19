@@ -10,7 +10,9 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     const cartData = Cookies.get("cart") ? JSON.parse(Cookies.get("cart")) : [];
-    setCart(cartData);
+    if (Array.isArray(cartData)) {
+      setCart(cartData);
+    }
   }, []);
 
   const addToCart = (product) => {
@@ -32,8 +34,14 @@ export const CartProvider = ({ children }) => {
     Cookies.set("cart", JSON.stringify(updatedCart), { expires: 7 });
   };
 
+  const removeFromCart = (productId) => {
+    const updatedCart = cart.filter((item) => item.productId !== productId);
+    setCart(updatedCart);
+    Cookies.set("cart", JSON.stringify(updatedCart), { expires: 7 });
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart }}>
       {children}
     </CartContext.Provider>
   );

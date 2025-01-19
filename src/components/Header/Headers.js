@@ -180,7 +180,7 @@ const Headers = () => {
                   <IoCartOutline className="w-6 h-6" />
                 </Link>
                 {cart.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
+                  <span className="absolute -top-2 -right-5 font-bold bg-gray-800 text-white text-xs rounded-full px-2 py-1">
                     {cart.length}
                   </span>
                 )}

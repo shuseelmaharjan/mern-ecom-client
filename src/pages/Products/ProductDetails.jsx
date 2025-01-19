@@ -188,10 +188,11 @@ const ProductDetails = () => {
     }
   
     console.log("Updated Cart:", existingCart);
-    addToCart(Cat_id);
+    addToCart(productData); 
   
     toast.success("Product added to cart!");
   };
+  
   
 
   return (

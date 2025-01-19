@@ -76,6 +76,23 @@ class AuthService {
       console.error(error);
     }
   }
+
+  async getProductCartDetails(cartDetails) {
+    const products = cartDetails.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+    }));
+
+    try {
+      const response = await this.api.post("/api/v1/products-costing", {
+        products,
+      });
+      return response.data.results;
+    } catch (error) {
+      console.error("Error fetching product data:", error);
+      throw error;
+    }
+  }
 }
 
 const authService = new AuthService();
