@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import HomepageService from "../../services/homepageService/homepageService";
-import config from "../../services/config";
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import HomepageService from "../../services/homepageService/homepageService"; 
+import config from "../../services/config"; 
 
-const JustForYou = () => {
-  const [forYouItems, setForYouItems] = useState([]);
+const RelatedItems = ({ productId }) => {
+  const [relatedItems, setRelatedItems] = useState([]);
   const [loading, setLoading] = useState(true);  
 
   const BASE_URL = config.API_BASE_URL;
 
-  const fetchDatas = async () => {
+  const fetchRelatedItems = useCallback(async () => {
     try {
-      const response = await HomepageService.foryoupageItems();
-      setForYouItems(response || []);  
+      const response = await HomepageService.getRelatedProducts(productId);
+      setRelatedItems(response || []);  
     } catch (error) {
-      console.error("Error fetching items:", error);
+      console.error("Error fetching related items:", error);
     } finally {
       setLoading(false); 
     }
-  };
+  }, [productId]); 
 
   useEffect(() => {
-    fetchDatas();
-  }, []);
+    fetchRelatedItems();
+  }, [productId, fetchRelatedItems]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -31,11 +31,11 @@ const JustForYou = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="flex justify-start items-center mb-6">
-        <h2 className="text-2xl font-semibold">Just For You</h2>
+        <h2 className="text-2xl font-semibold">Related Items</h2>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {forYouItems.length > 0 ? (
-          forYouItems.slice(0, 10).map((item) => {
+        {relatedItems.length > 0 ? (
+          relatedItems.slice(0, 10).map((item) => {
             const defaultImage = item.media.find((img) => img.default);
             const nextImage = item.media.find((img) => !img.default);
 
@@ -47,9 +47,7 @@ const JustForYou = () => {
             return (
               <Link
                 key={item.productId}
-                to={`/product?${encodeURIComponent(
-                  item.title.replace(/ /g, "-")
-                )}.html&src_identifier=${item.productId}`}
+                to={`/product?${encodeURIComponent(item.title.replace(/ /g, "-"))}.html&src_identifier=${item.productId}`}
                 className="group bg-white relative shadow hover:shadow-lg transition-shadow duration-300"
               >
                 {hasCampaign && (
@@ -72,10 +70,7 @@ const JustForYou = () => {
                   )}
                 </div>
                 <div className="p-4">
-                  <h3
-                    className="text-sm font-semibold truncate mt-2"
-                    title={item.title}
-                  >
+                  <h3 className="text-sm font-semibold truncate mt-2" title={item.title}>
                     {item.title}
                   </h3>
                   {item.brand && (
@@ -87,7 +82,6 @@ const JustForYou = () => {
                         <p className="text-lg font-bold text-orange-500">
                           ${discountedPrice.toFixed(2)}
                         </p>
-                        
                         <p className="text-sm text-gray-800 line-through mx-2">
                           ${item.price.toFixed(2)}
                         </p>
@@ -95,7 +89,7 @@ const JustForYou = () => {
                           -{item.campaign.discountPercentage}% 
                         </p>
                         <span className="ml-2 bg-orange-100 border-orange-500 border-2 text-orange-500 px-2 rounded-full">
-                        {item.campaign.saleType}
+                          {item.campaign.saleType}
                         </span>
                       </>
                     ) : (
@@ -109,11 +103,11 @@ const JustForYou = () => {
             );
           })
         ) : (
-          <p>No items available.</p> 
+          <p>No related items available.</p>
         )}
       </div>
     </div>
   );
 };
 
-export default JustForYou;
+export default RelatedItems;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FaShoppingCart, FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import HomepageService from "../../services/homepageService/homepageService";
 import config from "../../services/config";
@@ -91,8 +91,8 @@ const FlashSale = () => {
                   key={item._id}
                   to={`/product?${encodeURIComponent(
                     item.title.replace(/ /g, "-")
-                  )}.html&src_identifier=${item._id}&img_src_module=${defaultImage._id}`}
-                  className="group bg-white relative shadow hover:shadow-lg transition-shadow duration-300 flex-shrink-0 w-full sm:w-1/2 md:w-1/4 lg:w-1/5"
+                  )}.html&src_identifier=${item._id}`}
+                  className="group bg-white relative shadow hover:shadow-lg transition-shadow duration-300 mb-4 flex-shrink-0 w-full sm:w-1/2 md:w-1/4 lg:w-1/5"
                 >
                   <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
                     {item.discountPercentage}% Off
@@ -124,9 +124,7 @@ const FlashSale = () => {
                         ${item.price}
                       </p>
                     </div>
-                    <button className="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-600 transition duration-300">
-                      <FaShoppingCart size={18} />
-                    </button>
+
                   </div>
                 </Link>
               );

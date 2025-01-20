@@ -5,7 +5,7 @@ import config from "../../services/config";
 import HomepageService from "../../services/homepageService/homepageService";
 import { toast } from "react-toastify";
 import { capitalizeFirstLetter } from "../../utils/textUtils";
-import FlashSale from "../Homepage/FlashSale";
+import RelatedItems from "../Homepage/RelatedItems";
 import { useCart } from "../../context/CartContext";
 
 const ProductDetails = () => {
@@ -61,38 +61,43 @@ const ProductDetails = () => {
       try {
         const res = await HomepageService.getBreadCrumbDetails(Cat_id);
         const data = res.data;
-
-        const details = data.data.data.details;
-        const breadcrumbData = [
-          { name: "Home", link: "/" },
-          {
-            name: capitalizeFirstLetter(details.parentCategory.categoryName),
-            link: `/category/${details.parentCategory.categoryId}`,
-          },
-        ];
-
-        if (details.parentSubCategory) {
-          breadcrumbData.push({
-            name: capitalizeFirstLetter(
-              details.parentSubCategory.subCategoryName
-            ),
-            link: `/subcategory/${details.parentSubCategory.subCategoryId}`,
-          });
+    
+        if (data.success) {
+          const details = data.data; 
+          
+          const breadcrumbData = [
+            { name: "Home", link: "/" }, 
+            {
+              name: capitalizeFirstLetter(details.category.name),
+              link: `/category/${details.category.id}`, 
+            },
+          ];
+    
+          if (details.subCategory) {
+            breadcrumbData.push({
+              name: capitalizeFirstLetter(details.subCategory.name), 
+              link: `/subcategory/${details.subCategory.id}`,
+            });
+          }
+    
+          if (details.grandCategory) {
+            breadcrumbData.push({
+              name: capitalizeFirstLetter(details.grandCategory.name), 
+              link: `/grandcategory/${details.grandCategory.id}`,
+            });
+          }
+    
+          breadcrumbData.push({ name: "Product", link: "" });
+    
+          setBreadcrumb(breadcrumbData);
+        } else {
+          console.error("Failed to fetch breadcrumb details:", data.message);
         }
-
-        if (details.grandCategoryName) {
-          breadcrumbData.push({
-            name: capitalizeFirstLetter(details.grandCategoryName),
-            link: `/grandcategory/${details.grandCategoryId}`,
-          });
-        }
-
-        breadcrumbData.push({ name: data.data.productId, link: "" });
-        setBreadcrumb(breadcrumbData);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching breadcrumb details:", error);
       }
     };
+    
 
     fetchBreadCrumb();
     fetchIndivudualProductDetail();
@@ -391,7 +396,7 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
-      <FlashSale />
+      <RelatedItems productId={Cat_id} />
     </>
   );
 };

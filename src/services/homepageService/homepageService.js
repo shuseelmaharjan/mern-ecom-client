@@ -57,6 +57,26 @@ class AuthService {
     }
   }
 
+  async foryoupageItems() {
+    try {
+      const response = await this.api.get("/api/v1/foryoupage");
+      return response.data.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async getRelatedProducts(productId) {
+    try {
+      const response = await this.api.get(
+        `/api/v1/related-products/${productId}`
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async individualProductProperty(ProductId) {
     try {
       const response = await this.api.get(`/api/v1/product/${ProductId}`);
