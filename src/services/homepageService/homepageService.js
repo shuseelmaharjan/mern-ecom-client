@@ -1,7 +1,7 @@
 import axios from "axios";
 import config from "../config";
 
-class AuthService {
+class HomepageService {
   constructor() {
     this.api = axios.create({
       baseURL: config.API_BASE_URL,
@@ -127,7 +127,48 @@ class AuthService {
       throw error;
     }
   }
+
+  async fetchProducts(categoryId, page = 1, filterParams = {}) {
+    try {
+      const response = await this.api.get(
+        `/api/v1/product-category/${categoryId}`,
+        {
+          params: { page, limit: 20, ...filterParams },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      throw error;
+    }
+  }
+
+  async fetchFilterAttributes(categoryId) {
+    try {
+      const response = await this.api.get(
+        `/api/v1/category/${categoryId}/filter-attributes`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching filter attributes:", error);
+      throw error;
+    }
+  }
+  async fetchFilteredProducts(categoryId, filterParams, page = 1, limit = 2) {
+    try {
+      const response = await this.api.get(
+        `api/v1/category-filter/${categoryId}`,
+        {
+          params: { ...filterParams, page, limit },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching filtered products:", error);
+      throw error;
+    }
+  }
 }
 
-const authService = new AuthService();
-export default authService;
+const homepageService = new HomepageService();
+export default homepageService;

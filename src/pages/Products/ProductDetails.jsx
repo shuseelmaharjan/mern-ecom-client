@@ -69,7 +69,7 @@ const ProductDetails = () => {
             { name: "Home", link: "/" }, 
             {
               name: capitalizeFirstLetter(details.category.name),
-              link: `/category/${details.category.id}`, 
+              link: `/category?category=${details.category.name}&src=${details.category.id}`, 
             },
           ];
     
