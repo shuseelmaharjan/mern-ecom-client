@@ -279,10 +279,10 @@ const GrandCategory = () => {
         <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {products.map((item) => (
             <Link
-              key={item._id}
+              key={item.productId}
               to={`/product?${encodeURIComponent(
                 item.title.replace(/ /g, "-")
-              )}.html&src_identifier=${item._id}`}
+              )}.html&src_identifier=${item.productId}`}
               className="group bg-white relative shadow hover:shadow-lg transition-shadow duration-300"
             >
               {item.campaign && (
