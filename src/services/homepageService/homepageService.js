@@ -168,6 +168,71 @@ class HomepageService {
       throw error;
     }
   }
+
+  async fetchProducts1(subCategoryId, page = 1, filterParams = {}) {
+    try {
+      const response = await this.api.get(
+        `/api/v1/product-subcategory/${subCategoryId}`,
+        {
+          params: { page, limit: 20, ...filterParams },
+        }
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      throw error;
+    }
+  }
+
+  async fetchFilteredProducts1(
+    subCategoryId,
+    filterParams,
+    page = 1,
+    limit = 2
+  ) {
+    try {
+      const response = await this.api.get(
+        `api/v1/subcategory-filter/${subCategoryId}`,
+        {
+          params: { ...filterParams, page, limit },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching filtered products:", error);
+      throw error;
+    }
+  }
+
+  async fetchProducts2(grandCatId, page = 1, filterParams = {}) {
+    try {
+      const response = await this.api.get(
+        `/api/v1/product-grandcategory/${grandCatId}`,
+        {
+          params: { page, limit: 20, ...filterParams },
+        }
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      throw error;
+    }
+  }
+
+  async fetchFilteredProducts2(grandCatId, filterParams, page = 1, limit = 2) {
+    try {
+      const response = await this.api.get(
+        `api/v1/grandcategory-filter/${grandCatId}`,
+        {
+          params: { ...filterParams, page, limit },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching filtered products:", error);
+      throw error;
+    }
+  }
 }
 
 const homepageService = new HomepageService();

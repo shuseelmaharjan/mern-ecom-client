@@ -76,19 +76,17 @@ const ProductDetails = () => {
           if (details.subCategory) {
             breadcrumbData.push({
               name: capitalizeFirstLetter(details.subCategory.name), 
-              link: `/subcategory/${details.subCategory.id}`,
+              link: `/category/page2.html?category=${details.category.name}&src=${details.category.id}&sub=${details.subCategory.name}&src_identify=${details.subCategory.id}`,
             });
           }
     
           if (details.grandCategory) {
             breadcrumbData.push({
               name: capitalizeFirstLetter(details.grandCategory.name), 
-              link: `/grandcategory/${details.grandCategory.id}`,
+              link: `/category/page3.html?category=${details.category.name}&src=${details.category.id}&sub=${details.subCategory.name}&src_identify=${details.subCategory.id}&category-child=${details.grandCategory.name}&source=${details.grandCategory.id}`,
             });
           }
-    
-          breadcrumbData.push({ name: "Product", link: "" });
-    
+        
           setBreadcrumb(breadcrumbData);
         } else {
           console.error("Failed to fetch breadcrumb details:", data.message);
@@ -209,7 +207,7 @@ const ProductDetails = () => {
             {breadcrumb.map((item, index) => (
               <li key={index} className="flex items-center">
                 {item.link ? (
-                  <Link to={item.link} className="hover:text-blue-500">
+                  <Link to={item.link}>
                     {item.name}
                   </Link>
                 ) : (
@@ -220,7 +218,9 @@ const ProductDetails = () => {
                 )}
               </li>
             ))}
-            {product.title}
+            <span className="mx-2 text-gray-400">/ </span>
+            <span className="mx-2 text-gray-400">{product.title} </span>
+            
           </ol>
         </nav>
 

@@ -5,11 +5,14 @@ import { VscSettings } from "react-icons/vsc";
 import homepageService from "../../services/homepageService/homepageService"; 
 import { capitalizeFirstLetter } from "../../utils/textUtils";
 
-const CategoryPage = () => {
+const SubCategory = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const category = queryParams.get("category");
   const categoryId = queryParams.get("src");
+  const subcategory = queryParams.get("sub")
+  const subCatId = queryParams.get("src_identify");
+
 
   const [products, setProducts] = useState([]);
   const [filters, setFilters] = useState({
@@ -32,14 +35,14 @@ const CategoryPage = () => {
   const fetchProducts = useCallback(async (page = 1, filterParams = {}) => {
     setLoading(true);
     try {
-      const data = await homepageService.fetchProducts(categoryId, page, filterParams);
+      const data = await homepageService.fetchProducts1(subCatId, page, filterParams);
       setProducts((prev) => (page === 1 ? data : [...prev, ...data]));
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
       setLoading(false);
     }
-  }, [categoryId]);
+  }, [subCatId]);
 
   const fetchFilterAttributes = useCallback(async () => {
     try {
@@ -53,7 +56,7 @@ const CategoryPage = () => {
   useEffect(() => {
     fetchProducts(page);
     fetchFilterAttributes();
-  }, [categoryId, page, fetchProducts, fetchFilterAttributes]);
+  }, [subCatId, page, fetchProducts, fetchFilterAttributes]);
   
 
   const handleFilterClick = (filterType, value) => {
@@ -83,8 +86,8 @@ const CategoryPage = () => {
     };
 
     try {
-      const filteredProducts = await homepageService.fetchFilteredProducts(
-        categoryId,
+      const filteredProducts = await homepageService.fetchFilteredProducts1(
+        subCatId,
         filterParams,
         1,
         2
@@ -104,10 +107,17 @@ const CategoryPage = () => {
                 Home
             </li>
           </Link>
-          <span className="mx-2 text-gray-400">/ </span>
+          <span className="mx-2 text-gray-600">/ </span>
+          <Link to={`/category?category=${category}&src=${categoryId}`}>
           <li  className="flex items-center">
                 {capitalizeFirstLetter(category)}
             </li>
+          </Link>
+          <span className="mx-2 text-gray-600">/ </span>
+          <li  className="flex items-center text-gray-400">
+                {capitalizeFirstLetter(subcategory)}
+            </li>
+         
         </ol>
       </nav>
       <div className="flex gap-4">
@@ -342,4 +352,4 @@ const CategoryPage = () => {
   );
 };
 
-export default CategoryPage;
+export default SubCategory;
