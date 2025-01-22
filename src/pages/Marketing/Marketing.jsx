@@ -47,6 +47,7 @@ const Marketing = () => {
       switch (activeTab) {
         case "active":
           response = await marketingService.getActiveCampaign(accessToken);
+          console.log(response);
           break;
         case "upcoming":
           response = await marketingService.getUpcomingCampaign(accessToken);
@@ -79,7 +80,7 @@ const Marketing = () => {
   };
 
   const [showOptions, setShowOptions] = useState({});
-  const handleButtonClick = (id) => {
+  const handleButtonClick = (id, campaign) => {
     setShowOptions((prev) => ({
       ...prev,
       [id]: !prev[id],
@@ -179,14 +180,32 @@ const Marketing = () => {
             key={campaign._id}
             className="flex flex-col sm:flex-row bg-white shadow-md rounded-lg p-4 space-y-4 sm:space-y-0 sm:space-x-4 border-black"
           >
-            <div className="flex justify-center sm:justify-start">
+            {(campaign.priority === 'HEADER' || campaign.priority === 'BANNER')&&(
+              <div className="flex justify-center sm:justify-start">
               <img
-                src={`${BASE_URL}/${campaign.image}`}
+                src={`${BASE_URL}${campaign.banner}`}
+                alt={campaign.title}
+                className="w-32 h-32 object-cover rounded"
+                onClick={() => openImageHandler(campaign.banner)}
+              />
+            </div>
+            )}
+            {(campaign.priority === 'HOME' || campaign.priority === 'DEAL')&&(
+              <div className="flex justify-center sm:justify-start gap-10">
+              <img
+                src={`${BASE_URL}${campaign.image}`}
                 alt={campaign.title}
                 className="w-32 h-32 object-cover rounded"
                 onClick={() => openImageHandler(campaign.image)}
               />
+                            <img
+                src={`${BASE_URL}${campaign.poster}`}
+                alt={campaign.title}
+                className="w-32 h-32 object-cover rounded"
+              />
             </div>
+            )}
+ 
 
             <div className="flex-1 flex flex-col justify-between">
               <div className="flex-grow">
@@ -236,7 +255,7 @@ const Marketing = () => {
                   <div className="relative">
                   <button
                     className="py-1 px-3 border-gray-400 border-2 text-gray-800 rounded hover:bg-gray-200"
-                    onClick={() => handleButtonClick(campaign._id)}
+                    onClick={() => handleButtonClick(campaign._id, campaign.campaign)}
                   >
                     <HiDotsHorizontal />
                   </button>
@@ -340,7 +359,7 @@ const Marketing = () => {
           >
         
             <img
-              src={`${BASE_URL}/${openImage}`}
+              src={`${BASE_URL}${openImage}`}
               alt="Campaign"
               className="max-w-[80vw] max-h-[80vh] object-contain"
             />
