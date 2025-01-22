@@ -11,6 +11,7 @@ class MarketingService {
 
   async createCampaign(accessToken, formData) {
     try {
+      console.log("FormData", formData);
       const response = await this.api.post(
         "/api/v1/create-campaign",
         formData,
