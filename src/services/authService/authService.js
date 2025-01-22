@@ -19,6 +19,7 @@ class AuthService {
   // Signup logic
   async signup(data) {
     try {
+      console.log("request api:", this.api);
       const response = await this.api.post("/api/v1/signup", data);
       return response.data.message;
     } catch (error) {
@@ -30,6 +31,7 @@ class AuthService {
 
   // Login logic
   async login(data) {
+    console.log(data);
     try {
       const response = await this.api.post("/api/v1/login", data, {
         withCredentials: true,
@@ -39,6 +41,7 @@ class AuthService {
       });
       return response.data;
     } catch (error) {
+      console.log(error);
       throw new Error(
         error.response ? error.response.data.message : "Invalid Credentials"
       );
