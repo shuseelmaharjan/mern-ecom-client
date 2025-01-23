@@ -233,13 +233,6 @@ function App() {
       dashLoadout: true,
     },
     {
-      path: "/marketing/:tab",
-      element: <Marketing />,
-      showHeader: false,
-      private: true,
-      dashLoadout: true,
-    },
-    {
       path: "/campaign?",
       element: <Campaign />,
       showHeader: false,

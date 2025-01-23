@@ -6,7 +6,13 @@ import marketingService from "../../services/marketingService/marketingService";
 import { useAuth } from "../../context/AuthContext";
 import config from "../../services/config";
 
-const EditCampaignData = ({ editCampaignData, fetchData, setEditCampaignModal }) => {
+const EditCampaignData = ({
+  editCampaignData,
+  fetchData,
+  setEditCampaignModal,
+  setSuccessUpdate,
+  setErrorUpdate,
+}) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: editCampaignData.title || "",
@@ -26,8 +32,16 @@ const EditCampaignData = ({ editCampaignData, fetchData, setEditCampaignModal })
 
   const { accessToken } = useAuth();
   const [logoFile, setLogoFile] = useState(null);
-  const [currentImage, setCurrentImage] = useState(editCampaignData.image || "");
+  const [currentImage, setCurrentImage] = useState(
+    editCampaignData.banner || ""
+  );
+  const [imgFile, setImgFile] = useState(null);
+  const [currentImg, setCurrentImg] = useState(editCampaignData.image || "");
+  const [stickerFile, setStickerFIle] = useState(null);
+  const [stickerImg, setStickerImg] = useState(editCampaignData.poster || "");
   const fileInputRef = useRef(null);
+  const iamgeInputRef = useRef(null);
+  const posterInputRef = useRef(null);
 
   const handleInputChange = (e) => {
     const { id, value, type, checked } = e.target;
@@ -50,6 +64,32 @@ const EditCampaignData = ({ editCampaignData, fetchData, setEditCampaignModal })
     setLogoFile(null);
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImgFile(file);
+      setCurrentImg(null);
+    }
+  };
+
+  const handleImageRemove = () => {
+    setCurrentImg(null);
+    setImgFile(null);
+  };
+
+  const handlePosterChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setStickerFIle(file);
+      setStickerImg(null);
+    }
+  };
+
+  const handlePosterRemove = () => {
+    setStickerImg(null);
+    setStickerFIle(null);
+  };
+
   const handleDescriptionChange = (value) => {
     setFormData({ ...formData, description: value });
   };
@@ -57,7 +97,7 @@ const EditCampaignData = ({ editCampaignData, fetchData, setEditCampaignModal })
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     const payload = new FormData();
     payload.append("title", formData.title);
     payload.append("description", formData.description);
@@ -66,24 +106,35 @@ const EditCampaignData = ({ editCampaignData, fetchData, setEditCampaignModal })
     payload.append("expiryTime", formData.expiryTime);
     payload.append("discountPercentage", formData.discountPercentage);
     payload.append("priority", formData.priority);
-    payload.append("showOnHeader", formData.showOnHeader);
-  
+
     if (logoFile) {
-      payload.append("image", logoFile);
+      payload.append("banner", logoFile);
+
     }
-  
+    if(imgFile) {
+      payload.append("image", imgFile);
+    }
+    if(stickerFile){
+      payload.append("poster", stickerFile);
+
+    }
+
     try {
-      await marketingService.updateCampaign(accessToken, payload, editCampaignData._id);
+      await marketingService.updateCampaign(
+        accessToken,
+        payload,
+        editCampaignData._id
+      );
       setLoading(false);
       fetchData();
       setEditCampaignModal(false);
+      setSuccessUpdate('Campaign updated successfully');
     } catch (error) {
       console.error("Error updating campaign:", error);
       setLoading(false);
+      setErrorUpdate(error);
     }
   };
-  
-  
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -122,20 +173,20 @@ const EditCampaignData = ({ editCampaignData, fetchData, setEditCampaignModal })
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
             <div>
-              <label htmlFor="saleType" className="block mb-2 font-medium">
-                Sale Type
+              <label htmlFor="priority" className="block mb-2 font-medium">
+                Campaign Type
               </label>
               <select
-                id="saleType"
-                value={formData.saleType}
+                id="priority"
+                value={formData.priority}
                 onChange={handleInputChange}
                 className="w-full border border-gray-300 p-2 shadow-sm outline-none"
                 required
               >
-                <option value="SALE">SALE</option>
-                <option value="QUICKSALE">QUICKSALE</option>
-                <option value="FESTIVAL">FESTIVAL</option>
-                <option value="FREESHIPPING">FREESHIPPING</option>
+                <option value="HEADER">Header</option>
+                <option value="BANNER">Banner</option>
+                <option value="DEAL">Deal</option>
+                <option value="HOME">Home</option>
               </select>
             </div>
             <div>
@@ -182,86 +233,176 @@ const EditCampaignData = ({ editCampaignData, fetchData, setEditCampaignModal })
                 required
               />
             </div>
-            <div>
-              <label htmlFor="priority" className="block mb-2 font-medium">
-                Display On
-              </label>
-              <select
-                id="priority"
-                value={formData.priority}
-                onChange={handleInputChange}
-                className="w-full border border-gray-300 p-2 shadow-sm outline-none"
-                required
-              >
-                <option value="BANNER">BANNER</option>
-                <option value="FLASHSALE">FLASH SALE</option>
-                <option value="HOME">HOMEPAGE</option>
-              </select>
-            </div>
-            <div className="flex items-center">
-              <label htmlFor="showOnHeader" className="mr-2 font-medium">
-                Show on Header
-              </label>
-              <input
-                type="checkbox"
-                id="showOnHeader"
-                checked={formData.showOnHeader}
-                onChange={handleInputChange}
-                className="w-5 h-5 border border-gray-300 shadow-sm focus:ring-2 focus:ring-gray-800"
-              />
-            </div>
+            {formData.priority === "HOME" && (
+              <div>
+                <label htmlFor="saleType" className="block mb-2 font-medium">
+                  Display On
+                </label>
+                <select
+                  id="saleType"
+                  value={formData.saleType}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 p-2 shadow-sm outline-none"
+                  required
+                >
+                  <option value="SALE">Sale</option>
+                  <option value="BRAND">Brand</option>
+                  <option value="FESTIVAL">Festival</option>
+                  <option value="FREESHIPPING">Free Shipping</option>
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Banner Image */}
           <div className="mb-4">
-            <label className="block mb-2 font-medium">Banner</label>
-            {currentImage ? (
-              <div className="h-48 w-full relative">
-                <img
-                  src={`${BASE_URL}/${currentImage}`}
-                  alt="Current Preview"
-                  className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+            {(formData.priority === "HEADER" ||
+              formData.priority === "BANNER") && (
+              <>
+                <label className="block mb-2 font-medium">Banner</label>
+                {currentImage ? (
+                  <div className="h-48 w-full relative">
+                    <img
+                      src={`${BASE_URL}${currentImage}`}
+                      alt="Current Preview"
+                      className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                    />
+                    <FaTrash
+                      className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                      onClick={handleRemoveImage}
+                    />
+                  </div>
+                ) : !logoFile ? (
+                  <div
+                    className="h-48 w-full border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100"
+                    onClick={() => fileInputRef.current.click()}
+                  >
+                    <span className="text-gray-600">Select a new image</span>
+                  </div>
+                ) : (
+                  <div className="h-48 w-full relative">
+                    <img
+                      src={URL.createObjectURL(logoFile)}
+                      alt="New Preview"
+                      className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                    />
+                    <FaTrash
+                      className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                      onClick={handleRemoveImage}
+                    />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
                 />
-                <FaTrash
-                  className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
-                  onClick={handleRemoveImage}
-                />
-              </div>
-            ) : !logoFile ? (
-              <div
-                className="h-48 w-full border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100"
-                onClick={() => fileInputRef.current.click()}
-              >
-                <span className="text-gray-600">Select a new image</span>
-              </div>
-            ) : (
-              <div className="h-48 w-full relative">
-                <img
-                  src={URL.createObjectURL(logoFile)}
-                  alt="New Preview"
-                  className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
-                />
-                <FaTrash
-                  className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
-                  onClick={handleRemoveImage}
-                />
+              </>
+            )}
+
+            {(formData.priority === "DEAL" || formData.priority === "HOME") && (
+              <div className="flex space-x-4">
+                {/* Image Section */}
+                <div className="flex flex-col w-6/12">
+                  <label className="block mb-2 font-medium">Select Image</label>
+                  {currentImg ? (
+                    <div className="h-48 w-full relative">
+                      <img
+                        src={`${BASE_URL}${currentImg}`}
+                        alt="Current Preview"
+                        className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                      />
+                      <FaTrash
+                        className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                        onClick={handleImageRemove}
+                      />
+                    </div>
+                  ) : !imgFile ? (
+                    <div
+                      className="h-48 w-full border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100"
+                      onClick={() => iamgeInputRef.current.click()}
+                    >
+                      <span className="text-gray-600">Select a new image</span>
+                    </div>
+                  ) : (
+                    <div className="h-48 w-full relative">
+                      <img
+                        src={URL.createObjectURL(imgFile)}
+                        alt="Preview"
+                        className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                      />
+                      <FaTrash
+                        className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                        onClick={handleImageRemove}
+                      />
+                    </div>
+                  )}
+
+                  <input
+                    type="file"
+                    accept="image/jpeg, image/jpg"
+                    ref={iamgeInputRef}
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </div>
+
+                {/* Poster Section */}
+                <div className="flex flex-col w-6/12">
+                  <label className="block mb-2 font-medium">Poster</label>
+                  {stickerImg ? (
+                    <div className="h-48 w-full relative">
+                      <img
+                        src={`${BASE_URL}${stickerImg}`}
+                        alt="Current Preview"
+                        className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                      />
+                      <FaTrash
+                        className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                        onClick={handlePosterRemove}
+                      />
+                    </div>
+                  ) : !stickerFile ? (
+                    <div
+                      className="h-48 w-full border-2 border-dashed border-gray-400 rounded flex items-center justify-center cursor-pointer hover:bg-gray-100"
+                      onClick={() => posterInputRef.current.click()}
+                    >
+                      <span className="text-gray-600">Select a new image</span>
+                    </div>
+                  ) : (
+                    <div className="h-48 w-full relative">
+                      <img
+                        src={URL.createObjectURL(stickerFile)}
+                        alt="Preview"
+                        className="w-full h-full object-cover rounded shadow-md border-2 border-dashed border-gray-400"
+                      />
+                      <FaTrash
+                        className="absolute top-2 right-2 text-red-500 text-xl cursor-pointer hover:text-red-600"
+                        onClick={handlePosterRemove}
+                      />
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/png, image/gif"
+                    ref={posterInputRef}
+                    onChange={handlePosterChange}
+                    className="hidden"
+                  />
+                </div>
               </div>
             )}
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className="hidden"
-            />
           </div>
-
 
           <div className="flex justify-end gap-4 mt-4">
             <button
               type="submit"
               className={`px-4 py-2 bg-green-700 text-white font-semibold ${
-                loading ? "cursor-not-allowed bg-green-500" : "hover:bg-green-800"
+                loading
+                  ? "cursor-not-allowed bg-green-500"
+                  : "hover:bg-green-800"
               }`}
               disabled={loading}
             >

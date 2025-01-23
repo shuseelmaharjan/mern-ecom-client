@@ -22,17 +22,46 @@ const Marketing = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [addSuccessCampaign, setAddSuccessCampaign] = useState('');
+  const [errorAddCampaign, setAddErrorCampaign] = useState('');
+  const [successUpdate, setSuccessUpdate] = useState('');
+  const [errorUpdate, setErrorUpdate] = useState('');
+
 
   const BASE_URL = config.API_BASE_URL;
 
   useEffect(() => {
-    const currentTab = location.pathname.split("/")[2] || "active";
-    setActiveTab(currentTab);
+    if (addSuccessCampaign) {
+      toast.success(addSuccessCampaign);
+      setAddSuccessCampaign('');
+    }
+    if (errorAddCampaign) {
+      toast.error(errorAddCampaign);
+      setAddErrorCampaign('');
+    }
+  }, [addSuccessCampaign, errorAddCampaign]);
+  
+  useEffect(() => {
+    if (successUpdate) {
+      toast.success(successUpdate);
+      setSuccessUpdate('');
+    }
+    if (errorUpdate) {
+      toast.error(errorUpdate);
+      setErrorUpdate('');
+    }
+  }, [successUpdate, errorUpdate]);
+  
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const tab = urlParams.get("tab") || "active"; 
+    setActiveTab(tab);
   }, [location]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-    navigate(`/marketing/${tab}`);
+    navigate(`/marketing?tab=${tab}`);
   };
 
   const handleCreateCampaign = () => {
@@ -47,7 +76,6 @@ const Marketing = () => {
       switch (activeTab) {
         case "active":
           response = await marketingService.getActiveCampaign(accessToken);
-          console.log(response);
           break;
         case "upcoming":
           response = await marketingService.getUpcomingCampaign(accessToken);
@@ -217,12 +245,23 @@ const Marketing = () => {
               </div>
 
               <div className="flex space-x-2 mt-4">
+                {campaign.priority === 'HOME' && (
+                  <>
+                  <span className="bg-gray-200 rounded-full px-3 py-2 font-semibold">
+                  {campaign.priority}
+                </span>
                 <span className="bg-gray-200 rounded-full px-3 py-2 font-semibold">
                   {campaign.saleType}
                 </span>
-                <span className="bg-gray-200 rounded-full px-3 py-2 font-semibold">
+                  </>
+                )}
+                {(campaign.priority === 'HEADER' || campaign.priority === 'BANNER' || campaign.priority === 'DEAL')&& (
+                  <>
+                  <span className="bg-gray-200 rounded-full px-3 py-2 font-semibold">
                   {campaign.priority}
                 </span>
+                  </>
+                )}
               </div>
             </div>
 
@@ -336,11 +375,11 @@ const Marketing = () => {
         ))}
       </ul>
       {openCreateModal && (
-        <AddMarketing setOpenCreateModal={setOpenCreateModal} />
+        <AddMarketing setOpenCreateModal={setOpenCreateModal} setAddSuccessCampaign={setAddSuccessCampaign} setAddErrorCampaign={setAddErrorCampaign}/>
       )}
 
       {editCampaignModal && (
-        <EditCampaignData editCampaignData={editCampaignData} fetchData={fetchData} setEditCampaignModal={setEditCampaignModal}/>
+        <EditCampaignData editCampaignData={editCampaignData} fetchData={fetchData} setEditCampaignModal={setEditCampaignModal} setSuccessUpdate={setSuccessUpdate} setErrorUpdate={setErrorUpdate}/>
       )}
       {openImage && (
         <div

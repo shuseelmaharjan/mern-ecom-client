@@ -5,7 +5,7 @@ import { FaTrash } from "react-icons/fa";
 import marketingService from "../../services/marketingService/marketingService";
 import { useAuth } from "../../context/AuthContext";
 
-const AddMarketing = ({ setOpenCreateModal }) => {
+const AddMarketing = ({ setOpenCreateModal, setAddSuccessCampaign, setAddErrorCampaign }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -95,9 +95,11 @@ const AddMarketing = ({ setOpenCreateModal }) => {
       await marketingService.createCampaign(accessToken, formattedData);
       setLoading(false);
       setOpenCreateModal(false);
+      setAddSuccessCampaign('Campaign added successfully');
     } catch (error) {
       console.error("Error creating campaign:", error);
       setLoading(false);
+      setAddErrorCampaign(error);
     }
   };
   
@@ -248,7 +250,7 @@ const AddMarketing = ({ setOpenCreateModal }) => {
                 )}
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg, image/jpg"
                   ref={bannerInputRef}
                   onChange={handleBannerChange}
                   className="hidden"
@@ -283,7 +285,7 @@ const AddMarketing = ({ setOpenCreateModal }) => {
                   )}
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg, image/jpg"
                     ref={iamgeInputRef}
                     onChange={handleImageChange}
                     className="hidden"
@@ -315,7 +317,7 @@ const AddMarketing = ({ setOpenCreateModal }) => {
                   )}
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/png, image/gif"
                     ref={posterInputRef}
                     onChange={handlePosterChange}
                     className="hidden"
