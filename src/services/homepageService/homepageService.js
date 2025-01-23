@@ -157,7 +157,7 @@ class HomepageService {
   async fetchFilteredProducts(categoryId, filterParams, page = 1, limit = 2) {
     try {
       const response = await this.api.get(
-        `api/v1/category-filter/${categoryId}`,
+        `/api/v1/category-filter/${categoryId}`,
         {
           params: { ...filterParams, page, limit },
         }
@@ -192,7 +192,7 @@ class HomepageService {
   ) {
     try {
       const response = await this.api.get(
-        `api/v1/subcategory-filter/${subCategoryId}`,
+        `/api/v1/subcategory-filter/${subCategoryId}`,
         {
           params: { ...filterParams, page, limit },
         }
@@ -222,7 +222,7 @@ class HomepageService {
   async fetchFilteredProducts2(grandCatId, filterParams, page = 1, limit = 2) {
     try {
       const response = await this.api.get(
-        `api/v1/grandcategory-filter/${grandCatId}`,
+        `/api/v1/grandcategory-filter/${grandCatId}`,
         {
           params: { ...filterParams, page, limit },
         }
@@ -231,6 +231,31 @@ class HomepageService {
     } catch (error) {
       console.error("Error fetching filtered products:", error);
       throw error;
+    }
+  }
+  async getCampaignStatus() {
+    try {
+      const response = await this.api.get("/api/v1/campaign-status");
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  async getHeaderCampaign() {
+    try {
+      const response = await this.api.get("/api/v1/header-campaigns");
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async getTodayDealDatas() {
+    try {
+      const response = await this.api.get("/api/v1/todays-deal");
+      return response;
+    } catch (error) {
+      console.error(error);
     }
   }
 }

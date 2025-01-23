@@ -47,7 +47,7 @@ const Banners = () => {
               target="_blank"
             >
               <img
-                src={`${BASE_URL}/${image.image}`} 
+                src={`${BASE_URL}${image.banner}`} 
                 alt={image.title}
                 className="w-full h-[300px] shadow-lg object-cover"
               />

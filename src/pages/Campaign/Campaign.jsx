@@ -13,11 +13,11 @@ import { toast } from "react-toastify";
 const BASE_URL = config.API_BASE_URL;
 
 const Campaign = () => {
-  const {accessToken} = useAuth();
+  const { accessToken } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const defaultParams = {
-    event: "quicksale",
+    event: "sale",
   };
 
   const [activeTab, setActiveTab] = useState(
@@ -26,11 +26,20 @@ const Campaign = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const updateParams = useCallback((updatedParams) => {
-    const params = new URLSearchParams(location.search);
-    const finalParams = { ...Object.fromEntries(params.entries()), ...updatedParams };
-    navigate(`${location.pathname}?${new URLSearchParams(finalParams).toString()}`, { replace: true });
-  }, [location.search, location.pathname, navigate]);
+  const updateParams = useCallback(
+    (updatedParams) => {
+      const params = new URLSearchParams(location.search);
+      const finalParams = {
+        ...Object.fromEntries(params.entries()),
+        ...updatedParams,
+      };
+      navigate(
+        `${location.pathname}?${new URLSearchParams(finalParams).toString()}`,
+        { replace: true }
+      );
+    },
+    [location.search, location.pathname, navigate]
+  );
 
   const fetchCampaigns = useCallback(async (saleType) => {
     setLoading(true);
@@ -48,61 +57,63 @@ const Campaign = () => {
     fetchCampaigns(activeTab);
     updateParams({ event: activeTab });
   }, [activeTab, fetchCampaigns, updateParams]);
-  
 
   const handleTabClick = (type) => {
     setActiveTab(type);
   };
 
   const [openCreateModal, setOpenCreateModal] = useState(false);
-  const [campaign, setCampaign] = useState('');
+  const [campaign, setCampaign] = useState("");
   const openEngagementModal = (campaign) => {
     setOpenCreateModal(true);
     setCampaign(campaign);
-  }
+  };
 
-  const [toastSuccessMsg, setToastMsg] = useState('');
-  const [errorEngagement, setErrorEngagement] = useState('');
-  const [emptySelection, setEmptySelection] = useState('');
+  const [toastSuccessMsg, setToastMsg] = useState("");
+  const [errorEngagement, setErrorEngagement] = useState("");
+  const [emptySelection, setEmptySelection] = useState("");
 
   useEffect(() => {
     if (toastSuccessMsg) {
       toast.success(toastSuccessMsg);
-      setToastMsg(''); 
+      setToastMsg("");
     }
-  }, [toastSuccessMsg]);  
+  }, [toastSuccessMsg]);
 
   useEffect(() => {
     if (errorEngagement) {
       toast.error(errorEngagement);
-      setErrorEngagement(''); 
+      setErrorEngagement("");
     }
   }, [errorEngagement]);
 
   useEffect(() => {
     if (emptySelection) {
       toast.warn(emptySelection);
-      setEmptySelection(''); 
+      setEmptySelection("");
     }
   }, [emptySelection]);
   return (
     <div className="block w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
       <div className="flex mb-10 justify-between">
         <div className="flex space-x-4">
-          {["sale", "quicksale", "festival", "freeshipping"].map((type) => (
+          {["sale", "brand", "festival", "freeshipping"].map((type) => (
             <button
               key={type}
               onClick={() => handleTabClick(type)}
               className={`py-2 px-4 ${
-                activeTab === type ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-700"
+                activeTab === type
+                  ? "bg-gray-800 text-white"
+                  : "bg-gray-200 text-gray-700"
               }`}
             >
-              {type.charAt(0).toUpperCase() + type.slice(1).replace(/([A-Z])/g, " $1")}
+              {type.charAt(0).toUpperCase() +
+                type.slice(1).replace(/([A-Z])/g, " $1")}
             </button>
           ))}
         </div>
       </div>
-  
+
       {loading ? (
         <div>Loading...</div>
       ) : data.length === 0 ? (
@@ -115,13 +126,33 @@ const Campaign = () => {
               className="flex flex-col sm:flex-row bg-white shadow-md rounded-lg p-4 space-y-4 sm:space-y-0 sm:space-x-4 border-black"
             >
               <div className="flex justify-center sm:justify-start">
-                <img
-                  src={`${BASE_URL}/${campaign.image}`}
-                  alt={campaign.title}
-                  className="w-32 h-32 object-cover rounded"
-                />
+                {(campaign.priority === "HEADER" ||
+                  campaign.priority === "BANNER") && (
+                  <div className="flex justify-center sm:justify-start">
+                    <img
+                      src={`${BASE_URL}${campaign.banner}`}
+                      alt={campaign.title}
+                      className="w-32 h-32 object-cover rounded"
+                    />
+                  </div>
+                )}
+                {(campaign.priority === "HOME" ||
+                  campaign.priority === "DEAL") && (
+                  <div className="flex justify-center sm:justify-start gap-10">
+                    <img
+                      src={`${BASE_URL}${campaign.image}`}
+                      alt={campaign.title}
+                      className="w-32 h-32 object-cover rounded"
+                    />
+                    <img
+                      src={`${BASE_URL}${campaign.poster}`}
+                      alt={campaign.title}
+                      className="w-32 h-32 object-cover rounded"
+                    />
+                  </div>
+                )}
               </div>
-  
+
               <div className="flex-1 flex flex-col justify-between">
                 <div className="flex-grow">
                   <h3 className="text-xl font-semibold">{campaign.title}</h3>
@@ -130,44 +161,56 @@ const Campaign = () => {
                     dangerouslySetInnerHTML={{ __html: campaign.description }}
                   ></p>
                 </div>
-  
+
                 <div className="flex space-x-2 mt-4">
                   <span className="bg-gray-200 rounded-full px-3 py-2 font-semibold">
                     Display on {campaign.priority}
                   </span>
                 </div>
               </div>
-  
+
               <div className="sm:ml-auto flex flex-col justify-between sm:space-x-4 sm:space-y-0 space-y-2 h-auto">
                 <div className="flex justify-end space-x-8">
                   <p className="text-sm text-gray-500 text-xl flex space-x-2 items-center">
-                    <span><FaCalendarAlt className="text-2xl" /></span>
-                    <span className="text-lg">{DateUtils.formatDate(campaign.startTime)}</span>
+                    <span>
+                      <FaCalendarAlt className="text-2xl" />
+                    </span>
+                    <span className="text-lg">
+                      {DateUtils.formatDate(campaign.startTime)}
+                    </span>
                   </p>
                   <p className="text-sm text-gray-500 text-xl flex space-x-2 items-center">
-                    <span><MdOutlineTimer className="text-2xl" /></span>
-                    <span className="text-lg">{DateUtils.formatDate(campaign.expiryTime)}</span>
+                    <span>
+                      <MdOutlineTimer className="text-2xl" />
+                    </span>
+                    <span className="text-lg">
+                      {DateUtils.formatDate(campaign.expiryTime)}
+                    </span>
                   </p>
                   <span className="bg-green-100 border-green-800 border-2 px-4 font-semibold py-1 text-green-800 rounded-full flex items-center">
                     <GoDotFill /> <span className="ml-2">Active</span>
                   </span>
                 </div>
-  
+
                 <div className="flex mt-auto mb-0 space-x-6 items-center justify-end">
                   {/* Discounted Percentage Section */}
                   <div className="flex items-center space-x-2">
-                    <h1 className="text-3xl font-semibold text-gray-800">{campaign.discountPercentage}%</h1>
+                    <h1 className="text-3xl font-semibold text-gray-800">
+                      {campaign.discountPercentage}%
+                    </h1>
                     <div className="text-gray-700">
                       <h2 className="font-medium">Discounted</h2>
                       <h2 className="font-medium">Percentage</h2>
                     </div>
                   </div>
-  
+
                   <div className="w-px h-12 bg-gray-600"></div>
-  
+
                   {/* Total Visits Section */}
                   <div className="flex items-center space-x-2">
-                    <h1 className="text-3xl font-semibold text-gray-800">{campaign.totalVisits}</h1>
+                    <h1 className="text-3xl font-semibold text-gray-800">
+                      {campaign.totalVisits}
+                    </h1>
                     <div className="text-gray-700">
                       <h2 className="font-medium">Total</h2>
                       <h2 className="font-medium">Visits</h2>
@@ -176,7 +219,9 @@ const Campaign = () => {
                   <div className="w-px h-12 bg-gray-600"></div>
                   <button
                     className="py-2 px-4 bg-gray-800 font-semibold text-white hover:bg-gray-700"
-                    onClick={() => {openEngagementModal(campaign)}}
+                    onClick={() => {
+                      openEngagementModal(campaign);
+                    }}
                   >
                     Make Engagement
                   </button>
@@ -187,11 +232,18 @@ const Campaign = () => {
         </ul>
       )}
       {openCreateModal && (
-        <AddEngagement setOpenCreateModal={setOpenCreateModal} fetchCampaigns={fetchCampaigns} campaign={campaign} accessToken={accessToken} setToastMsg={setToastMsg} setErrorEngagement={setErrorEngagement} setEmptySelection={setEmptySelection}/>
+        <AddEngagement
+          setOpenCreateModal={setOpenCreateModal}
+          fetchCampaigns={fetchCampaigns}
+          campaign={campaign}
+          accessToken={accessToken}
+          setToastMsg={setToastMsg}
+          setErrorEngagement={setErrorEngagement}
+          setEmptySelection={setEmptySelection}
+        />
       )}
     </div>
   );
-  
 };
 
 export default Campaign;

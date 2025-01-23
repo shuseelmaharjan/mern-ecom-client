@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import homepageService from "../../services/homepageService/homepageService";
 
 const HeadingAds = () => {
   const [campaigns, setCampaigns] = useState([]);
@@ -11,14 +12,14 @@ const HeadingAds = () => {
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:5000/api/v1/header-campaigns"
-        );
-        const data = await response.json();
-        if (data.success) {
-          setCampaigns(data.data);
+        const response = await homepageService.getHeaderCampaign();
+
+        if (Array.isArray(response.data.data)) {
+          setCampaigns(response.data.data);
+        } else if (response.data.data) {
+          setCampaigns([response.data.data]);
         } else {
-          setError(data.message);
+          setError("No campaigns found.");
         }
       } catch (err) {
         setError("Failed to fetch campaigns");
@@ -44,8 +45,18 @@ const HeadingAds = () => {
     window.location.href = url;
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading)
+    return (
+      <div className="h-auto py-2 flex items-center justify-center cursor-pointer bg-amber-300">
+        Loading
+      </div>
+    );
+  if (error)
+    return (
+      <div className="error-message bg-red-300 p-4 text-center">
+        Error: {error}
+      </div>
+    );
 
   return (
     <div className="w-full overflow-hidden">

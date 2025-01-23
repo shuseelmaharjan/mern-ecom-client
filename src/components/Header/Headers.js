@@ -23,6 +23,7 @@ const Headers = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegisterModelOpen, setIsRegisterModalOpen] = useState(false);
   const [forgetPasswordModalOpen, setForgetPasswordModalOpen] = useState(false);
+  const [headerCampaign, setHeaderCampaign] = useState(false);
 
   const { cart } = useCart();
 
@@ -84,10 +85,22 @@ const Headers = () => {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    const getActiveHeader = async () => {
+      try {
+        const response = await HomepageService.getCampaignStatus();
+        setHeaderCampaign(response.data.isHeaderActive);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getActiveHeader();
+  }, []);
+
   return (
     <>
       <header className="w-full border-b border-gray-200 bg-white shadow-md sticky top-0 z-50">
-        <HeadingAds />
+        {headerCampaign && <HeadingAds />}
         <div className="container mx-auto px-4 bg-white h-full">
           <div className="flex sm:flex-row items-center justify-between h-full">
             {/* Logo */}
