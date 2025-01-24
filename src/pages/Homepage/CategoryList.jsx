@@ -27,7 +27,7 @@ const CategoryList = () => {
   const BASE_URL = config.API_BASE_URL;
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
 
   if (error) {
@@ -40,7 +40,7 @@ const CategoryList = () => {
         {categories.map((category) => (
           <Link
             key={category.id}
-            to={`/category?category=${encodeURIComponent(category.name)}&src=${
+            to={`/category?category=${encodeURIComponent(category.name.replace(/ /g, "-"))}&src=${
               category._id
             }`}
             className="flex flex-col items-center"

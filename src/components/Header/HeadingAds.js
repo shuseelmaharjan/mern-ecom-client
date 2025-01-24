@@ -41,8 +41,11 @@ const HeadingAds = () => {
     autoplaySpeed: 5000,
   };
 
-  const handleClick = (url) => {
-    window.location.href = url;
+  const handleClick = (campaign) => {
+    const url = `source?source_module=${encodeURIComponent(
+      campaign.title.replace(/ /g, "-")
+    )}.html&source_identifier=${campaign._id}&target=most-popular&page=1`;
+    window.open(url, "_blank");
   };
 
   if (loading)
@@ -66,7 +69,7 @@ const HeadingAds = () => {
             <div
               key={campaign._id}
               className="h-auto py-2 flex items-center justify-center cursor-pointer bg-amber-300"
-              onClick={() => handleClick(campaign.link)}
+              onClick={() => handleClick(campaign)}
             >
               <div
                 dangerouslySetInnerHTML={{ __html: campaign.description }}
@@ -80,7 +83,7 @@ const HeadingAds = () => {
           <div
             key={campaign._id}
             className="h-auto py-2 flex items-center justify-center cursor-pointer bg-amber-300"
-            onClick={() => handleClick(campaign.link)}
+            onClick={() => handleClick(campaign)}
           >
             <div
               dangerouslySetInnerHTML={{ __html: campaign.description }}

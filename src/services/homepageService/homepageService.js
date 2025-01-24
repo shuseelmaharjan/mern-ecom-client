@@ -258,6 +258,23 @@ class HomepageService {
       console.error(error);
     }
   }
+  async freeShippingItems() {
+    try {
+      const response = await this.api.get("/api/v1/freeshipping-products");
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async festivalItems() {
+    try {
+      const response = await this.api.get("/api/v1/festival-products");
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 const homepageService = new HomepageService();

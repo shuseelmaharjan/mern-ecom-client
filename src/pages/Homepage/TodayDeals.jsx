@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import HomepageService from "../../services/homepageService/homepageService";
 import config from "../../services/config";
+import { calculateTimeLeft } from "../../utils/timer";
 
 const TodayDeals = () => {
   const [flashSaleData, setFlashSaleData] = useState(null);
@@ -10,7 +11,6 @@ const TodayDeals = () => {
 
   const BASE_URL = config.API_BASE_URL;
   const carouselRef = useRef(null);
-  const navigate = useNavigate();
 
   const fetchDatas = async () => {
     try {
@@ -32,27 +32,13 @@ const TodayDeals = () => {
       const expiryDate = new Date(flashSaleData.campaignEndTime);
 
       const updateTimer = () => {
-        const now = new Date();
-        const timeDiff = expiryDate - now;
-
-        if (timeDiff <= 0) {
-          setTimeLeft("Expired");
-        } else {
-          const hours = Math.floor(
-            (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-          );
-          const minutes = Math.floor(
-            (timeDiff % (1000 * 60 * 60)) / (1000 * 60)
-          );
-          const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-          setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
-        }
+        setTimeLeft(calculateTimeLeft(expiryDate));
       };
 
-      updateTimer();
+      updateTimer(); 
       const interval = setInterval(updateTimer, 1000);
 
-      return () => clearInterval(interval);
+      return () => clearInterval(interval); 
     }
   }, [flashSaleData]);
 
@@ -69,12 +55,19 @@ const TodayDeals = () => {
   if (!flashSaleData) {
     return (
       <div className="text-center text-xl font-semibold py-12">
-        No items on Flash Sale
+        No items on Today's Deal
       </div>
     );
   }
 
-  const { products, campaignName, poster } = flashSaleData;
+  const { products, campaignName, poster, campaignId } = flashSaleData;
+
+  const handleClick = () => {
+    const url = `source?source_module=${encodeURIComponent(
+      campaignName.replace(/ /g, "-")
+    )}.html&source_identifier=${campaignId}&target=most-popular&page=1`;
+    window.open(url, "_blank");
+  };
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -82,6 +75,7 @@ const TodayDeals = () => {
         <h2 className="text-2xl font-semibold">
           {campaignName}
           <span className="ml-4 text-red-500 text-lg font-medium">
+            <span className="mr-2">Deal Ends after: </span>
             {timeLeft || ""}
           </span>
         </h2>
@@ -120,7 +114,6 @@ const TodayDeals = () => {
                 5% Off
               </div>
               <div className="relative">
-                {/* Main Product Images */}
                 <img
                   src={`${BASE_URL}/${media.defaultImage}`}
                   alt={title}
@@ -131,8 +124,6 @@ const TodayDeals = () => {
                   alt={title}
                   className="w-full h-80 object-cover absolute top-0 left-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
                 />
-
-                {/* Poster at Bottom */}
                 {poster && (
                   <img
                     src={`${BASE_URL}${poster}`}
@@ -165,7 +156,7 @@ const TodayDeals = () => {
       <div className="flex justify-end mt-8">
         <button
           className="px-6 py-2 bg-gray-800 text-white font-semibold hover:bg-gray-700 transition duration-300"
-          onClick={() => navigate("/flash-sale")}
+          onClick={handleClick}
         >
           View More Deals of {campaignName}
         </button>

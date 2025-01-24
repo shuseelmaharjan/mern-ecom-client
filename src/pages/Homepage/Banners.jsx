@@ -3,7 +3,6 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; 
 import HomepageService from "../../services/homepageService/homepageService";
 import config from "../../services/config";
-import { Link } from "react-router-dom";
 
 const Banners = () => {
   const [carouselImages, setCarouselImages] = useState([]);
@@ -26,10 +25,18 @@ const Banners = () => {
     fetchBanners();
   }, []);
 
+  const handleRedirect = (image) => {
+    const url = `source?source_module=${encodeURIComponent(
+      image.title?.replace(/ /g, "-") || "default-title"
+    )}.html&source_identifier=${image._id}&target=most-popular&page=1`;
+    
+    window.open(url, "_blank");
+  };
+
   return (
     <div className="w-full max-w-full mx-auto">
       {loading ? (
-        <div className="text-center">Loading banners...</div>
+        <div className="text-center"></div>
       ) : (
         <Carousel
           autoPlay
@@ -41,18 +48,17 @@ const Banners = () => {
           interval={3000}
         >
           {carouselImages.map((image) => (
-            <Link
+            <div
               key={image._id}
-              to={`/campaigns/${image._id}`}
-              target="_blank"
+              onClick={() => handleRedirect(image)} 
+              className="cursor-pointer"
             >
               <img
                 src={`${BASE_URL}${image.banner}`} 
-                alt={image.title}
+                alt={image.title || "Banner Image"}
                 className="w-full h-[300px] shadow-lg object-cover"
               />
-            
-            </Link>
+            </div>
           ))}
         </Carousel>
       )}
