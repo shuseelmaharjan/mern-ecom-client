@@ -41,6 +41,7 @@ import CategoryPage from "./pages/Products/CategoryPage";
 import ProductDetails from "./pages/Products/ProductDetails";
 import SubCategory from "./pages/Products/SubCategoryPage";
 import GrandCategory from "./pages/Products/GrandCategory";
+import CampaignItems from "./pages/Homepage/CampaignItems";
 
 function App() {
   const location = useLocation();
@@ -99,6 +100,13 @@ function App() {
     {
       path: "/product",
       element: <ProductDetails />,
+      showHeader: true,
+      private: false,
+      dashLoadout: false,
+    },
+    {
+      path: "/source",
+      element: <CampaignItems />,
       showHeader: true,
       private: false,
       dashLoadout: false,
