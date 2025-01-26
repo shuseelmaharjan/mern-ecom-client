@@ -90,6 +90,23 @@ class SiteService {
       console.error(error);
     }
   }
+
+  async updateShippingPolicy(data, accessToken, policyId) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/update-shipping-policy/${policyId}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 const siteService = new SiteService();

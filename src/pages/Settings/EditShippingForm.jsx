@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import sitePolicyService from "../../services/sitePolicyService/sitePolicyService";
 
-const AddShippingForm = ({ fetchData, setAddForm, accessToken }) => {
-
+const EditShippingForm = ({ fetchData, setEditForm, editData, accessToken }) => {
   const [formData, setFormData] = useState({
     shippingPolicyName: "",
     shippingMethod: "",
@@ -12,7 +11,6 @@ const AddShippingForm = ({ fetchData, setAddForm, accessToken }) => {
   });
 
   const [loading, setLoading] = useState(false);
-
   const [errors, setErrors] = useState({
     shippingPolicyName: "",
     shippingMethod: "",
@@ -20,6 +18,18 @@ const AddShippingForm = ({ fetchData, setAddForm, accessToken }) => {
     shippingPolicyDescription: "",
     costofDelivery: "",
   });
+
+  useEffect(() => {
+    if (editData) {
+      setFormData({
+        shippingPolicyName: editData.shippingPolicyName || "",
+        shippingMethod: editData.shippingMethod || "",
+        shippingDays: editData.shippingDays || "",
+        shippingPolicyDescription: editData.shippingPolicyDescription || "",
+        costofDelivery: editData.costofDelivery || "",
+      });
+    }
+  }, [editData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,27 +66,27 @@ const AddShippingForm = ({ fetchData, setAddForm, accessToken }) => {
       setLoading(false);
       return;
     }
-  
+
     try {
-      const response = await sitePolicyService.createShippingPolicy(
+      const response = await sitePolicyService.updateShippingPolicy(
         formData,
-        accessToken
+        accessToken,
+        editData._id
       );
       console.log(response.data);
       fetchData();
-      setAddForm(false);
+      setEditForm(false);
     } catch (error) {
-      console.error("Error saving shipping policy:", error);
+      console.error("Error updating shipping policy:", error);
     } finally {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg shadow-lg w-full sm:w-8/12 md:w-8/12 lg:w-6/12 p-6">
-        <h3 className="text-lg font-semibold mb-4">Add Shipping Policy</h3>
+        <h3 className="text-lg font-semibold mb-4">Edit Shipping Policy</h3>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
@@ -213,11 +223,11 @@ const AddShippingForm = ({ fetchData, setAddForm, accessToken }) => {
               }`}
               disabled={loading}
             >
-              {loading ? "Saving..." : "Save"}
+              {loading ? "Updating..." : "Update"}
             </button>
             <button
               type="button"
-              onClick={() => setAddForm(false)}
+              onClick={() => setEditForm(false)}
               className={`px-4 py-2 bg-red-500 text-white font-semibold ${
                 loading ? "cursor-not-allowed bg-red-400" : "hover:bg-red-600"
               }`}
@@ -232,4 +242,4 @@ const AddShippingForm = ({ fetchData, setAddForm, accessToken }) => {
   );
 };
 
-export default AddShippingForm;
+export default EditShippingForm;

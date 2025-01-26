@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import sitePolicyService from "../../services/sitePolicyService/sitePolicyService";
 import AddShippingForm from "./AddShippingForm";
 import { useAuth } from "../../context/AuthContext";
+import EditShippingForm from "./EditShippingForm";
 
 const CompanyShippingPolicies = () => {
 
@@ -27,8 +28,11 @@ const CompanyShippingPolicies = () => {
     setAddForm(true);
   }
 
+  const [editForm, setEditForm] = useState(false);
+  const [editData, setEditData]= useState('');
   const handleEdit = (item)=> {
-    console.log(item);
+    setEditForm(true);
+    setEditData(item);
   }
 
   const [dataId, setDataId] = useState('');
@@ -78,7 +82,7 @@ const CompanyShippingPolicies = () => {
                 <div className="flex flex-col gap-2 mt-4">
                   <h2 className="text-lg font-semibold">Shipping Method: {item.shippingMethod}</h2>
                   <h2 className="text-lg font-semibold">Shipping Days: {item.shippingDays}</h2>
-                  <h2 className="text-lg font-semibold">Cost of Delivery: {item.cod}</h2>
+                  <h2 className="text-lg font-semibold">Cost of Delivery: {item.costofDelivery}</h2>
                   <p className="text-gray-500">{item.shippingPolicyDescription}</p>
                 </div>
               </div>
@@ -94,10 +98,15 @@ const CompanyShippingPolicies = () => {
 
       {addForm && (
         <>
-        <AddShippingForm fetchData={fetchData} setAddForm={setAddForm}/>
+        <AddShippingForm fetchData={fetchData} setAddForm={setAddForm} accessToken={accessToken}/>
         </>
       )}
 
+      {editForm && (
+        <>
+        <EditShippingForm fetchData={fetchData} setEditForm={setEditForm} editData={editData} accessToken={accessToken}/>
+        </>
+      )}
       {removeConfirm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white rounded-lg shadow-lg w-full sm:w-6/12 md:w-6/12 lg:w-4/12 p-6">
