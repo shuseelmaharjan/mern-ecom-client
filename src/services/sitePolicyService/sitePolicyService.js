@@ -73,6 +73,23 @@ class SiteService {
       console.error("Error creating shipping policy:", error);
     }
   }
+
+  async deactivateShippingPolicy(policyId, accessToken) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/deactivate-shipping-policy/${policyId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 const siteService = new SiteService();
