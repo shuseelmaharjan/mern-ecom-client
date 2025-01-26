@@ -47,6 +47,32 @@ class SiteService {
       console.error("Error updating site policy data:", error);
     }
   }
+
+  async getShippingPolicyData() {
+    try {
+      const response = await this.api.get("/api/v1/get-shipping-policy");
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async createShippingPolicy(data, accessToken) {
+    try {
+      const response = await this.api.post(
+        "/api/v1/create-shipping-policy",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error creating shipping policy:", error);
+    }
+  }
 }
 
 const siteService = new SiteService();
