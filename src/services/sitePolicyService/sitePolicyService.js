@@ -107,6 +107,49 @@ class SiteService {
       console.error(error);
     }
   }
+
+  async createReturnPolicy(data, accessToken) {
+    try {
+      const response = await this.api.post(
+        "/api/v1/create-return-policy",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error creating site policy:", error);
+    }
+  }
+
+  async getSiteReturnPolicyData() {
+    try {
+      const response = await this.api.get("/api/v1/get-return-policy");
+      return response;
+    } catch (error) {
+      console.error("Error getting site return policy data:", error);
+    }
+  }
+
+  async updateReturnPolicy(policyId, data, accessToken) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/update-return-policy/${policyId}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      console.error("Error updating site return policy data:", error);
+    }
+  }
 }
 
 const siteService = new SiteService();
