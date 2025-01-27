@@ -41,7 +41,7 @@ const ShopShippingPolicy = ({ accessToken, shopId, setSuccessMsg, setErrorMsg, c
       {data.length > 0 ? (
         <>
           {data.map((item, index) => (
-            <div key={index} className="p-4 border-2 border-gray-200 mb-4 rounded-lg shadow-md">
+            <div key={index} className="w-full p-4 border border-gray-300 shadow-sm mb-4 rounded-lg">
               <div className="flex flex-col text-sm">
                 <div className="flex justify-between items-center mb-2">
                   <div className="flex gap-4 items-center">

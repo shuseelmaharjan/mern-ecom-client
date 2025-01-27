@@ -12,6 +12,7 @@ import AddShippingPolicyModal from "./AddShippingPolicyModal";
 import AddReturnPolicyModal from "./AddReturnPolicyModal";
 import ShopShippingPolicy from "./ShopShippingPolicy";
 import DateUtils from "../../utils/dateUtils";
+import ShopReturnPolicy from "./ShopReturnPolicy";
 
 const MyShop = () => {
   const { accessToken } = useAuth();
@@ -300,6 +301,13 @@ const MyShop = () => {
             </button>
           </div>
           <DefaultReturnPolicy />
+          <ShopReturnPolicy
+          accessToken={accessToken}
+          shopId={shopId}
+          setSuccessMsg={setSuccessMsg}
+          setErrorMsg={setErrorMsg}
+          callNewData={callNewData}
+          />
         </div>
       </div>
       {shippingPolicyModal && (
@@ -317,6 +325,11 @@ const MyShop = () => {
         <AddReturnPolicyModal
           setReturnPolicyModal={setReturnPolicyModal}
           shopId={shopId}
+          accessToken={accessToken}
+          setSuccessMsg={setSuccessMsg}
+          setErrorMsg={setErrorMsg}
+          fetchData={fetchData}
+          setCallNewData={setCallNewData}
         />
       )}
     </div>

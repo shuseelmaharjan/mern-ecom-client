@@ -17,22 +17,25 @@ const DefaultReturnPolicy = () => {
   }, []);
 
   return (
-    <>
+    <div className="space-y-4">
       {companyPolicyData &&
         companyPolicyData.map((policy, index) => (
           <div
             key={index}
-            className="w-full p-4 border border-gray-300 shadow-sm mb-4 rounded-lg"
+            className="w-full p-6 border border-gray-200 shadow-md rounded-lg mb-4 bg-white"
           >
-            <div className="flex justify-between items-center mb-3">
+            <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold text-gray-800">
                 {policy.policyName}
               </h3>
+              <span className="px-3 py-1 border-2 border-gray-800 rounded-full bg-gray-100 text-gray-800 text-sm">
+                    Default
+                  </span>
             </div>
-            <p className="text-gray-600 mb-4">{policy.policyDescription}</p>
+            <p className="text-gray-600">{policy.policyDescription}</p>
           </div>
         ))}
-    </>
+    </div>
   );
 };
 
