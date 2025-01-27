@@ -15,6 +15,9 @@ import HeadingAds from "./HeadingAds";
 import { capitalizeFirstLetter } from "../../utils/textUtils";
 import HomepageService from "../../services/homepageService/homepageService";
 import { useCart } from "../../context/CartContext";
+import { FaShop } from "react-icons/fa6";
+import { jwtDecode } from "jwt-decode";
+import Cookie from "js-cookie";
 
 const Headers = () => {
   const [logo, setLogo] = useState("");
@@ -24,6 +27,7 @@ const Headers = () => {
   const [isRegisterModelOpen, setIsRegisterModalOpen] = useState(false);
   const [forgetPasswordModalOpen, setForgetPasswordModalOpen] = useState(false);
   const [headerCampaign, setHeaderCampaign] = useState(false);
+  const [siteTitle, setSiteTitle] = useState("");
 
   const { cart } = useCart();
 
@@ -62,6 +66,7 @@ const Headers = () => {
       try {
         const data = await siteService.getData(accessToken);
         setLogo(data.siteData.logo);
+        setSiteTitle(data.siteData.title);
       } catch (error) {
         console.error(error);
       }
@@ -95,6 +100,20 @@ const Headers = () => {
       }
     };
     getActiveHeader();
+  }, []);
+
+  const [role, setRole] = useState("");
+
+  useEffect(() => {
+    const token = Cookie.get("_r");
+    if (token) {
+      try {
+        const decodeToken = jwtDecode(token);
+        setRole(decodeToken.role);
+      } catch (error) {
+        console.error("Invalid token", error);
+      }
+    }
   }, []);
 
   return (
@@ -147,7 +166,7 @@ const Headers = () => {
                 )}
               </div>
 
-              <div className="relative w-full max-w-md">
+              <div className="relative w-full max-w-xl">
                 <input
                   type="text"
                   placeholder="Search for products..."
@@ -200,6 +219,41 @@ const Headers = () => {
                   </span>
                 )}
               </div>
+              {isLoggedIn && (
+                <a
+                  href={
+                    role === "vendor" ||
+                    role === "hr" ||
+                    role === "admin" ||
+                    role === "staff" ||
+                    role === "mm"
+                      ? `/dashboard`
+                      : `/sell-on-${siteTitle}`
+                  }
+                  target={
+                    role === "vendor" ||
+                    role === "hr" ||
+                    role === "admin" ||
+                    role === "staff" ||
+                    role === "mm"
+                      ? "_self"
+                      : "_blank"
+                  }
+                  rel={
+                    role === "vendor" ||
+                    role === "hr" ||
+                    role === "admin" ||
+                    role === "staff" ||
+                    role === "mm"
+                      ? ""
+                      : "noopener noreferrer"
+                  }
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  <FaShop className="w-6 h-6" />
+                </a>
+              )}
+
               <Link
                 to={"/wishlist"}
                 className="text-gray-600 hover:text-gray-800"

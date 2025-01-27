@@ -1,5 +1,5 @@
 import "./App.css";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import PrivateRoutes from "./context/PrivateRoutes";
 import Dashboard from "./pages/Dashboard/Dashboard";
@@ -29,8 +29,6 @@ import OrderHistory from "./pages/OrderHistory/OrderHistory";
 import Rewards from "./pages/Rewards/Rewards";
 import Header from "./components/Header/Headers";
 import DashLoadout from "./components/Layouts/DashLoadout";
-import DummyProducts from "./components/Cart/DummyProducts";
-import CheckOut from "./components/Cart/Checkout";
 import Employee from "./pages/Employee/Employee";
 import Site from "./pages/Site/Site";
 import { ToastContainer, Flip } from "react-toastify";
@@ -42,9 +40,24 @@ import ProductDetails from "./pages/Products/ProductDetails";
 import SubCategory from "./pages/Products/SubCategoryPage";
 import GrandCategory from "./pages/Products/GrandCategory";
 import CampaignItems from "./pages/Homepage/CampaignItems";
+import siteService from "./services/site/siteService";
+import BecomeVendor from "./pages/Homepage/BecomeVendor";
 
 function App() {
   const location = useLocation();
+  const [siteTitle, setSiteTitle] = useState("");
+  useEffect(() => {
+    const fetchSiteData = async () => {
+      try {
+        const data = await siteService.getData();
+        setSiteTitle(data.siteData.title);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchSiteData();
+  }, []);
 
   const routeConfig = [
     { path: "/", element: <HomePage />, showHeader: true, private: false },
@@ -61,19 +74,12 @@ function App() {
       showHeader: true,
       private: false,
     },
-    // Dummy route for dummy products API
-    {
-      path: "/dummy-products",
-      element: <DummyProducts />,
-      showHeader: true,
-      private: false,
-    },
 
     {
-      path: "/checkout",
-      element: <CheckOut />,
-      showHeader: true,
-      private: true,
+      path: `/sell-on-${siteTitle}`,
+      element: <BecomeVendor />,
+      showHeader: false,
+      private: false,
     },
 
     {

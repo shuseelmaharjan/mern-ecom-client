@@ -29,7 +29,7 @@ const Settings = () => {
     'company-policies': <CompanyPolicies />,
     'company-return-policies': <CompanyReturnPolicies />,
     'company-shipping-policies': <CompanyShippingPolicies />,
-    'default-vendor-policies': <CompanyVendorsPolicies />,
+    // 'default-vendor-policies': <CompanyVendorsPolicies />,
   };
 
   const tabTitles = {
@@ -44,7 +44,7 @@ const Settings = () => {
     'company-policies':'Company Policy', 
     'company-return-policies':'Company Return Policy', 
     'company-shipping-policies': 'Company Shipping Policy',
-    'default-vendor-policies':'Vendor Policies',
+    // 'default-vendor-policies':'Vendor Policies',
   };
 
   const defaultTab = 'my-profile';
@@ -81,7 +81,7 @@ const Settings = () => {
 
         <h2 className="text-base font-semibold mt-6 mb-4">Site Settings</h2>
         <ul className="space-y-2">
-          {['company-policies', 'company-return-policies', 'company-shipping-policies', 'default-vendor-policies'].map((item) => (
+          {['company-policies', 'company-return-policies', 'company-shipping-policies'].map((item) => (
             <li
               key={item}
               className={`cursor-pointer p-2 rounded-md ${

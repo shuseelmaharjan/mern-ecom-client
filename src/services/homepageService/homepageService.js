@@ -275,6 +275,19 @@ class HomepageService {
       console.error(error);
     }
   }
+
+  async createShop(data, accessToken) {
+    try {
+      const response = await this.api.post("/api/v1/create-shop", data, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error(error.response.data.message);
+    }
+  }
 }
 
 const homepageService = new HomepageService();
