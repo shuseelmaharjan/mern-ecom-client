@@ -3,126 +3,78 @@ import { Link } from "react-router-dom";
 import { PiGearSix } from "react-icons/pi";
 import { IoHomeOutline, IoBarChartOutline } from "react-icons/io5";
 import { LuShapes, LuMessageSquareText, LuUsersRound } from "react-icons/lu";
-import { LiaBullhornSolid } from "react-icons/lia";
-import { AiOutlineBank } from "react-icons/ai";
-
 import { BsClipboard2Data } from "react-icons/bs";
+import { SiGooglecampaignmanager360 } from "react-icons/si";
+import { IoTicketOutline } from "react-icons/io5";
+import { FaShop } from "react-icons/fa6";
 
 export const VendorNavbar = ({ isSidebarExpanded, isActive }) => {
   return (
-    <>
-      <nav className="flex-1 overflow-y-auto mt-12 bg-white" id="nav">
-        <ul className="flex flex-col gap-y-1">
-          <Link to="/dashboard">
+    <nav
+      className="flex-1 overflow-y-auto bg-white shadow-md rounded-lg mt-10"
+      id="nav"
+    >
+      <span className="relative text-gray-700 px-4 text-sm w-full pt-4">
+        MENU
+      </span>
+      <ul className="flex flex-col gap-y-2 p-4">
+        {/* Reusable Nav Item Component */}
+        {[
+          { path: "/dashboard", label: "Dashboard", Icon: IoHomeOutline },
+          { path: "/statistics", label: "Stats", Icon: IoBarChartOutline },
+          { path: "/listing", label: "Listing", Icon: LuShapes },
+          { path: "/messages", label: "Messages", Icon: LuMessageSquareText },
+          {
+            path: "/order-and-delivery",
+            label: "Order & Delivery",
+            Icon: BsClipboard2Data,
+          },
+          {
+            path: "/campaign",
+            label: "Campaign",
+            Icon: SiGooglecampaignmanager360,
+          },
+        ].map(({ path, label, Icon }, index) => (
+          <Link to={path} key={index}>
             <li
-              className={`hover:bg-gray-900 hover:text-white font-semibold mx-4 rounded-lg px-4 py-3 flex transition duration-300 ease-in-out items-center text-base ${
-                isActive("/dashboard") ? "bg-black text-white" : ""
-              }`}
+              className={`${
+                isActive(path) ? "bg-gray-900 text-white" : "text-gray-700"
+              } hover:bg-gray-800 hover:text-white font-medium rounded-lg px-4 py-3 flex items-center text-base transition duration-300 ease-in-out`}
             >
-              <IoHomeOutline
-                className={`${isSidebarExpanded ? "" : "mx-auto"}`}
-              />
-              {isSidebarExpanded && <span className="mx-2">Dashboard</span>}
-            </li>
-          </Link>
-          <Link to="/listing">
-            <li
-              className={`hover:bg-gray-900 hover:text-white font-semibold mx-4 rounded-lg px-4 py-3 flex transition duration-300 ease-in-out items-center text-base ${
-                isActive("/listing") ? "bg-black text-white" : ""
-              }`}
-            >
-              <LuShapes className={`${isSidebarExpanded ? "" : "mx-auto"}`} />
-              {isSidebarExpanded && <span className="mx-2">Listing</span>}
-            </li>
-          </Link>
-          <Link to="/messages">
-            <li
-              className={`hover:bg-gray-900 hover:text-white font-semibold mx-4 rounded-lg px-4 py-3 flex transition duration-300 ease-in-out items-center text-base ${
-                isActive("/messages") ? "bg-black text-white" : ""
-              }`}
-            >
-              <LuMessageSquareText
-                className={`${isSidebarExpanded ? "" : "mx-auto"}`}
-              />
-              {isSidebarExpanded && <span className="mx-2">Messages</span>}
-            </li>
-          </Link>
-          <Link to="/order-and-delivery">
-            <li
-              className={`hover:bg-gray-900 hover:text-white font-semibold mx-4 rounded-lg px-4 py-3 flex transition duration-300 ease-in-out items-center text-base ${
-                isActive("/order-and-delivery") ? "bg-black text-white" : ""
-              }`}
-            >
-              <BsClipboard2Data
-                className={`${isSidebarExpanded ? "" : "mx-auto"}`}
-              />
+              {/* Icon with consistent size */}
+              <Icon className="text-lg transition-transform flex-shrink-0" />
+              {/* Label, conditionally rendered */}
               {isSidebarExpanded && (
-                <span className="mx-2">Order & Delivery</span>
+                <span className="ml-3 whitespace-nowrap">{label}</span>
               )}
             </li>
           </Link>
-          <div className="my-4 border-t border-gray-200"></div>
-          <Link to="/statistics">
+        ))}
+      </ul>
+      <span className="relative text-gray-700 px-4 text-sm w-full pt-4">
+        OTHERS
+      </span>
+      <ul className="flex flex-col gap-y-2 p-4">
+        {[
+          { path: "/my-shop", label: "My Shop", Icon: FaShop },
+          { path: "/ticket", label: "Ticket", Icon: IoTicketOutline },
+          { path: "/settings", label: "Settings", Icon: PiGearSix },
+          { path: "/help", label: "Help", Icon: LuUsersRound },
+        ].map(({ path, label, Icon }, index) => (
+          <Link to={path} key={index}>
             <li
-              className={`hover:bg-gray-900 hover:text-white font-semibold mx-4 rounded-lg px-4 py-3 flex transition duration-300 ease-in-out items-center text-base ${
-                isActive("/statistics") ? "bg-black text-white" : ""
-              }`}
+              className={`${
+                isActive(path) ? "bg-gray-900 text-white" : "text-gray-700"
+              } hover:bg-gray-800 hover:text-white font-medium rounded-lg px-4 py-3 flex items-center text-base transition duration-300 ease-in-out`}
             >
-              <IoBarChartOutline
-                className={`${isSidebarExpanded ? "" : "mx-auto"}`}
-              />
-              {isSidebarExpanded && <span className="mx-2">Stats</span>}
+              <Icon className="text-lg transition-transform flex-shrink-0" />
+              {isSidebarExpanded && (
+                <span className="ml-3 whitespace-nowrap">{label}</span>
+              )}
             </li>
           </Link>
-          <Link to="/marketing">
-            <li
-              className={`hover:bg-gray-900 hover:text-white font-semibold mx-4 rounded-lg px-4 py-3 flex transition duration-300 ease-in-out items-center text-base ${
-                isActive("/marketing") ? "bg-black text-white" : ""
-              }`}
-            >
-              <LiaBullhornSolid
-                className={`${isSidebarExpanded ? "" : "mx-auto"}`}
-              />
-              {isSidebarExpanded && <span className="mx-2">Marketing</span>}
-            </li>
-          </Link>
-          <div className="my-4 border-t border-gray-200"></div>
-          <Link to="/finances">
-            <li
-              className={`hover:bg-gray-900 hover:text-white font-semibold mx-4 rounded-lg px-4 py-3 flex transition duration-300 ease-in-out items-center text-base ${
-                isActive("/finances") ? "bg-black text-white" : ""
-              }`}
-            >
-              <AiOutlineBank
-                className={`${isSidebarExpanded ? "" : "mx-auto"}`}
-              />
-              {isSidebarExpanded && <span className="mx-2">Finances</span>}
-            </li>
-          </Link>
-          <Link to="/help">
-            <li
-              className={`hover:bg-gray-900 hover:text-white font-semibold mx-4 rounded-lg px-4 py-3 flex transition duration-300 ease-in-out items-center text-base ${
-                isActive("/help") ? "bg-black text-white" : ""
-              }`}
-            >
-              <LuUsersRound
-                className={`${isSidebarExpanded ? "" : "mx-auto"}`}
-              />
-              {isSidebarExpanded && <span className="mx-2">Help</span>}
-            </li>
-          </Link>
-          <Link to="/settings">
-            <li
-              className={`hover:bg-gray-900 hover:text-white font-semibold mx-4 rounded-lg px-4 py-3 flex transition duration-300 ease-in-out items-center text-base ${
-                isActive("/settings") ? "bg-black text-white" : ""
-              }`}
-            >
-              <PiGearSix className={`${isSidebarExpanded ? "" : "mx-auto"}`} />
-              {isSidebarExpanded && <span className="mx-2">Settings</span>}
-            </li>
-          </Link>
-        </ul>
-      </nav>
-    </>
+        ))}
+      </ul>
+    </nav>
   );
 };

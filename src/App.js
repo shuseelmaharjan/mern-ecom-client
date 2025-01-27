@@ -42,6 +42,8 @@ import GrandCategory from "./pages/Products/GrandCategory";
 import CampaignItems from "./pages/Homepage/CampaignItems";
 import siteService from "./services/site/siteService";
 import BecomeVendor from "./pages/Homepage/BecomeVendor";
+import MyShop from "./pages/Shop/MyShop";
+import OpenTickets from "./pages/Tickets/OpenTickets";
 
 function App() {
   const location = useLocation();
@@ -125,6 +127,20 @@ function App() {
       showHeader: true,
       private: true,
       dashLoadout: false,
+    },
+    {
+      path: "/my-shop",
+      element: <MyShop />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/ticket",
+      element: <OpenTickets />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
     },
     {
       path: "/be-a-member",

@@ -150,6 +150,34 @@ class SiteService {
       console.error("Error updating site return policy data:", error);
     }
   }
+
+  async getShopShippingPolicyData(shopId) {
+    try {
+      const response = await this.api.get(
+        `/api/v1/${shopId}/shipping-policies`
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async deactivateShopShippingPolicy(policyId, accessToken) {
+    try {
+      const response = await this.api.put(
+        `/api/v1/deactivate-shop-shipping-policy/${policyId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 const siteService = new SiteService();
