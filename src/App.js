@@ -12,7 +12,6 @@ import Marketing from "./pages/Marketing/Marketing";
 import Help from "./pages/Help/Help";
 import Settings from "./pages/Settings/Settings";
 import Finances from "./pages/Finances/Finances";
-import AddProduct from "./pages/Products/AddProduct";
 import BeMember from "./pages/BeMember/BeMember";
 import HomePage from "./pages/Homepage/Homepage";
 import Login from "./pages/Auth/Login";
@@ -44,6 +43,8 @@ import siteService from "./services/site/siteService";
 import BecomeVendor from "./pages/Homepage/BecomeVendor";
 import MyShop from "./pages/Shop/MyShop";
 import OpenTickets from "./pages/Tickets/OpenTickets";
+import StartProduct from "./pages/Products/StartProduct";
+import AddProducts from "./pages/Products/AddProducts";
 
 function App() {
   const location = useLocation();
@@ -299,8 +300,15 @@ function App() {
     },
 
     {
-      path: "/listing/create-product",
-      element: <AddProduct />,
+      path: "/listing/create-listing",
+      element: <StartProduct />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/listing/create-listing/:id",
+      element: <AddProducts />,
       showHeader: false,
       private: true,
       dashLoadout: true,
