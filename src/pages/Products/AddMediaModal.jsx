@@ -53,7 +53,7 @@ const AddMediaModal = ({ onClose, productId, accessToken, fetchVariationDetails 
         "PUT",
         accessToken
       );
-      await fetchVariationDetails(); // Fetch updated data when saved
+      await fetchVariationDetails(); 
       onClose();
     } catch (error) {
       console.error('Error saving media:', error);

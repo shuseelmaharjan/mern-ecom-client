@@ -6,7 +6,8 @@ const apiURL = config.API_BASE_URL;
 export default async function apiHandler(data, url, method, accessToken) {
   try {
     const headers = {
-      Authorization: `Bearer ${accessToken}`,
+      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+      "Content-Type": data instanceof FormData ? undefined : "application/json",
     };
 
     if (!(data instanceof FormData)) {
@@ -24,15 +25,20 @@ export default async function apiHandler(data, url, method, accessToken) {
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      if (
-        error.response &&
-        error.response.status >= 400 &&
-        error.response.status < 500
-      ) {
-        console.error("Response data:", error.response.data);
+      if (error.response) {
+        try {
+          return error.response.data;
+        } catch (parseError) {
+          console.error("Error parsing response data:", parseError);
+          throw new Error("Unexpected response format");
+        }
+      } else {
+        console.error("No response received:", error);
+        throw new Error("No response received");
       }
     } else {
       console.error("Unexpected error:", error);
+      throw new Error("Unexpected error occurred");
     }
   }
 }

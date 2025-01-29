@@ -6,6 +6,7 @@ import HasColors from "./HasColors";
 import HasSize from "./HasSize";
 import AddTags from "./AddTags";
 import ProductImages from "./ProductImages";
+import Policy from "./Policy";
 
 const AddProducts = () => {
   const { productId } = useParams();
@@ -339,6 +340,15 @@ const AddProducts = () => {
             </h2>
           </div>
           <ProductImages productId={productId} accessToken={accessToken} />
+        </div>
+
+        <div className="flex flex-col space-y-2 md:flex-col md:space-x-4 border border-gray-200 p-4 rounded-lg space-y-6">
+          <div className="flex flex-col space-y-2">
+            <h2 className="text-lg font-semibold text-gray-800">
+              Shipping and Return Policy
+            </h2>
+          </div>
+          <Policy productId={productId} accessToken={accessToken} />
         </div>
 
         <div className="flex flex-col justify-end space-y-2 mt-4">

@@ -51,6 +51,22 @@ class ProductService {
       console.error(error);
     }
   }
+
+  async removeVariation(productId, variationIds, token) {
+    try {
+      const response = await this.api.delete(
+        `/api/v1/products/${productId}/variations/${variationIds}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 const productService = new ProductService();

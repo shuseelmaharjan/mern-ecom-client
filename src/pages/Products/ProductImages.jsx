@@ -6,6 +6,7 @@ import config from "../../services/config";
 import AddVariationModal from "./AddVariationModal";
 import EditVariationModal from "./EditVariationModal";
 import ConfirmationModal from "./ConfirmationModal";
+import productService from "../../services/productService/productService";
 
 const ProductImages = ({ productId, accessToken }) => {
   const BASE_URL = config.API_BASE_URL;
@@ -100,12 +101,7 @@ const ProductImages = ({ productId, accessToken }) => {
 
   const handleConfirmDelete = async () => {
     try {
-      await apiHandler(
-        null,
-        `/api/v1/products/${productId}/variations/${variationIdToDelete}`,
-        "DELETE",
-        accessToken
-      );
+      await productService.removeVariation(productId, variationIdToDelete, accessToken);  
       await fetchVariationDetails();
       handleCloseConfirmationModal();
     } catch (err) {
