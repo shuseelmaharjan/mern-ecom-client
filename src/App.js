@@ -307,7 +307,7 @@ function App() {
       dashLoadout: true,
     },
     {
-      path: "/listing/create-listing/:id",
+      path: "/listing/create-listing/:productId",
       element: <AddProducts />,
       showHeader: false,
       private: true,

@@ -5,14 +5,19 @@ const apiURL = config.API_BASE_URL;
 
 export default async function apiHandler(data, url, method, accessToken) {
   try {
+    const headers = {
+      Authorization: `Bearer ${accessToken}`,
+    };
+
+    if (!(data instanceof FormData)) {
+      headers["Content-Type"] = "application/json";
+    }
+
     const axiosConfig = {
       method: method.toLowerCase(),
       url: apiURL + url,
       data: data,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: headers,
     };
 
     const response = await axios(axiosConfig);
