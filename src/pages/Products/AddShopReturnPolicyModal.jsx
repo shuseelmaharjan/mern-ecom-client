@@ -33,14 +33,15 @@ const AddShopReturnPolicyModal = ({ setAddShopPolicyModal, accessToken, fetchSho
     return newErrors;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleAddPolicy = async (e) => {
+    e.preventDefault(); // Prevent the default form submission behavior
+  
     const newErrors = validateForm();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-
+  
     setLoading(true);
     try {
       await apiHandler(formData, '/api/v2/create-shop-return-policy', 'POST', accessToken);
@@ -57,7 +58,7 @@ const AddShopReturnPolicyModal = ({ setAddShopPolicyModal, accessToken, fetchSho
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg shadow-lg w-full sm:w-8/12 md:w-6/12 lg:w-4/12 p-6">
         <h3 className="text-lg font-semibold mb-4">Add Return Policy</h3>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleAddPolicy}>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2" htmlFor="policyName">
               Policy Name

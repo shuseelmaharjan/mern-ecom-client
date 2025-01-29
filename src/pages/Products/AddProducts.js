@@ -80,7 +80,6 @@ const AddProducts = () => {
     setMessage(null);
     setError(null);
     try {
-      console.log("Product Details:", productDetails);
       const updatedProduct = await apiHandler(
         productDetails,
         `/api/v1/update-product/${productId}`,
@@ -333,6 +332,7 @@ const AddProducts = () => {
             </button>
           </div>
         </div>
+
         <div className="flex flex-col space-y-2 md:flex-col md:space-x-4 border border-gray-200 p-4 rounded-lg space-y-6">
           <div className="flex flex-col space-y-2">
             <h2 className="text-lg font-semibold text-gray-800">
@@ -356,7 +356,7 @@ const AddProducts = () => {
             type="submit"
             className="bg-gray-800 w-3/12 ml-auto text-white px-6 py-2 hover:bg-gray-700"
           >
-            Create Product
+            Update Product
           </button>
         </div>
       </form>
