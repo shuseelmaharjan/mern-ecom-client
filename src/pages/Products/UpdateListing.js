@@ -10,7 +10,7 @@ import Policy from "./Policy";
 import { useNavigate } from "react-router-dom";
 import { useMessage } from "../../context/MessageContext";
 
-const AddProducts = () => {
+const UpdateListing = () => {
   const { productId } = useParams();
   const { accessToken } = useAuth();
   const navigate = useNavigate();
@@ -85,7 +85,7 @@ const AddProducts = () => {
         accessToken
       );
       setProductDetails(updatedProduct);
-      setMessage("Product added successfully!");
+      setMessage("Product updated successfully!");
       navigate("/listing");
     } catch (err) {
       setError(err);
@@ -105,7 +105,7 @@ const AddProducts = () => {
   return (
     <div className="block w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
       <h1 className="text-2xl font-bold text-gray-800">
-        Create Product Listing
+        Update Product Listing
       </h1>
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4 mt-6">
         <div className="flex flex-col space-y-2 md:flex-col md:space-x-4 border border-gray-200 p-4 rounded-lg space-y-6">
@@ -355,7 +355,7 @@ const AddProducts = () => {
             type="submit"
             className="bg-gray-800 w-3/12 ml-auto text-white px-6 py-2 hover:bg-gray-700"
           >
-            Create Product
+            Update Product
           </button>
         </div>
       </form>
@@ -363,4 +363,4 @@ const AddProducts = () => {
   );
 };
 
-export default AddProducts;
+export default UpdateListing;

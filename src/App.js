@@ -45,6 +45,7 @@ import MyShop from "./pages/Shop/MyShop";
 import OpenTickets from "./pages/Tickets/OpenTickets";
 import StartProduct from "./pages/Products/StartProduct";
 import AddProducts from "./pages/Products/AddProducts";
+import UpdateListing from "./pages/Products/UpdateListing";
 
 function App() {
   const location = useLocation();
@@ -309,6 +310,13 @@ function App() {
     {
       path: "/listing/create-listing/:productId",
       element: <AddProducts />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/listing/update-listing/:productId",
+      element: <UpdateListing />,
       showHeader: false,
       private: true,
       dashLoadout: true,
