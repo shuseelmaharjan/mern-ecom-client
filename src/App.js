@@ -244,7 +244,14 @@ function App() {
       dashLoadout: false,
     },
     {
-      path: "/order-and-delivery",
+      path: "/order-and-delivery/:orderPage",
+      element: <OrderAndDelivery />,
+      showHeader: false,
+      private: true,
+      dashLoadout: true,
+    },
+    {
+      path: "/order-and-delivery/pending",
       element: <OrderAndDelivery />,
       showHeader: false,
       private: true,

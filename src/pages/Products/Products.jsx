@@ -126,7 +126,7 @@ const Products = () => {
         {/* Product Grid Section */}
         <div className="w-full md:w-10/12">
           {loading ? (
-            <div className="text-center py-8">Loading products...</div>
+            <div className="text-center py-8"></div>
           ) : (
             <div className={getGridClasses()}>
               {products.map((product) => (
@@ -302,6 +302,9 @@ const Products = () => {
         {/* Settings Panel */}
         <div className="w-full md:w-2/12 flex flex-col items-end space-y-4">
           <div className="flex space-x-4 justify-between items-center w-full">
+            <div className="flex items-center space-x-2">
+          <span className="text-lg font-semibold">Stats</span>
+
             <div
               onClick={handleToggle}
               className={`relative w-16 h-8 flex items-center rounded-full cursor-pointer transition-all duration-300 ${
@@ -329,6 +332,7 @@ const Products = () => {
               >
                 OFF
               </span>
+            </div>
             </div>
             <div className="flex space-x-4">
               <button
@@ -362,6 +366,8 @@ const Products = () => {
             <option value="oldest">Oldest First</option>
             <option value="priceHighLow">Price High to Low</option>
             <option value="priceLowHigh">Price Low to High</option>
+            <option value="quantityHighLow">Quantity High to Low</option>
+            <option value="quantityLowHigh">Quantity Low to High</option>
           </select>
           <div className="flex flex-col space-y-2 w-full mt-4">
             <h1 className="text-base font-semibold">Total Products</h1>
