@@ -7,10 +7,15 @@ import HasSize from "./HasSize";
 import AddTags from "./AddTags";
 import ProductImages from "./ProductImages";
 import Policy from "./Policy";
+import { useNavigate } from "react-router-dom";
+import { useMessage } from "../../context/MessageContext";
 
 const AddProducts = () => {
   const { productId } = useParams();
   const { accessToken } = useAuth();
+  const navigate = useNavigate();
+  const { setMessage } = useMessage();
+
   const [productDetails, setProductDetails] = useState({
     title: "",
     description: "",
@@ -21,13 +26,13 @@ const AddProducts = () => {
     weight: "",
     shape: "",
     hasDimension: false,
-    dimension: { width: "", height: "" },
+    productHeight: "",
+    productWidth: "",
     material: "",
     customOrder: false,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [message, setMessage] = useState(null);
 
   const fetchProductDetails = useCallback(async () => {
     try {
@@ -51,35 +56,28 @@ const AddProducts = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === "width" || name === "height") {
-      setProductDetails((prevDetails) => ({
-        ...prevDetails,
-        dimension: {
-          ...prevDetails.dimension,
-          [name]: value,
-        },
-      }));
-    } else {
-      setProductDetails((prevDetails) => ({
-        ...prevDetails,
-        [name]: value,
-      }));
-    }
+    setProductDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
   };
 
   const handleToggle = (field) => {
     setProductDetails((prevDetails) => ({
       ...prevDetails,
       [field]: !prevDetails[field],
+      ...(field === "hasDimension" && !prevDetails[field] === false
+        ? { productHeight: "", productWidth: "" }
+        : {}),
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage(null);
     setError(null);
     try {
+      console.log("productDetails", productDetails);
       const updatedProduct = await apiHandler(
         productDetails,
         `/api/v1/update-product/${productId}`,
@@ -87,7 +85,8 @@ const AddProducts = () => {
         accessToken
       );
       setProductDetails(updatedProduct);
-      setMessage("Product updated successfully!");
+      setMessage("Product added successfully!");
+      navigate("/listing");
     } catch (err) {
       setError(err);
     } finally {
@@ -108,8 +107,6 @@ const AddProducts = () => {
       <h1 className="text-2xl font-bold text-gray-800">
         Update Product Listing
       </h1>
-      {message && <div className="text-green-500 mb-4">{message}</div>}
-      {error && <div className="text-red-500 mb-4">{error.message}</div>}
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4 mt-6">
         <div className="flex flex-col space-y-2 md:flex-col md:space-x-4 border border-gray-200 p-4 rounded-lg space-y-6">
           <div className="flex flex-col space-y-2">
@@ -151,7 +148,7 @@ const AddProducts = () => {
               Price
             </label>
             <input
-              type="text"
+              type="number"
               id="price"
               name="price"
               value={productDetails.price}
@@ -216,7 +213,7 @@ const AddProducts = () => {
               Weight
             </label>
             <input
-              type="text"
+              type="number"
               id="weight"
               name="weight"
               value={productDetails.weight}
@@ -285,11 +282,12 @@ const AddProducts = () => {
                   <input
                     type="text"
                     id="width"
-                    name="width"
-                    value={productDetails.dimension.width}
+                    name="productWidth"
+                    value={productDetails.productWidth}
                     onChange={handleInputChange}
                     placeholder="Enter width"
                     className="w-full border border-gray-300 p-2 shadow-sm outline-none"
+                    disabled={!productDetails.hasDimension}
                   />
                 </div>
                 <div className="flex flex-col space-y-2 w-full md:w-4/12">
@@ -299,11 +297,12 @@ const AddProducts = () => {
                   <input
                     type="text"
                     id="height"
-                    name="height"
-                    value={productDetails.dimension.height}
+                    name="productHeight"
+                    value={productDetails.productHeight}
                     onChange={handleInputChange}
                     placeholder="Enter height"
                     className="w-full border border-gray-300 p-2 shadow-sm outline-none"
+                    disabled={!productDetails.hasDimension}
                   />
                 </div>
               </div>

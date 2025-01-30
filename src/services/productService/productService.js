@@ -27,13 +27,16 @@ class ProductService {
     }
   }
 
-  async getVendorsProduct(token) {
+  async getVendorsProduct(listing, sort, accessToken) {
     try {
-      const response = await this.api.get("/api/v1/vendor-product", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await this.api.get(
+        `/api/v1/get-vendor-products/${sort}/${listing}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       console.error(error);

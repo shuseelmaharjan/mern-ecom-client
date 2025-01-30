@@ -1,216 +1,221 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import { IoGridSharp } from "react-icons/io5";
 import { FaList } from "react-icons/fa6";
-import productService from '../../services/productService/productService';
 import { useAuth } from '../../context/AuthContext';
+import apiHandler from '../../api/apiHandler';
+import { useMessage } from '../../context/MessageContext';
+import { toast, ToastContainer, Flip } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import config from '../../services/config';
 
 const Products = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const defaultParams = {
-    listing: 'active',
-    view: 'grid',
-    stats: 'disable',
-  };
-
-  const [activeTab, setActiveTab] = useState(defaultParams.listing);
-  const [viewType, setViewType] = useState(defaultParams.view);
-  const [isEnabled, setIsEnabled] = useState(defaultParams.stats === 'enable');
-  const [products, setProducts] = useState([]);
-  const [sortBy, setSortBy] = useState('');
-
+  const { message, setMessage } = useMessage();
   const { accessToken } = useAuth();
   const BASE_URL = config.API_BASE_URL;
 
-  const updateParams = (updatedParams) => {
-    const params = new URLSearchParams(location.search);
-    const finalParams = { ...Object.fromEntries(params.entries()), ...updatedParams };
-    navigate(`${location.pathname}?${new URLSearchParams(finalParams).toString()}`);
-  };
-  
+  // State management
+  const [activeTab, setActiveTab] = useState('active');
+  const [viewType, setViewType] = useState('grid');
+  const [products, setProducts] = useState([]);
+  const [sortBy, setSortBy] = useState('latest');
+  const [loading, setLoading] = useState(true);
 
-  const fetchData = useCallback(async () => {
-    try {
-      let response;
-      if (activeTab === 'active') {
-        response = await productService.getVendorsProduct(accessToken);
-      } else if (activeTab === 'expired') {
-        response = await productService.getInactiveVendorsProducts(accessToken);
-      }
-      if (response?.products?.products) {
-        setProducts(response.products.products);
-      }
-    } catch (error) {
-      console.error(error);
+  // Toast notifications
+  useEffect(() => {
+    if (message) {
+      toast.success(message);
+      setMessage(null);
     }
-  }, [activeTab, accessToken]);
+  }, [message, setMessage]);
+
+  // Fetch products from API
+  const fetchProducts = useCallback(async () => {
+    try {
+      setLoading(true);
+      const isActive = activeTab === 'active';
+      const isDraft = activeTab === 'drafts';
+      
+
+      const response = await apiHandler(null, `/api/v1/get-vendor-products/${sortBy}/${isActive}/${isDraft}`, "GET", accessToken);
+      
+      setProducts(response);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      toast.error('Failed to fetch products');
+    } finally {
+      setLoading(false);
+    }
+  }, [activeTab, sortBy, accessToken]);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const currentTab = params.get('listing') || defaultParams.listing;
-    const currentView = params.get('view') || defaultParams.view;
-    const currentStats = params.get('stats') || defaultParams.stats;
-  
-    setActiveTab(currentTab);
-    setViewType(currentView);
-    setIsEnabled(currentStats === 'enable');
-  
-    fetchData();
-  }, [location, fetchData, defaultParams.listing, defaultParams.stats, defaultParams.view]);
-  
+    fetchProducts();
+  }, [fetchProducts]);
 
+  // Tab handling
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-    updateParams({ listing: tab });
+    navigate(`?tab=${tab}&sort=${sortBy}`);
+    fetchProducts();
   };
 
-  const handleViewChange = (view) => {
-    setViewType(view);
-    updateParams({ view });
-  };
-
-  const handleToggle = () => {
-    const newStatus = !isEnabled ? 'enable' : 'disable';
-    setIsEnabled(!isEnabled);
-    updateParams({ stats: newStatus });
-  };
-
+  // Sort handling
   const handleSortChange = (e) => {
     const value = e.target.value;
     setSortBy(value);
-
-    const sortedProducts = [...products];
-
-    switch (value) {
-      case 'latest':
-        sortedProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        break;
-      case 'oldest':
-        sortedProducts.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-        break;
-      case 'priceHighLow':
-        sortedProducts.sort((a, b) => b.price - a.price);
-        break;
-      case 'priceLowHigh':
-        sortedProducts.sort((a, b) => a.price - b.price);
-        break;
-      case 'quantityHighLow':
-        sortedProducts.sort((a, b) => b.quantity - a.quantity);
-        break;
-      case 'quantityLowHigh':
-        sortedProducts.sort((a, b) => a.quantity - b.quantity);
-        break;
-      default:
-        break;
-    }
-
-    setProducts(sortedProducts);
+    navigate(`?tab=${activeTab}&sort=${value}`);
+    fetchProducts();
   };
 
-  const handleCreateProduct = ()=> {
-    navigate('/listing/create-listing')
-  }
+  // Responsive grid classes
+  const getGridClasses = () => {
+    if (viewType === 'grid') {
+      return 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
+    }
+    return 'flex flex-col gap-4';
+  };
 
   return (
     <div className="block w-full h-auto p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
-      <div className="flex mb-10 justify-between">
-        <div className="flex space-x-4">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row mb-10 justify-between">
+        <div className="flex space-x-4 mb-4 md:mb-0">
           <button
             onClick={() => handleTabClick("active")}
-            className={`py-2 px-4 ${activeTab === "active" ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-700"}`}
+            className={`py-2 px-4 rounded ${
+              activeTab === "active" 
+                ? "bg-gray-800 text-white" 
+                : "bg-gray-200 text-gray-700"
+            }`}
           >
-            Active Listing
+            Active Products
           </button>
           <button
-            onClick={() => handleTabClick("expired")}
-            className={`py-2 px-4 ${activeTab === "expired" ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-700"}`}
+            onClick={() => handleTabClick("drafts")}
+            className={`py-2 px-4 rounded ${
+              activeTab === "drafts" 
+                ? "bg-gray-800 text-white" 
+                : "bg-gray-200 text-gray-700"
+            }`}
           >
-            Expired Listing
+            Drafts
           </button>
         </div>
-        <button
-          className="py-2 px-4 bg-gray-800 font-semibold text-white hover:bg-gray-700"
-          onClick={handleCreateProduct}
+        
+        <div className="flex space-x-4">
+          <button
+            onClick={() => navigate('/listing/create-listing')}
+            className="py-2 px-4 bg-gray-800 font-semibold text-white hover:bg-gray-700 rounded"
+          >
+            Add Product
+          </button>
+        </div>
+      </div>
+
+      {/* Controls Section */}
+      <div className="flex flex-col md:flex-row justify-between mb-6 space-y-4 md:space-y-0">
+        <div className="flex space-x-4">
+          <button
+            onClick={() => setViewType("grid")}
+            className={`p-2 rounded ${
+              viewType === "grid" 
+                ? "bg-gray-800 text-white" 
+                : "bg-gray-200 text-gray-700"
+            }`}
+          >
+            <IoGridSharp size={20} />
+          </button>
+          <button
+            onClick={() => setViewType("list")}
+            className={`p-2 rounded ${
+              viewType === "list" 
+                ? "bg-gray-800 text-white" 
+                : "bg-gray-200 text-gray-700"
+            }`}
+          >
+            <FaList size={20} />
+          </button>
+        </div>
+
+        <select
+          value={sortBy}
+          onChange={handleSortChange}
+          className="p-2 rounded bg-gray-200 text-gray-700 md:w-48"
         >
-          Add Product
-        </button>
+          <option value="latest">Latest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="priceHighLow">Price High to Low</option>
+          <option value="priceLowHigh">Price Low to High</option>
+        </select>
       </div>
 
-      <div className="flex space-x-4">
-        <div className="w-10/12">
-          <div className={viewType === "grid" ? "grid grid-cols-3 gap-4" : "flex flex-col gap-4"}>
-            {products.map((product) => (
-              <div key={product._id} className={viewType === "grid" ? "border shadow-md" : "flex items-center border p-4 shadow-md"}>
-                <img
-                  src={`${BASE_URL}/${product.media.images.find((img) => img.default)?.url}`}
-                  alt={product.title}
-                  className={viewType === "grid" ? "w-full h-72 object-cover" : "w-24 h-24"}
-                />
-                <div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold">{product.title}</h3>
-                    <p>{product.quantity} in stock</p>
-                    <p className="text-gray-600">${product.price}</p>
+      {/* Products Grid */}
+      {loading ? (
+        <div className="text-center py-8">Loading products...</div>
+      ) : (
+        <div className={getGridClasses()}>
+          {products.map((product) => (
+            <div
+              key={product._id}
+              className={`border rounded-lg shadow-sm overflow-hidden ${
+                viewType === 'list' ? 'flex flex-col md:flex-row' : ''
+              }`}
+            >
+              <img
+                src={`${BASE_URL}${product.variations[0]?.media[0]}`}
+                alt={product.title}
+                className={`object-cover ${
+                  viewType === 'grid' 
+                    ? 'w-full h-48' 
+                    : 'w-full md:w-48 h-48 md:h-auto'
+                }`}
+              />
+
+              <div className="p-4 flex-1">
+                <h3 className="text-lg font-semibold mb-2">{product.title}</h3>
+                <p className="text-gray-600 mb-2">${product.price}</p>
+                <p className="text-sm mb-2">{product.quantity} in stock</p>
+
+                {activeTab === 'drafts' && (
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-500">
+                      {product.description.substring(0, 100)}...
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {product.color?.map((c) => (
+                        <span
+                          key={c}
+                          className="px-2 py-1 text-xs rounded-full bg-gray-100"
+                        >
+                          {c}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      Material: {product.material}
+                    </p>
                   </div>
-                </div>
+                )}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-        <div className="w-2/12">
-          <div className="flex justify-end space-x-2 mb-6">
-          <div className="flex items-center space-x-4">
-      <button
-        onClick={handleToggle}
-        className={`w-16 h-8 rounded-full flex items-center p-1 ${
-          isEnabled ? "bg-green-500" : "bg-gray-300"
-        }`}
-      >
-        <div
-          className={`h-6 w-6 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
-            isEnabled ? "translate-x-8" : ""
-          }`}
-        ></div>
-      </button>
-      <span className="text-sm font-medium">
-        {isEnabled ? "Enabled" : "Disabled"}
-      </span>
-    </div>
-            <button
-              onClick={() => handleViewChange("grid")}
-              className={`py-2 px-4 ${viewType === "grid" ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-700"}`}
-            >
-              <IoGridSharp />
-            </button>
-            <button
-              onClick={() => handleViewChange("list")}
-              className={`py-2 px-4 ${viewType === "list" ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-700"}`}
-            >
-              <FaList />
-            </button>
-          </div>
+      )}
 
-          <div className="mb-6 w-full">
-            <label htmlFor="sort" className="font-semibold text-base">Sort</label>
-            <select
-              id="sort"
-              value={sortBy}
-              onChange={handleSortChange}
-              className="py-2 px-4 bg-gray-200 text-gray-700 w-full mt-4"
-            >
-              <option value="">Sort by</option>
-              <option value="latest">Latest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="priceHighLow">Price High to Low</option>
-              <option value="priceLowHigh">Price Low to High</option>
-              <option value="quantityHighLow">Quantity High to Low</option>
-              <option value="quantityLowHigh">Quantity Low to High</option>
-            </select>
-          </div>
-        </div>
-      </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        transition={Flip}
+      />
     </div>
   );
 };

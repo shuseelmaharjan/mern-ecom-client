@@ -10,10 +10,6 @@ export default async function apiHandler(data, url, method, accessToken) {
       "Content-Type": data instanceof FormData ? undefined : "application/json",
     };
 
-    if (!(data instanceof FormData)) {
-      headers["Content-Type"] = "application/json";
-    }
-
     const axiosConfig = {
       method: method.toLowerCase(),
       url: apiURL + url,
@@ -27,7 +23,10 @@ export default async function apiHandler(data, url, method, accessToken) {
     if (axios.isAxiosError(error)) {
       if (error.response) {
         try {
-          return error.response.data;
+          console.error("Error response data:", error.response.data);
+          throw new Error(
+            error.response.data.message || "Error response from server"
+          );
         } catch (parseError) {
           console.error("Error parsing response data:", parseError);
           throw new Error("Unexpected response format");

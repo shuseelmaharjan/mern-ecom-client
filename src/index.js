@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
+import { MessageProvider } from "./context/MessageContext";
 import "react-toastify/dist/ReactToastify.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -14,8 +15,10 @@ root.render(
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
+          <MessageProvider>
             <App />
-          </CartProvider>
+          </MessageProvider>
+        </CartProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
