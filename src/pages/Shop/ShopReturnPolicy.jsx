@@ -72,8 +72,12 @@ const ShopReturnPolicy = ({
               <div className="flex flex-col text-sm">
                 <div className="flex justify-between items-center mb-2">
                   <div className="flex gap-4 items-center">
-                    <span className="font-semibold text-base">{item.policyName}</span>
-                    <span className="italic">Created At: {DateUtils.formatDate(item.createdAt)}</span>
+                    <span className="font-semibold text-base">
+                      {item.policyName}
+                    </span>
+                    <span className="italic">
+                      Created At: {DateUtils.formatDate(item.createdAt)}
+                    </span>
                   </div>
                   <button
                     onClick={() => handleRemovePolicy(item._id)}
@@ -83,9 +87,9 @@ const ShopReturnPolicy = ({
                   </button>
                 </div>
 
-                  <span
-                    dangerouslySetInnerHTML={{ __html: item.policyDescription }}
-                  ></span>
+                <span
+                  dangerouslySetInnerHTML={{ __html: item.policyDescription }}
+                ></span>
               </div>
             </div>
           ))}

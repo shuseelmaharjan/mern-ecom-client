@@ -21,6 +21,18 @@ class ShopService {
       console.error(error);
     }
   }
+  async getLogisticServices(accessToken) {
+    try {
+      const response = await this.api.get("/api/v1/shipping-methods", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 const shopService = new ShopService();
 export default shopService;

@@ -20,10 +20,9 @@ const DefaultReturnPolicy = () => {
     <div className="space-y-4">
       {companyPolicyData &&
         companyPolicyData.map((policy, index) => (
-          <div
-            key={index}
-            className="w-full p-6 border border-gray-200 shadow-md rounded-lg mb-4 bg-white"
-          >
+         
+                        <div key={index} className="w-full p-4 border border-gray-300 shadow-sm mb-4 rounded-lg">
+
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold text-gray-800">
                 {policy.policyName}

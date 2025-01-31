@@ -13,6 +13,8 @@ import AddReturnPolicyModal from "./AddReturnPolicyModal";
 import ShopShippingPolicy from "./ShopShippingPolicy";
 import DateUtils from "../../utils/dateUtils";
 import ShopReturnPolicy from "./ShopReturnPolicy";
+import AddShippingMethodModal from "./AddShippingMethodModal";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 const MyShop = () => {
   const { accessToken } = useAuth();
@@ -30,6 +32,7 @@ const MyShop = () => {
   const [editDescription, setEditDescription] = useState(false);
   const [isUpdatingDescription, setIsUpdatingDescription] = useState(false);
   const [callNewData, setCallNewData] = useState(false);
+  const [logistic, setLogistic] = useState("");
 
   useEffect(() => {
     if (successMsg) {
@@ -53,8 +56,11 @@ const MyShop = () => {
   const fetchData = useCallback(async () => {
     try {
       const response = await shopService.getData(accessToken);
+      const logistic = await shopService.getLogisticServices(accessToken);
       setShopData(response.data);
       setShopId(response.data._id);
+      setLogistic(logistic.data);
+      console.log(logistic.data);
     } catch (error) {
       console.error(error);
     }
@@ -147,6 +153,29 @@ const MyShop = () => {
     setReturnPolicyModal(true);
   };
 
+  const [shippingMethodModal, setShippingMethodModal] = useState(false);
+  const handleOpenShipingMethodsModal = () => {
+    setShippingMethodModal(true);
+  };
+
+  const returnLogisticService = async (id) => {
+    try {
+      await axios.put(
+        `${BASE_URL}/api/v1/update-shipping-method/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setSuccessMsg("Logistic service removed successfully");
+      fetchData();
+    } catch (error) {
+      console.error("Error removing logistic service:", error);
+      setErrorMsg("Error removing logistic service");
+    }
+  };
   return (
     <div className="w-full p-6 shadow-lg rounded-lg gap-6 lg:gap-8 border-gray-100 border-2">
       <div className="flex gap-4 mb-8">
@@ -270,8 +299,8 @@ const MyShop = () => {
         </div>
       )}
       <div className="flex flex-col lg:flex-row gap-6 mt-8">
-        <div className="lg:w-1/2">
-          <div className="flex justify-between items-center">
+        <div className="lg:w-1/3">
+          <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-semibold mb-4">Shipping Policies</h1>
             <button
               className="bg-gray-800 px-3 py-2 text-white font-semibold"
@@ -290,8 +319,8 @@ const MyShop = () => {
           />
         </div>
 
-        <div className="lg:w-1/2">
-          <div className="flex justify-between items-center">
+        <div className="lg:w-1/3">
+          <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-semibold mb-4">Return Policies</h1>
             <button
               className="bg-gray-800 px-3 py-2 text-white font-semibold"
@@ -302,12 +331,60 @@ const MyShop = () => {
           </div>
           <DefaultReturnPolicy />
           <ShopReturnPolicy
-          accessToken={accessToken}
-          shopId={shopId}
-          setSuccessMsg={setSuccessMsg}
-          setErrorMsg={setErrorMsg}
-          callNewData={callNewData}
+            accessToken={accessToken}
+            shopId={shopId}
+            setSuccessMsg={setSuccessMsg}
+            setErrorMsg={setErrorMsg}
+            callNewData={callNewData}
           />
+        </div>
+        <div className="lg:w-1/3">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-semibold mb-4">Logistic</h1>
+            <button
+              className="bg-gray-800 px-3 py-2 text-white font-semibold"
+              onClick={handleOpenShipingMethodsModal}
+            >
+              Add Method
+            </button>
+          </div>
+          {logistic.length > 0 ? (
+            <>
+              {logistic.map((item, index) => (
+                <div
+                  key={index}
+                  className="w-full p-4 border border-gray-300 shadow-sm mb-4 rounded-lg"
+                >
+                  <div
+                    key={index}
+                    className="flex justify-between items-center mb-2"
+                  >
+                    <div className="flex gap-4 items-center">
+                      <span className="font-semibold text-base">
+                        {item.name}
+                      </span>
+                    </div>
+                    <div className="flex gap-4 items-center">
+                      <span className="font-semibold">Shipping Company:</span>
+                      <span>{item.shippingCompany}</span>
+                      <button
+                        onClick={() => returnLogisticService(item._id)}
+                        className="px-3 py-1 border-2 border-red-500 rounded-full bg-red-500 text-white flex items-center gap-2"
+                      >
+                        <FaRegTrashAlt /> Remove
+                      </button>{" "}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <>
+              <div className="w-full p-4 border border-gray-300 shadow-sm mb-4 rounded-lg">
+                <p className="text-gray-600">No logistic service added yet</p>
+              </div>
+            </>
+          )}
         </div>
       </div>
       {shippingPolicyModal && (
@@ -325,6 +402,17 @@ const MyShop = () => {
         <AddReturnPolicyModal
           setReturnPolicyModal={setReturnPolicyModal}
           shopId={shopId}
+          accessToken={accessToken}
+          setSuccessMsg={setSuccessMsg}
+          setErrorMsg={setErrorMsg}
+          fetchData={fetchData}
+          setCallNewData={setCallNewData}
+        />
+      )}
+
+      {shippingMethodModal && (
+        <AddShippingMethodModal
+          setShippingMethodModal={setShippingMethodModal}
           accessToken={accessToken}
           setSuccessMsg={setSuccessMsg}
           setErrorMsg={setErrorMsg}

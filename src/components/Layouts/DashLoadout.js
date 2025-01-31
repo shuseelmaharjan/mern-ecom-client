@@ -254,7 +254,7 @@ const DashLoadout = ({ children }) => {
                     )}
                   </span>
                   <span
-                    className="relative text-lg font-medium h-full text-gray-700 cursor-pointer select-none"
+                    className="relative text-lg font-medium h-full text-gray-700 cursor-pointer select-none mr-20"
                     onClick={toggleProfileOptions}
                   >
                     {name}
