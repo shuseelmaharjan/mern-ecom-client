@@ -9,6 +9,7 @@ import TitleModal from "./TitleModal";
 import TaglineModal from "./TaglineModal";
 import DescriptionModal from "./DescriptionModal";
 import DOMPurify from "dompurify";
+import SiteProfit from "./SiteProfit";
 
 const Site = () => {
   const [siteLogo, setSiteLogo] = useState(null);
@@ -209,7 +210,13 @@ const Site = () => {
 
       {/* Site Members */}
       <div className="block w-full lg:w-4/12 border-gray-200 border-l">
-        <h4 className="text-lg font-semibold px-4">Site Members</h4>
+
+        <h4 className="text-lg font-semibold px-4">Site Profilt</h4>
+        <div className="p-4 space-y-4">
+
+          <SiteProfit accessToken={accessToken}/>
+        </div>
+        <h4 className="text-lg font-semibold px-4">Site Admin</h4>
         <div className="p-4 space-y-4">
           {admins.map((admin) => (
             <div
